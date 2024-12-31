@@ -1,58 +1,73 @@
 messages:
   # プラグイン情報
   plugin:
-    enable: "=================================\nBellCommand プラグインが有効になりました!\n作者: 柠枺\nバージョン: {version}\n================================="
-    debug-enabled: "デバッグモードが有効になりました"
-    bedrock-detected: "統合版サーバーを検出しました"
-    disable: "BellCommand プラグインが無効になりました!"
+    enable: "§a[BellCommand] プラグインが有効になりました v%version%"
+    disable: "§c[BellCommand] プラグインが無効になりました"
+    debug-enabled: "§e[BellCommand] デバッグモードが有効になりました"
+    bedrock-detected: "§e[BellCommand] 統合版サーバーを検出しました。一部の機能が利用できない可能性があります"
+    version: "§6[BellCommand] バージョン: v%version%"
+    
+    update:
+      checking: "§eアップデートを確認中..."
+      available: "§e新しいバージョンが利用可能です！現在: v%current%、最新: v%latest%"
+      up-to-date: "§aプラグインは最新です (v%version%)"
+      check-failed: "§cアップデートの確認に失敗しました: %error%"
+      download-start: "§e[BellCommand] アップデートのダウンロードを開始します..."
+      download-success: "§a[BellCommand] アップデートのダウンロードが完了しました。再起動後に適用されます"
+      download-failed: "§c[BellCommand] アップデートのダウンロードに失敗しました: §e%error%"
+      invalid-source: "§c無効な更新ソース: %source%"
+      source-disabled: "§eアップデートチェックは無効です"
   
   # コマンド関連
   command:
-    player-only: "このコマンドはプレイヤーのみが使用できます。"
-    no-permission: "§cこのコマンドを実行する権限がありません!"
-    reload-success: "§a設定を正常に再読み込みしました!"
+    player-only: "§cこのコマンドはプレイヤーのみ実行できます"
+    no-permission: "§cこのコマンドを実行する権限がありません"
+    reload-success: "§a設定を再読み込みしました"
+    reload-failed: "§c設定の再読み込みに失敗しました"
     reload-debug: "§eデバッグ情報がコンソールに出力されました"
-    reload-failed: "§c設定の再読み込みに失敗しました! コンソールのエラーを確認してください"
-    item-given: "§aコマンドアイテム §6{item} §aを付与しました！"
-    item-exists: "§cインベントリにすでに §6{item} §cがあります！"
-    item-removed: "§aインベントリから §6{item} §aを削除しました！"
-    no-item-found: "§cインベントリに §6{item} §cが見つかりません！"
-    cooldown: "§cこのアイテムはクールダウン中です！ 残り時間: §e{seconds}§c秒"
-    item-list: "§6利用可能なコマンドアイテム:"
-    item-list-entry: "§7- §e{id}§7: §f{name}"
-    item-info: "§6アイテム情報 §7- §e{id}:"
-    item-info-name: "§7名前: §f{name}"
-    item-info-type: "§7タイプ: §f{type}"
-    item-info-permission: "§7権限: §f{permission}"
-    item-info-cooldown: "§7クールダウン: §f{cooldown}秒"
-    invalid-item: "§cID §6{id} §cのコマンドアイテムが見つかりません！"
+    item-list: "§6=== 利用可能なコマンドアイテム ==="
+    item-list-entry: "§7- %id%: §f%name%"
+    item-list-end: "§6======================="
+    invalid-item: "§cエラー: ID §e%id% §cのコマンドアイテムが見つかりません"
+    item-exists: "§cすでに §6%item% §cを所持しています"
+    item-given: "§aコマンドアイテム §6%item% §aを受け取りました"
+    item-removed: "§aコマンドアイテム §6%item% §aを削除しました"
+    no-item-found: "§c削除可能なコマンドアイテムが見つかりません"
+    cooldown: "§cアイテムはクールダウン中です。あと §e%seconds% §c秒お待ちください"
   
   # エラーメッセージ
   error:
-    invalid-item: "無効なアイテムID: {item}"
-    reload-error: "設定の再読み込み中にエラーが発生しました: {error}"
-    no-permission-use: "§cこのコマンドアイテムを使用する権限がありません！"
+    no-permission-use: "§cこのアイテムを使用する権限がありません"
+    reload-error: "§c設定の再読み込み中にエラーが発生しました: §e%error%"
+    invalid-material: "§c無効なアイテムタイプ: §e%material%"
+    command-failed: "§cコマンドの実行に失敗しました: §e%command%"
   
   # デバッグメッセージ
   debug:
     config:
-      loaded: "設定を読み込みました:"
-      items-loaded: "{count}個のコマンドアイテムを読み込みました:"
-      item-entry: "- {id}: {name} ({type})"
-    
+      items-loaded: "§e[デバッグ] §6%count% §e個のコマンドアイテムを読み込みました"
+      item-entry: "§e[デバッグ] アイテム: §6%id% §e(名前: §6%name%§e, タイプ: §6%type%§e)"
+      config-reloaded: "§e[デバッグ] 設定ファイルを再読み込みしました"
+      
     interact:
-      event-start: "===== インタラクションイベント発生 ====="
-      player: "プレイヤー: {player}"
-      action: "アクション: {action}"
-      item-id: "アイテムID: {id}"
-      item-name: "アイテム名: {name}"
-      permission-check: "権限チェック: {result}"
-      cooldown-check: "クールダウンチェック: {result}"
-      cooldown-remaining: "残りクールダウン: {seconds}秒"
-      executing-commands: "コマンド実行リスト:"
-      command-entry: "- {command}"
-      event-end: "===== イベント処理完了 ====="
-    
+      event-start: "§e[デバッグ] アイテム相互作用イベントが発生しました"
+      player: "§e[デバッグ] プレイヤー: §6%player%"
+      action: "§e[デバッグ] アクション: §6%action%"
+      item-id: "§e[デバッグ] アイテムID: §6%id%"
+      item-name: "§e[デバッグ] アイテム名: §6%name%"
+      cooldown-check: "§e[デバッグ] クールダウン確認: §6%seconds%§e秒"
+      permission-check: "§e[デバッグ] 権限確認: §6%result%"
+      
     command:
-      item-given: "プレイヤー {player} にコマンドアイテム {item} を付与"
-      item-removed: "プレイヤー {player} のコマンドアイテム {item} を削除" 
+      item-given: "§e[デバッグ] アイテム付与: §6%item% §eをプレイヤー §6%player% §eに"
+      item-removed: "§e[デバッグ] アイテム削除: §6%item% §eをプレイヤー §6%player% §eから"
+      command-execute: "§e[デバッグ] コマンド実行: §6%command%"
+      command-result: "§e[デバッグ] コマンド実行結果: §6%result%"
+      
+    update:
+      source-init: "§e[デバッグ] 更新ソースの初期化: %source%"
+      response: "§e[デバッグ] 更新確認レスポンス: %response%"
+      check-start: "§e[デバッグ] 更新確認開始"
+      parse-version: "§e[デバッグ] バージョン解析: §6%version%"
+      download-url: "§e[デバッグ] ダウンロードURL: §6%url%"
+      download-progress: "§e[デバッグ] ダウンロード進捗: §6%progress%%" 

@@ -9,15 +9,15 @@ messages:
     
     # 更新源相关消息
     update:
-      checking: "§e[BellCommand] 正在检查更新..."
-      available: "§e[BellCommand] 发现新版本! 当前版本: §6v%current%§e, 最新版本: §6v%latest%"
-      up-to-date: "§a[BellCommand] 插件已是最新版本 §6v%version%"
-      check-failed: "§c[BellCommand] 检查更新失败: §e%error%"
+      checking: "§e正在检查更新..."
+      available: "§e发现新版本! 当前版本: v%current%, 最新版本: v%latest%"
+      up-to-date: "§a插件已是最新版本 (v%version%)"
+      check-failed: "§c检查更新失败: %error%"
       download-start: "§e[BellCommand] 开始下载更新..."
       download-success: "§a[BellCommand] 更新下载完成，将在下次重启时生效"
       download-failed: "§c[BellCommand] 更新下载失败: §e%error%"
-      source-disabled: "§e[BellCommand] 更新检查已禁用"
-      invalid-source: "§c[BellCommand] 无效的更新源: §e%source%"
+      invalid-source: "§c无效的更新源: %source%"
+      source-disabled: "§e更新检查已禁用"
   
   # 命令相关消息
   command:
@@ -79,9 +79,9 @@ messages:
       
     # 更新源调试信息
     update:
-      source-init: "§e[调试] 初始化更新源: §6%source%"
+      source-init: "§e[调试] 正在初始化更新源: %source%"
+      response: "§e[调试] 更新检查响应: %response%"
       check-start: "§e[调试] 开始检查更新"
-      response: "§e[调试] 更新源响应: §6%response%"
       parse-version: "§e[调试] 解析版本信息: §6%version%"
       download-url: "§e[调试] 下载地址: §6%url%"
       download-progress: "§e[调试] 下载进度: §6%progress%%" 

@@ -1,58 +1,73 @@
 messages:
   # 插件信息
   plugin:
-    enable: "=================================\nBellCommand 插件已啟動!\n作者: 柠枺\n版本: {version}\n================================="
-    debug-enabled: "調試模式已啟用"
-    bedrock-detected: "檢測到基岩版伺服器"
-    disable: "BellCommand 插件已關閉!"
+    enable: "§a[BellCommand] 插件已啟用 v%version%"
+    disable: "§c[BellCommand] 插件已禁用"
+    debug-enabled: "§e[BellCommand] 調試模式已啟用"
+    bedrock-detected: "§e[BellCommand] 檢測到基岩版伺服器，部分功能可能不可用"
+    version: "§6[BellCommand] 版本: v%version%"
+    
+    update:
+      checking: "§e正在檢查更新..."
+      available: "§e發現新版本！當前版本: v%current%，最新版本: v%latest%"
+      up-to-date: "§a插件已是最新版本 (v%version%)"
+      check-failed: "§c檢查更新失敗: %error%"
+      download-start: "§e[BellCommand] 開始下載更新..."
+      download-success: "§a[BellCommand] 更新下載完成，將在下次重啟時生效"
+      download-failed: "§c[BellCommand] 更新下載失敗: §e%error%"
+      invalid-source: "§c無效的更新源: %source%"
+      source-disabled: "§e更新檢查已禁用"
   
   # 命令相關
   command:
-    player-only: "此命令只能由玩家使用。"
-    no-permission: "§c你沒有權限執行此命令!"
-    reload-success: "§a配置已成功重新加載!"
+    player-only: "§c該命令只能由玩家執行"
+    no-permission: "§c你沒有權限執行此命令"
+    reload-success: "§a配置文件重載成功"
+    reload-failed: "§c配置文件重載失敗"
     reload-debug: "§e調試信息已輸出到控制台"
-    reload-failed: "§c配置重載失敗! 請檢查控制台錯誤信息"
-    item-given: "§a已給予您命令物品 §6{item}§a！"
-    item-exists: "§c你的背包中已經有一個 §6{item} §c了！"
-    item-removed: "§a已移除你背包中的 §6{item}§a！"
-    no-item-found: "§c未在你的背包中找到 §6{item}§c！"
-    cooldown: "§c該物品還在冷卻中! 剩餘時間: §e{seconds}§c秒"
-    item-list: "§6可用的命令物品:"
-    item-list-entry: "§7- §e{id}§7: §f{name}"
-    item-info: "§6物品信息 §7- §e{id}:"
-    item-info-name: "§7名稱: §f{name}"
-    item-info-type: "§7類型: §f{type}"
-    item-info-permission: "§7權限: §f{permission}"
-    item-info-cooldown: "§7冷卻: §f{cooldown}秒"
-    invalid-item: "§c未找到ID為 §6{id} §c的命令物品！"
+    item-list: "§6=== 可用的命令物品列表 ==="
+    item-list-entry: "§7- %id%: §f%name%"
+    item-list-end: "§6======================="
+    invalid-item: "§c錯誤: 未找到ID為 §e%id% §c的命令物品"
+    item-exists: "§c你已經擁有 §6%item% §c了"
+    item-given: "§a成功獲得命令物品 §6%item%"
+    item-removed: "§a已移除命令物品 §6%item%"
+    no-item-found: "§c未找到可移除的命令物品"
+    cooldown: "§c物品正在冷卻中，還需等待 §e%seconds% §c秒"
   
   # 錯誤信息
   error:
-    invalid-item: "無效的物品ID: {item}"
-    reload-error: "配置重載時發生錯誤: {error}"
-    no-permission-use: "§c你沒有權限使用這個命令物品！"
+    no-permission-use: "§c你沒有權限使用該物品"
+    reload-error: "§c重載配置時發生錯誤: §e%error%"
+    invalid-material: "§c無效的物品類型: §e%material%"
+    command-failed: "§c命令執行失敗: §e%command%"
   
   # 調試信息
   debug:
     config:
-      loaded: "配置加載完成:"
-      items-loaded: "已加載 {count} 個命令物品:"
-      item-entry: "- {id}: {name} ({type})"
-    
+      items-loaded: "§e[調試] 已成功加載 §6%count% §e個命令物品"
+      item-entry: "§e[調試] 物品: §6%id% §e(名稱: §6%name%§e, 類型: §6%type%§e)"
+      config-reloaded: "§e[調試] 配置文件已重新加載"
+      
     interact:
-      event-start: "===== 交互事件觸發 ====="
-      player: "玩家: {player}"
-      action: "動作: {action}"
-      item-id: "物品ID: {id}"
-      item-name: "物品名稱: {name}"
-      permission-check: "權限檢查: {result}"
-      cooldown-check: "冷卻檢查: {result}"
-      cooldown-remaining: "剩餘冷卻: {seconds}秒"
-      executing-commands: "執行命令列表:"
-      command-entry: "- {command}"
-      event-end: "===== 事件處理完成 ====="
-    
+      event-start: "§e[調試] 觸發物品交互事件"
+      player: "§e[調試] 玩家: §6%player%"
+      action: "§e[調試] 交互類型: §6%action%"
+      item-id: "§e[調試] 物品ID: §6%id%"
+      item-name: "§e[調試] 物品名稱: §6%name%"
+      cooldown-check: "§e[調試] 檢查冷卻時間: §6%seconds%§e秒"
+      permission-check: "§e[調試] 權限檢查: §6%result%"
+      
     command:
-      item-given: "給予玩家 {player} 命令物品: {item}"
-      item-removed: "移除玩家 {player} 的命令物品: {item}" 
+      item-given: "§e[調試] 給予物品: §6%item% §e給玩家 §6%player%"
+      item-removed: "§e[調試] 移除物品: §6%item% §e從玩家 §6%player%"
+      command-execute: "§e[調試] 執行命令: §6%command%"
+      command-result: "§e[調試] 命令執行結果: §6%result%"
+      
+    update:
+      source-init: "§e[調試] 正在初始化更新源: %source%"
+      response: "§e[調試] 更新檢查響應: %response%"
+      check-start: "§e[調試] 開始檢查更新"
+      parse-version: "§e[調試] 解析版本信息: §6%version%"
+      download-url: "§e[調試] 下載地址: §6%url%"
+      download-progress: "§e[調試] 下載進度: §6%progress%%" 

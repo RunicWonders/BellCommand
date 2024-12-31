@@ -1,58 +1,73 @@
 messages:
   # Plugin information
   plugin:
-    enable: "=================================\nBellCommand Plugin Enabled!\nAuthor: 柠枺\nVersion: {version}\n================================="
-    debug-enabled: "Debug mode enabled"
-    bedrock-detected: "Bedrock server detected"
-    disable: "BellCommand Plugin Disabled!"
+    enable: "§a[BellCommand] Plugin enabled v%version%"
+    disable: "§c[BellCommand] Plugin disabled"
+    debug-enabled: "§e[BellCommand] Debug mode enabled"
+    bedrock-detected: "§e[BellCommand] Bedrock server detected, some features may not be available"
+    version: "§6[BellCommand] Version: v%version%"
+    
+    update:
+      checking: "§eChecking for updates..."
+      available: "§eNew version available! Current: v%current%, Latest: v%latest%"
+      up-to-date: "§aPlugin is up to date (v%version%)"
+      check-failed: "§cUpdate check failed: %error%"
+      download-start: "§e[BellCommand] Starting download update..."
+      download-success: "§a[BellCommand] Update downloaded, will take effect after restart"
+      download-failed: "§c[BellCommand] Update download failed: §e%error%"
+      invalid-source: "§cInvalid update source: %source%"
+      source-disabled: "§eUpdate check is disabled"
   
   # Command related
   command:
-    player-only: "This command can only be used by players."
-    no-permission: "§cYou don't have permission to use this command!"
-    reload-success: "§aConfiguration reloaded successfully!"
+    player-only: "§cThis command can only be executed by players"
+    no-permission: "§cYou don't have permission to use this command"
+    reload-success: "§aConfiguration reloaded successfully"
+    reload-failed: "§cConfiguration reload failed"
     reload-debug: "§eDebug information has been output to console"
-    reload-failed: "§cConfiguration reload failed! Please check console for errors"
-    item-given: "§aGave you the command item §6{item}§a!"
-    item-exists: "§cYou already have a §6{item} §cin your inventory!"
-    item-removed: "§aRemoved §6{item} §afrom your inventory!"
-    no-item-found: "§cNo §6{item} §cfound in your inventory!"
-    cooldown: "§cThis item is on cooldown! Time remaining: §e{seconds}§c seconds"
-    item-list: "§6Available command items:"
-    item-list-entry: "§7- §e{id}§7: §f{name}"
-    item-info: "§6Item Info §7- §e{id}:"
-    item-info-name: "§7Name: §f{name}"
-    item-info-type: "§7Type: §f{type}"
-    item-info-permission: "§7Permission: §f{permission}"
-    item-info-cooldown: "§7Cooldown: §f{cooldown} seconds"
-    invalid-item: "§cNo command item found with ID §6{id}§c!"
+    item-list: "§6=== Available Command Items ==="
+    item-list-entry: "§7- %id%: §f%name%"
+    item-list-end: "§6======================="
+    invalid-item: "§cError: Command item with ID §e%id% §cnot found"
+    item-exists: "§cYou already have §6%item%"
+    item-given: "§aSuccessfully received command item §6%item%"
+    item-removed: "§aRemoved command item §6%item%"
+    no-item-found: "§cNo removable command items found"
+    cooldown: "§cItem is on cooldown, wait §e%seconds% §cseconds"
   
   # Error messages
   error:
-    invalid-item: "Invalid item ID: {item}"
-    reload-error: "Error occurred while reloading configuration: {error}"
-    no-permission-use: "§cYou don't have permission to use this command item!"
+    no-permission-use: "§cYou don't have permission to use this item"
+    reload-error: "§cError occurred while reloading: §e%error%"
+    invalid-material: "§cInvalid material type: §e%material%"
+    command-failed: "§cCommand execution failed: §e%command%"
   
   # Debug messages
   debug:
     config:
-      loaded: "Configuration loaded:"
-      items-loaded: "Loaded {count} command items:"
-      item-entry: "- {id}: {name} ({type})"
-    
+      items-loaded: "§e[Debug] Successfully loaded §6%count% §ecommand items"
+      item-entry: "§e[Debug] Item: §6%id% §e(Name: §6%name%§e, Type: §6%type%§e)"
+      config-reloaded: "§e[Debug] Configuration file reloaded"
+      
     interact:
-      event-start: "===== Interaction Event Triggered ====="
-      player: "Player: {player}"
-      action: "Action: {action}"
-      item-id: "Item ID: {id}"
-      item-name: "Item Name: {name}"
-      permission-check: "Permission Check: {result}"
-      cooldown-check: "Cooldown Check: {result}"
-      cooldown-remaining: "Cooldown Remaining: {seconds} seconds"
-      executing-commands: "Executing Commands:"
-      command-entry: "- {command}"
-      event-end: "===== Event Processing Complete ====="
-    
+      event-start: "§e[Debug] Item interaction event triggered"
+      player: "§e[Debug] Player: §6%player%"
+      action: "§e[Debug] Action type: §6%action%"
+      item-id: "§e[Debug] Item ID: §6%id%"
+      item-name: "§e[Debug] Item name: §6%name%"
+      cooldown-check: "§e[Debug] Cooldown check: §6%seconds%§e seconds"
+      permission-check: "§e[Debug] Permission check: §6%result%"
+      
     command:
-      item-given: "Gave command item {item} to player {player}"
-      item-removed: "Removed command item {item} from player {player}" 
+      item-given: "§e[Debug] Given item: §6%item% §eto player §6%player%"
+      item-removed: "§e[Debug] Removed item: §6%item% §efrom player §6%player%"
+      command-execute: "§e[Debug] Executing command: §6%command%"
+      command-result: "§e[Debug] Command execution result: §6%result%"
+      
+    update:
+      source-init: "§e[Debug] Initializing update source: %source%"
+      response: "§e[Debug] Update check response: %response%"
+      check-start: "§e[Debug] Starting update check"
+      parse-version: "§e[Debug] Parsing version: §6%version%"
+      download-url: "§e[Debug] Download URL: §6%url%"
+      download-progress: "§e[Debug] Download progress: §6%progress%%" 
