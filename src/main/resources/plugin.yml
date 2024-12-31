@@ -7,32 +7,25 @@ description: A powerful command item plugin
 website: https://github.com/ningmengchongshui/BellCommand
 
 commands:
-  clock:
-    description: Get a command item
-    usage: /clock [itemId]
-    permission: bellcommand.clock
-    aliases: [bclock, bellclock]
-  clockremove:
-    description: Remove command items
-    usage: /clockremove [itemId]
-    permission: bellcommand.clock
-    aliases: [bclockremove, bellclockremove]
   bellcommand:
     description: Plugin main command
     usage: /bellcommand reload
     permission: bellcommand.reload
     aliases: [bc, bell]
+    
+  clock:
+    description: Get a command item
+    usage: /clock [itemId]
+    permission: bellcommand.clock
+    aliases: [bclock, bellclock]
+    
+  clockremove:
+    description: Remove command items
+    usage: /clockremove [itemId]
+    permission: bellcommand.clock
+    aliases: [bclockremove, bellclockremove]
 
 permissions:
-  bellcommand.clock:
-    description: Allows using the clock command
-    default: op
-  bellcommand.reload:
-    description: Allows reloading the plugin configuration
-    default: op
-  bellcommand.item.*:
-    description: Allows using all command items
-    default: op
   bellcommand.*:
     description: 允许使用所有功能
     default: op
@@ -40,3 +33,15 @@ permissions:
       bellcommand.clock: true
       bellcommand.reload: true
       bellcommand.item.*: true
+  
+  bellcommand.clock:
+    description: Allows using the clock command
+    default: op
+  
+  bellcommand.reload:
+    description: Allows reloading the plugin configuration
+    default: op
+  
+  bellcommand.item.*:
+    description: Allows using all command items
+    default: op

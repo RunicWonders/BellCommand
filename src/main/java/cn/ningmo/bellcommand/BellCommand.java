@@ -42,10 +42,15 @@ public class BellCommand extends JavaPlugin {
         itemManager = new CommandItemManager(this);
         
         // 注册命令和监听器
-        getCommand("clock").setExecutor(this::onCommand);
-        getCommand("reload").setExecutor(this::onReloadCommand);
-        getCommand("clockremove").setExecutor(this::onRemoveCommand);
-        getCommand("bellcommand").setExecutor(this::onBellCommand);
+        if (getCommand("clock") != null) {
+            getCommand("clock").setExecutor(this::onCommand);
+        }
+        if (getCommand("clockremove") != null) {
+            getCommand("clockremove").setExecutor(this::onRemoveCommand);
+        }
+        if (getCommand("bellcommand") != null) {
+            getCommand("bellcommand").setExecutor(this::onBellCommand);
+        }
         getServer().getPluginManager().registerEvents(new ItemClickListener(this), this);
         
         // 输出启动信息
