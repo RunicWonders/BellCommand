@@ -1,0 +1,58 @@
+messages:
+  # Plugin information
+  plugin:
+    enable: "=================================\nBellCommand Plugin Enabled!\nAuthor: 柠枺\nVersion: {version}\n================================="
+    debug-enabled: "Debug mode enabled"
+    bedrock-detected: "Bedrock server detected"
+    disable: "BellCommand Plugin Disabled!"
+  
+  # Command related
+  command:
+    player-only: "This command can only be used by players."
+    no-permission: "§cYou don't have permission to use this command!"
+    reload-success: "§aConfiguration reloaded successfully!"
+    reload-debug: "§eDebug information has been output to console"
+    reload-failed: "§cConfiguration reload failed! Please check console for errors"
+    item-given: "§aGave you the command item §6{item}§a!"
+    item-exists: "§cYou already have a §6{item} §cin your inventory!"
+    item-removed: "§aRemoved §6{item} §afrom your inventory!"
+    no-item-found: "§cNo §6{item} §cfound in your inventory!"
+    cooldown: "§cThis item is on cooldown! Time remaining: §e{seconds}§c seconds"
+    item-list: "§6Available command items:"
+    item-list-entry: "§7- §e{id}§7: §f{name}"
+    item-info: "§6Item Info §7- §e{id}:"
+    item-info-name: "§7Name: §f{name}"
+    item-info-type: "§7Type: §f{type}"
+    item-info-permission: "§7Permission: §f{permission}"
+    item-info-cooldown: "§7Cooldown: §f{cooldown} seconds"
+    invalid-item: "§cNo command item found with ID §6{id}§c!"
+  
+  # Error messages
+  error:
+    invalid-item: "Invalid item ID: {item}"
+    reload-error: "Error occurred while reloading configuration: {error}"
+    no-permission-use: "§cYou don't have permission to use this command item!"
+  
+  # Debug messages
+  debug:
+    config:
+      loaded: "Configuration loaded:"
+      items-loaded: "Loaded {count} command items:"
+      item-entry: "- {id}: {name} ({type})"
+    
+    interact:
+      event-start: "===== Interaction Event Triggered ====="
+      player: "Player: {player}"
+      action: "Action: {action}"
+      item-id: "Item ID: {id}"
+      item-name: "Item Name: {name}"
+      permission-check: "Permission Check: {result}"
+      cooldown-check: "Cooldown Check: {result}"
+      cooldown-remaining: "Cooldown Remaining: {seconds} seconds"
+      executing-commands: "Executing Commands:"
+      command-entry: "- {command}"
+      event-end: "===== Event Processing Complete ====="
+    
+    command:
+      item-given: "Gave command item {item} to player {player}"
+      item-removed: "Removed command item {item} from player {player}" 

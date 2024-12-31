@@ -1,0 +1,58 @@
+messages:
+  # プラグイン情報
+  plugin:
+    enable: "=================================\nBellCommand プラグインが有効になりました!\n作者: 柠枺\nバージョン: {version}\n================================="
+    debug-enabled: "デバッグモードが有効になりました"
+    bedrock-detected: "統合版サーバーを検出しました"
+    disable: "BellCommand プラグインが無効になりました!"
+  
+  # コマンド関連
+  command:
+    player-only: "このコマンドはプレイヤーのみが使用できます。"
+    no-permission: "§cこのコマンドを実行する権限がありません!"
+    reload-success: "§a設定を正常に再読み込みしました!"
+    reload-debug: "§eデバッグ情報がコンソールに出力されました"
+    reload-failed: "§c設定の再読み込みに失敗しました! コンソールのエラーを確認してください"
+    item-given: "§aコマンドアイテム §6{item} §aを付与しました！"
+    item-exists: "§cインベントリにすでに §6{item} §cがあります！"
+    item-removed: "§aインベントリから §6{item} §aを削除しました！"
+    no-item-found: "§cインベントリに §6{item} §cが見つかりません！"
+    cooldown: "§cこのアイテムはクールダウン中です！ 残り時間: §e{seconds}§c秒"
+    item-list: "§6利用可能なコマンドアイテム:"
+    item-list-entry: "§7- §e{id}§7: §f{name}"
+    item-info: "§6アイテム情報 §7- §e{id}:"
+    item-info-name: "§7名前: §f{name}"
+    item-info-type: "§7タイプ: §f{type}"
+    item-info-permission: "§7権限: §f{permission}"
+    item-info-cooldown: "§7クールダウン: §f{cooldown}秒"
+    invalid-item: "§cID §6{id} §cのコマンドアイテムが見つかりません！"
+  
+  # エラーメッセージ
+  error:
+    invalid-item: "無効なアイテムID: {item}"
+    reload-error: "設定の再読み込み中にエラーが発生しました: {error}"
+    no-permission-use: "§cこのコマンドアイテムを使用する権限がありません！"
+  
+  # デバッグメッセージ
+  debug:
+    config:
+      loaded: "設定を読み込みました:"
+      items-loaded: "{count}個のコマンドアイテムを読み込みました:"
+      item-entry: "- {id}: {name} ({type})"
+    
+    interact:
+      event-start: "===== インタラクションイベント発生 ====="
+      player: "プレイヤー: {player}"
+      action: "アクション: {action}"
+      item-id: "アイテムID: {id}"
+      item-name: "アイテム名: {name}"
+      permission-check: "権限チェック: {result}"
+      cooldown-check: "クールダウンチェック: {result}"
+      cooldown-remaining: "残りクールダウン: {seconds}秒"
+      executing-commands: "コマンド実行リスト:"
+      command-entry: "- {command}"
+      event-end: "===== イベント処理完了 ====="
+    
+    command:
+      item-given: "プレイヤー {player} にコマンドアイテム {item} を付与"
+      item-removed: "プレイヤー {player} のコマンドアイテム {item} を削除" 

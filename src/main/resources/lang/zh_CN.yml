@@ -1,0 +1,87 @@
+messages:
+  # 插件系统消息
+  plugin:
+    enable: "§a[BellCommand] 插件已启用 v%version%"
+    disable: "§c[BellCommand] 插件已禁用"
+    debug-enabled: "§e[BellCommand] 调试模式已启用"
+    bedrock-detected: "§e[BellCommand] 检测到基岩版服务端，部分功能可能不可用"
+    version: "§6[BellCommand] 版本: v%version%"
+    
+    # 更新源相关消息
+    update:
+      checking: "§e[BellCommand] 正在检查更新..."
+      available: "§e[BellCommand] 发现新版本! 当前版本: §6v%current%§e, 最新版本: §6v%latest%"
+      up-to-date: "§a[BellCommand] 插件已是最新版本 §6v%version%"
+      check-failed: "§c[BellCommand] 检查更新失败: §e%error%"
+      download-start: "§e[BellCommand] 开始下载更新..."
+      download-success: "§a[BellCommand] 更新下载完成，将在下次重启时生效"
+      download-failed: "§c[BellCommand] 更新下载失败: §e%error%"
+      source-disabled: "§e[BellCommand] 更新检查已禁用"
+      invalid-source: "§c[BellCommand] 无效的更新源: §e%source%"
+  
+  # 命令相关消息
+  command:
+    # 通用命令消息
+    player-only: "§c该命令只能由玩家执行"
+    no-permission: "§c你没有权限执行此命令"
+    
+    # 重载命令消息
+    reload-success: "§a配置文件重载成功"
+    reload-failed: "§c配置文件重载失败"
+    reload-debug: "§e调试信息已输出到控制台"
+    
+    # 物品列表命令消息
+    item-list: "§6=== 可用的命令物品列表 ==="
+    item-list-entry: "§7- %id%: §f%name%"
+    item-list-end: "§6======================="
+    
+    # 物品操作消息
+    invalid-item: "§c错误: 未找到ID为 §e%id% §c的命令物品"
+    item-exists: "§c你已经拥有 §6%item% §c了"
+    item-given: "§a成功获得命令物品 §6%item%"
+    item-removed: "§a已移除命令物品 §6%item%"
+    no-item-found: "§c未找到可移除的命令物品"
+    
+    # 使用限制消息
+    cooldown: "§c物品正在冷却中，还需等待 §e%seconds% §c秒"
+  
+  # 错误消息
+  error:
+    no-permission-use: "§c你没有权限使用该物品"
+    reload-error: "§c重载配置时发生错误: §e%error%"
+    invalid-material: "§c无效的物品类型: §e%material%"
+    command-failed: "§c命令执行失败: §e%command%"
+  
+  # 调试信息
+  debug:
+    # 配置相关调试
+    config:
+      items-loaded: "§e[调试] 已成功加载 §6%count% §e个命令物品"
+      item-entry: "§e[调试] 物品: §6%id% §e(名称: §6%name%§e, 类型: §6%type%§e)"
+      config-reloaded: "§e[调试] 配置文件已重新加载"
+      
+    # 交互事件调试
+    interact:
+      event-start: "§e[调试] 触发物品交互事件"
+      player: "§e[调试] 玩家: §6%player%"
+      action: "§e[调试] 交互类型: §6%action%"
+      item-id: "§e[调试] 物品ID: §6%id%"
+      item-name: "§e[调试] 物品名称: §6%name%"
+      cooldown-check: "§e[调试] 检查冷却时间: §6%seconds%§e秒"
+      permission-check: "§e[调试] 权限检查: §6%result%"
+      
+    # 命令执行调试
+    command:
+      item-given: "§e[调试] 给予物品: §6%item% §e给玩家 §6%player%"
+      item-removed: "§e[调试] 移除物品: §6%item% §e从玩家 §6%player%"
+      command-execute: "§e[调试] 执行命令: §6%command%"
+      command-result: "§e[调试] 命令执行结果: §6%result%"
+      
+    # 更新源调试信息
+    update:
+      source-init: "§e[调试] 初始化更新源: §6%source%"
+      check-start: "§e[调试] 开始检查更新"
+      response: "§e[调试] 更新源响应: §6%response%"
+      parse-version: "§e[调试] 解析版本信息: §6%version%"
+      download-url: "§e[调试] 下载地址: §6%url%"
+      download-progress: "§e[调试] 下载进度: §6%progress%%" 
