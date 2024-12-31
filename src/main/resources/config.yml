@@ -1,5 +1,5 @@
 # 插件设置
-debug: true # 调试模式，设置为true时会输出更多信息
+debug: false # 调试模式，设置为true时会输出更多信息
 language: "zh_CN" # 语言设置 (支持: zh_CN, en_US, zh_TW, ja_JP)
 
 # 更新源设置
@@ -47,11 +47,10 @@ items:
     permission: "bellcommand.item.compass"
     cooldown: 10
 
-# 添加配置版本号，用于后续升级时的配置迁移
-config-version: 1
-# 添加默认语言设置
-default-language: "zh_CN"
-# 添加物品默认设置
+# 物品默认设置
 default-settings:
-  cooldown: 5
-  permission-required: true
+  cooldown: 5 # 默认冷却时间(秒)
+  permission-required: true # 是否需要权限
+
+# 配置版本号，用于后续升级时的配置迁移
+config-version: 1
