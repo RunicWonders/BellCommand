@@ -134,7 +134,6 @@ items:
 
 ## 支持与反馈
 - GitHub Issues: [问题反馈](https://github.com/ning-g-mo/BellCommand/issues)
-- MineBBS: [插件发布页](https://www.minebbs.com/)
 
 
 ## 特别鸣谢
