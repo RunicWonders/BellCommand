@@ -17,6 +17,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import org.bukkit.Bukkit;
+import java.util.stream.Collectors;
 
 public class BellCommand extends JavaPlugin {
 
@@ -184,6 +185,7 @@ public class BellCommand extends JavaPlugin {
                     placeholders.put("name", item.getName());
                     player.sendMessage(languageManager.getMessage("messages.command.item-list-entry", placeholders));
                 }
+                player.sendMessage(languageManager.getMessage("messages.command.item-list-end"));
                 return true;
             }
 
@@ -191,6 +193,10 @@ public class BellCommand extends JavaPlugin {
             CommandItem item = itemManager.getItem(itemId);
             
             if (item == null) {
+                if (isDebugEnabled()) {
+                    getLogger().warning("找不到物品ID: " + itemId);
+                    getLogger().warning("可用物品列表: " + String.join(", ", itemManager.getAllItems().stream().map(CommandItem::getId).collect(Collectors.toList())));
+                }
                 Map<String, String> placeholders = new HashMap<>();
                 placeholders.put("id", itemId);
                 player.sendMessage(languageManager.getMessage("messages.command.invalid-item", placeholders));
@@ -199,6 +205,16 @@ public class BellCommand extends JavaPlugin {
 
             // 检查权限
             if (!itemManager.canUseItem(player, item)) {
+                if (isDebugEnabled()) {
+                    getLogger().warning("玩家 " + player.getName() + " 权限检查失败");
+                    getLogger().warning("- bellcommand.*: " + player.hasPermission("bellcommand.*"));
+                    getLogger().warning("- bellcommand.clock: " + player.hasPermission("bellcommand.clock"));
+                    getLogger().warning("- bellcommand.item.*: " + player.hasPermission("bellcommand.item.*"));
+                    if (!item.getPermission().isEmpty()) {
+                        getLogger().warning("- " + item.getPermission() + ": " + 
+                            player.hasPermission(item.getPermission()));
+                    }
+                }
                 player.sendMessage(languageManager.getMessage("messages.error.no-permission-use"));
                 return true;
             }

@@ -126,3 +126,17 @@ config-version: 1
 - [cursor](https://www.cursor.com/) - 主力提供了插件的源代码，解决了部分问题。
 - [IDEa](https://www.jetbrains.com/zh-cn/idea/) - IDEa提供了插件的构建环境，解决了部分问题。
 - [leafMC](https://github.com/Winds-Studio/Leaf) - leafMC提供了插件的生产环境，解决了部分问题。
+
+## 版本历史
+
+### v1.0.1
+- 修复了权限系统问题
+- 优化了命令处理逻辑
+- 改进了调试信息输出
+- 修复了命令注册问题
+
+### v1.0.0
+- 初始版本发布
+- 实现基本的命令物品功能
+- 添加多语言支持
+- 添加调试模式

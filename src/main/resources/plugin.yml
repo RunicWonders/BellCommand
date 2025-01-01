@@ -1,5 +1,5 @@
 name: BellCommand
-version: 1.0.0
+version: 1.0.1
 main: cn.ningmo.bellcommand.BellCommand
 api-version: 1.13
 author: ningmengchongshui
@@ -36,7 +36,7 @@ permissions:
   
   bellcommand.clock:
     description: Allows using the clock command
-    default: op
+    default: true
   
   bellcommand.reload:
     description: Allows reloading the plugin configuration
@@ -44,4 +44,4 @@ permissions:
   
   bellcommand.item.*:
     description: Allows using all command items
-    default: op
+    default: true

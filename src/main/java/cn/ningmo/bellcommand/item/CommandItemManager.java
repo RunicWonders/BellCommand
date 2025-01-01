@@ -25,10 +25,16 @@ public class CommandItemManager {
     private void loadItems() {
         items.clear();
         ConfigurationSection itemsSection = plugin.getConfig().getConfigurationSection("items");
-        if (itemsSection == null) return;
+        if (itemsSection == null) {
+            if (plugin.isDebugEnabled()) {
+                plugin.getLogger().warning("配置文件中没有找到 items 部分");
+            }
+            return;
+        }
 
         if (plugin.isDebugEnabled()) {
             plugin.getLogger().info("开始加载命令物品...");
+            plugin.getLogger().info("找到 " + itemsSection.getKeys(false).size() + " 个物品配置");
         }
 
         for (String id : itemsSection.getKeys(false)) {
@@ -72,22 +78,31 @@ public class CommandItemManager {
     }
 
     public boolean canUseItem(Player player, CommandItem item) {
-        // 基础命令权限检查
+        // 如果玩家有全部权限，直接返回true
+        if (player.hasPermission("bellcommand.*")) {
+            return true;
+        }
+        
+        // 如果玩家有所有物品的使用权限，直接返回true
+        if (player.hasPermission("bellcommand.item.*")) {
+            return true;
+        }
+        
+        // 检查基础命令权限
         if (!player.hasPermission("bellcommand.clock")) {
-            return false;
-        }
-        
-        // 特定物品权限检查
-        if (!item.getPermission().isEmpty() && !player.hasPermission(item.getPermission())) {
-            return false;
-        }
-        
-        // 通配符权限检查
-        if (!player.hasPermission("bellcommand.item.*")) {
-            String itemPermission = "bellcommand.item." + item.getId().toLowerCase();
-            if (!player.hasPermission(itemPermission)) {
-                return false;
+            if (plugin.isDebugEnabled()) {
+                plugin.getLogger().info("玩家 " + player.getName() + " 缺少基础命令权限: bellcommand.clock");
             }
+            return false;
+        }
+        
+        // 检查特定物品权限
+        if (!item.getPermission().isEmpty()) {
+            boolean hasPermission = player.hasPermission(item.getPermission());
+            if (plugin.isDebugEnabled() && !hasPermission) {
+                plugin.getLogger().info("玩家 " + player.getName() + " 缺少物品权限: " + item.getPermission());
+            }
+            return hasPermission;
         }
         
         return true;
