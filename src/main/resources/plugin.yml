@@ -1,63 +1,28 @@
 name: BellCommand
-version: 1.1.0
+version: '${project.version}'
 main: cn.ningmo.bellcommand.BellCommand
-api-version: 1.13
-author: ningmengchongshui
+api-version: '1.21'
+authors: [NingMo]
 description: A powerful command item plugin
-website: https://github.com/ningmengchongshui/BellCommand
-
 commands:
-  bellcommand:
-    description: Plugin main command
-    usage: /bellcommand reload
-    permission: bellcommand.reload
-    aliases: [bc, bell]
-    
-  clock:
-    description: Get a command item
-    usage: /clock [itemId]
-    permission: bellcommand.clock
-    aliases: [bclock, bellclock]
-    
-  clockremove:
-    description: Remove command items
-    usage: /clockremove [itemId]
-    permission: bellcommand.clock
-    aliases: [bclockremove, bellclockremove]
-
+  bc:
+    description: BellCommand main command
+    usage: /<command> [reload|give|list]
+    aliases: [bellcommand]
+    permission: bellcommand.command
 permissions:
-  bellcommand.*:
-    description: 允许使用所有功能
+  bellcommand.command:
+    description: Allows using BellCommand commands
     default: op
-    children:
-      bellcommand.clock: true
-      bellcommand.reload: true
-      bellcommand.item.*: true
-  
-  bellcommand.clock:
-    description: 允许使用命令物品获取命令
-    default: true
-  
   bellcommand.reload:
-    description: 允许重载插件配置
+    description: Allows reloading BellCommand configuration
     default: op
-  
-  bellcommand.item.*:
-    description: 允许使用所有命令物品
-    default: true
-    children:
-      bellcommand.item.home: true
-      bellcommand.item.feed: true
-      bellcommand.item.workbench: true
-  
-  bellcommand.item.home:
-    description: 允许使用传送回家物品
-    default: true
-  
-  bellcommand.item.feed:
-    description: 允许使用补充饥饿度物品
-    default: true
-  
-  bellcommand.item.workbench:
-    description: 允许使用便携工作台物品
+  bellcommand.give:
+    description: Allows giving command items
+    default: op
+  bellcommand.list:
+    description: Allows listing command items
+    default: op
+  bellcommand.use:
+    description: Allows using command items
     default: true

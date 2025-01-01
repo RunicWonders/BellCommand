@@ -6,6 +6,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.Material;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,6 +23,30 @@ public class CommandItemManager {
         this.cooldowns = new ConcurrentHashMap<>();
         loadItems();
         startCleanupTask();
+    }
+
+    private void startCleanupTask() {
+        // 每5分钟清理一次过期的冷却数据
+        cleanupTask = plugin.getServer().getScheduler().runTaskTimerAsynchronously(
+            plugin,
+            this::cleanupCooldowns,
+            6000L, // 5分钟 = 300秒 = 6000tick
+            6000L
+        );
+    }
+
+    public void disable() {
+        if (cleanupTask != null) {
+            cleanupTask.cancel();
+            cleanupTask = null;
+        }
+        items.clear();
+        cooldowns.clear();
+    }
+
+    public void reload() {
+        items.clear();
+        loadItems();
     }
 
     private void loadItems() {
@@ -72,128 +97,130 @@ public class CommandItemManager {
         return items.get(id);
     }
 
-    public CommandItem getItem(ItemStack item) {
-        if (item == null) return null;
-        return items.values().stream()
-            .filter(cmdItem -> cmdItem.matches(item))
-            .findFirst()
-            .orElse(null);
-    }
-
     public Collection<CommandItem> getAllItems() {
-        return Collections.unmodifiableCollection(items.values());
+        return items.values();
     }
 
-    public boolean canUseItem(Player player, CommandItem item) {
-        // 如果玩家有全部权限，直接返回true
-        if (player.hasPermission("bellcommand.*")) {
-            return true;
+    public void executeCommands(Player player, CommandItem item, String type) {
+        List<CommandItem.CommandEntry> commands = item.getCommands(type);
+        if (commands == null || commands.isEmpty()) {
+            return;
         }
-        
-        // 如果玩家有所有物品的使用权限，直接返回true
-        if (player.hasPermission("bellcommand.item.*")) {
-            return true;
-        }
-        
-        // 检查基础命令权限
-        if (!player.hasPermission("bellcommand.clock")) {
-            if (plugin.isDebugEnabled()) {
-                plugin.getLogger().info("玩家 " + player.getName() + " 缺少基础命令权限: bellcommand.clock");
+
+        for (CommandItem.CommandEntry command : commands) {
+            try {
+                String processedCommand = command.getCommand()
+                    .replace("%player%", player.getName())
+                    .replace("%uuid%", player.getUniqueId().toString());
+
+                boolean success;
+                if (command.isAsConsole()) {
+                    success = plugin.getServer().dispatchCommand(
+                        plugin.getServer().getConsoleSender(),
+                        processedCommand
+                    );
+                } else {
+                    success = plugin.getServer().dispatchCommand(
+                        player,
+                        processedCommand
+                    );
+                }
+
+                if (plugin.isDebugEnabled()) {
+                    Map<String, String> placeholders = new HashMap<>();
+                    placeholders.put("result", success ? "成功" : "失败");
+                    plugin.getLogger().info(plugin.getLanguageManager()
+                        .getMessage("messages.debug.command.command-result", placeholders));
+                }
+            } catch (Exception e) {
+                if (plugin.isDebugEnabled()) {
+                    plugin.getLogger().warning("执行命令时出错: " + e.getMessage());
+                    e.printStackTrace();
+                }
             }
-            return false;
         }
-        
-        // 检查特定物品权限
-        if (!item.getPermission().isEmpty()) {
-            boolean hasPermission = player.hasPermission(item.getPermission());
-            if (plugin.isDebugEnabled() && !hasPermission) {
-                plugin.getLogger().info("玩家 " + player.getName() + " 缺少物品权限: " + item.getPermission());
-            }
-            return hasPermission;
-        }
-        
-        return true;
     }
 
-    public boolean isOnCooldown(Player player, CommandItem item) {
-        if (item.getCooldown() <= 0) return false;
+    public CommandItem getCommandItem(ItemStack itemStack) {
+        if (itemStack == null || itemStack.getType() == Material.AIR) {
+            return null;
+        }
 
-        Map<String, Long> playerCooldowns = cooldowns.computeIfAbsent(
-            player.getUniqueId().toString(), k -> new ConcurrentHashMap<>());
-        
-        Long lastUse = playerCooldowns.get(item.getId());
-        if (lastUse == null) return false;
+        for (CommandItem item : items.values()) {
+            if (item.matches(itemStack)) {
+                return item;
+            }
+        }
+        return null;
+    }
 
-        long cooldownEnd = lastUse + (item.getCooldown() * 1000L);
-        return System.currentTimeMillis() < cooldownEnd;
+    public boolean checkCooldown(Player player, CommandItem item) {
+        if (item.getCooldown() <= 0) {
+            return true;
+        }
+
+        String playerId = player.getUniqueId().toString();
+        Map<String, Long> playerCooldowns = cooldowns.computeIfAbsent(playerId, k -> new HashMap<>());
+        Long lastUseTime = playerCooldowns.get(item.getId());
+
+        if (lastUseTime == null) {
+            playerCooldowns.put(item.getId(), System.currentTimeMillis());
+            return true;
+        }
+
+        long timePassed = System.currentTimeMillis() - lastUseTime;
+        if (timePassed >= item.getCooldown() * 1000L) {
+            playerCooldowns.put(item.getId(), System.currentTimeMillis());
+            return true;
+        }
+
+        return false;
     }
 
     public int getRemainingCooldown(Player player, CommandItem item) {
-        Map<String, Long> playerCooldowns = cooldowns.get(player.getUniqueId().toString());
-        if (playerCooldowns == null) return 0;
-
-        Long lastUse = playerCooldowns.get(item.getId());
-        if (lastUse == null) return 0;
-
-        long cooldownEnd = lastUse + (item.getCooldown() * 1000L);
-        long remaining = (cooldownEnd - System.currentTimeMillis()) / 1000;
-        return remaining > 0 ? (int) remaining : 0;
-    }
-
-    public void updateCooldown(Player player, CommandItem item) {
-        if (item.getCooldown() <= 0) return;
-        
-        Map<String, Long> playerCooldowns = cooldowns.computeIfAbsent(
-            player.getUniqueId().toString(), k -> new ConcurrentHashMap<>());
-        
-        playerCooldowns.put(item.getId(), System.currentTimeMillis());
-    }
-
-    public void reload() {
-        loadItems();
-        startCleanupTask();
-    }
-
-    public void disable() {
-        if (cleanupTask != null) {
-            cleanupTask.cancel();
-            cleanupTask = null;
+        String playerId = player.getUniqueId().toString();
+        Map<String, Long> playerCooldowns = cooldowns.get(playerId);
+        if (playerCooldowns == null) {
+            return 0;
         }
-        cleanupCooldowns();
-        items.clear();
-        cooldowns.clear();
+
+        Long lastUseTime = playerCooldowns.get(item.getId());
+        if (lastUseTime == null) {
+            return 0;
+        }
+
+        long timePassed = System.currentTimeMillis() - lastUseTime;
+        long cooldownMillis = item.getCooldown() * 1000L;
+        long remaining = cooldownMillis - timePassed;
+
+        return remaining > 0 ? (int) (remaining / 1000) : 0;
     }
 
-    public void cleanupCooldowns() {
+    private void cleanupCooldowns() {
         long now = System.currentTimeMillis();
         cooldowns.forEach((playerId, playerCooldowns) -> {
             playerCooldowns.entrySet().removeIf(entry -> {
-                CommandItem item = items.get(entry.getKey());
-                if (item == null) return true;
-                
-                long cooldownEnd = entry.getValue() + (item.getCooldown() * 1000L);
-                return now >= cooldownEnd;
+                CommandItem item = getItem(entry.getKey());
+                if (item == null) {
+                    return true;
+                }
+                return now - entry.getValue() >= item.getCooldown() * 1000L;
             });
-            
-            // 如果玩家没有任何冷却中的物品，移除该玩家的记录
-            if (playerCooldowns.isEmpty()) {
-                cooldowns.remove(playerId);
-            }
         });
-    }
-    
-    private void startCleanupTask() {
-        if (cleanupTask != null) {
-            cleanupTask.cancel();
-        }
-        
-        // 每5分钟清理一次过期的冷却时间
-        cleanupTask = plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, 
-            this::cleanupCooldowns, 6000L, 6000L);
+        cooldowns.entrySet().removeIf(entry -> entry.getValue().isEmpty());
     }
 
-    public void clearCache() {
-        items.clear();
-        cooldowns.clear();
+    public void resetCooldowns(Player player) {
+        cooldowns.remove(player.getUniqueId().toString());
+    }
+
+    public void resetCooldown(Player player, CommandItem item) {
+        Map<String, Long> playerCooldowns = cooldowns.get(player.getUniqueId().toString());
+        if (playerCooldowns != null) {
+            playerCooldowns.remove(item.getId());
+            if (playerCooldowns.isEmpty()) {
+                cooldowns.remove(player.getUniqueId().toString());
+            }
+        }
     }
 } 

@@ -4,23 +4,20 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-import org.bukkit.Bukkit;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.HashMap;
+import cn.ningmo.bellcommand.utils.ColorUtils;
 
 public class CommandItem {
     private final String id;
     private final Material material;
     private final String name;
     private final List<String> lore;
-    private final List<CommandEntry> leftClickCommands;
-    private final List<CommandEntry> rightClickCommands;
     private final String permission;
     private final int cooldown;
+    private final Map<String, List<CommandEntry>> commands;
 
     public static class CommandEntry {
         private final String command;
@@ -43,50 +40,53 @@ public class CommandItem {
     public CommandItem(String id, ConfigurationSection config) {
         this.id = id;
         this.material = Material.valueOf(config.getString("item-id", "CLOCK").toUpperCase());
-        this.name = ChatColor.translateAlternateColorCodes('&', config.getString("name", "Command Item"));
-        this.lore = config.getStringList("lore").stream()
-            .map(line -> ChatColor.translateAlternateColorCodes('&', line))
-            .collect(Collectors.toList());
+        this.name = ColorUtils.translateColors(config.getString("name", "命令物品"));
+        this.lore = ColorUtils.translateColors(config.getStringList("lore"));
         this.permission = config.getString("permission", "");
         this.cooldown = config.getInt("cooldown", 0);
-
-        this.leftClickCommands = loadCommands(config, "commands.left-click");
-        this.rightClickCommands = loadCommands(config, "commands.right-click");
-    }
-
-    private List<CommandEntry> loadCommands(ConfigurationSection config, String path) {
-        List<CommandEntry> commands = new ArrayList<>();
-        if (config.contains(path)) {
-            if (config.isList(path)) {
-                // 支持旧格式
-                config.getStringList(path).forEach(cmd -> 
-                    commands.add(new CommandEntry(cmd, false)));
-            } else if (config.isConfigurationSection(path)) {
-                // 新格式
-                ConfigurationSection cmdSection = config.getConfigurationSection(path);
-                for (String key : cmdSection.getKeys(false)) {
-                    if (cmdSection.isConfigurationSection(key)) {
-                        ConfigurationSection entry = cmdSection.getConfigurationSection(key);
-                        String command = entry.getString("command");
-                        boolean asConsole = entry.getBoolean("as-console", false);
-                        commands.add(new CommandEntry(command, asConsole));
+        this.commands = new HashMap<>();
+        
+        // 加载命令
+        ConfigurationSection commandsSection = config.getConfigurationSection("commands");
+        if (commandsSection != null) {
+            for (String type : commandsSection.getKeys(false)) {
+                List<CommandEntry> typeCommands = new ArrayList<>();
+                ConfigurationSection typeSection = commandsSection.getConfigurationSection(type);
+                
+                if (typeSection != null) {
+                    for (String key : typeSection.getKeys(false)) {
+                        ConfigurationSection cmdSection = typeSection.getConfigurationSection(key);
+                        if (cmdSection != null) {
+                            String cmd = cmdSection.getString("command");
+                            boolean asConsole = cmdSection.getBoolean("as-console", false);
+                            typeCommands.add(new CommandEntry(cmd, asConsole));
+                        }
                     }
                 }
+                
+                commands.put(type, typeCommands);
             }
         }
-        return commands;
     }
 
-    public void executeCommands(Player player, boolean isRightClick) {
-        List<CommandEntry> commands = isRightClick ? rightClickCommands : leftClickCommands;
-        for (CommandEntry entry : commands) {
-            if (entry.asConsole) {
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), 
-                    entry.command.replace("%player%", player.getName()));
-            } else {
-                player.performCommand(entry.command);
-            }
-        }
+    public String getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getPermission() {
+        return permission;
+    }
+
+    public int getCooldown() {
+        return cooldown;
+    }
+
+    public List<CommandEntry> getCommands(String type) {
+        return commands.getOrDefault(type, new ArrayList<>());
     }
 
     public ItemStack createItemStack() {
@@ -101,26 +101,15 @@ public class CommandItem {
     }
 
     public boolean matches(ItemStack item) {
-        if (item == null || item.getType() != material) return false;
+        if (item == null || item.getType() != material) {
+            return false;
+        }
+
         ItemMeta meta = item.getItemMeta();
-        if (meta == null || !meta.hasDisplayName()) return false;
+        if (meta == null || !meta.hasDisplayName()) {
+            return false;
+        }
+
         return meta.getDisplayName().equals(name);
     }
-
-    // Getters
-    public String getId() { return id; }
-    public Material getMaterial() { return material; }
-    public String getName() { return name; }
-    public List<String> getLore() { return new ArrayList<>(lore); }
-    public List<CommandEntry> getRightClickCommands() { return new ArrayList<>(rightClickCommands); }
-    public List<CommandEntry> getLeftClickCommands() { return new ArrayList<>(leftClickCommands); }
-    public String getPermission() { return permission; }
-    public int getCooldown() { return cooldown; }
-
-    public boolean isValid() {
-        if (id == null || id.isEmpty()) return false;
-        if (name == null || name.isEmpty()) return false;
-        if (material == null) return false;
-        return true;
-    }
-} 
+}
