@@ -5,6 +5,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,66 +17,76 @@ public class CommandItem {
     private final Material material;
     private final String name;
     private final List<String> lore;
-    private final List<String> rightClickCommands;
-    private final List<String> leftClickCommands;
+    private final List<CommandEntry> leftClickCommands;
+    private final List<CommandEntry> rightClickCommands;
     private final String permission;
     private final int cooldown;
 
-    private List<String> validateCommands(List<String> commands) {
-        if (commands == null) {
-            return new ArrayList<>();
-        }
-        
-        return commands.stream()
-            .map(String::trim)
-            .filter(cmd -> !cmd.isEmpty())
-            .map(cmd -> cmd.startsWith("/") ? cmd.substring(1) : cmd)
-            .filter(this::isCommandSafe)
-            .collect(Collectors.toList());
-    }
+    public static class CommandEntry {
+        private final String command;
+        private final boolean asConsole;
 
-    private boolean isCommandSafe(String command) {
-        String lcCmd = command.toLowerCase();
-        String[] dangerousCommands = {
-            "op", "deop", "stop", "reload", "restart",
-            "bukkit:", "minecraft:", "spigot:", "paper:",
-            "${", "$(", "eval", "rl", "ban", "kick"
-        };
-        
-        for (String dangerous : dangerousCommands) {
-            if (lcCmd.startsWith(dangerous)) {
-                return false;
-            }
+        public CommandEntry(String command, boolean asConsole) {
+            this.command = command;
+            this.asConsole = asConsole;
         }
-        
-        return true;
+
+        public String getCommand() {
+            return command;
+        }
+
+        public boolean isAsConsole() {
+            return asConsole;
+        }
     }
 
     public CommandItem(String id, ConfigurationSection config) {
-        if (id == null || id.isEmpty()) {
-            throw new IllegalArgumentException("物品ID不能为空");
-        }
-        this.id = id.toLowerCase();
-        
-        String itemId = config.getString("item-id", "CLOCK");
-        this.material = Material.matchMaterial(itemId);
-        if (this.material == null) {
-            throw new IllegalArgumentException("无效的物品类型: " + itemId);
-        }
-        
-        String rawName = config.getString("name");
-        if (rawName == null || rawName.isEmpty()) {
-            throw new IllegalArgumentException("物品名称不能为空");
-        }
-        this.name = ChatColor.translateAlternateColorCodes('&', rawName);
-        
+        this.id = id;
+        this.material = Material.valueOf(config.getString("item-id", "CLOCK").toUpperCase());
+        this.name = ChatColor.translateAlternateColorCodes('&', config.getString("name", "Command Item"));
         this.lore = config.getStringList("lore").stream()
             .map(line -> ChatColor.translateAlternateColorCodes('&', line))
             .collect(Collectors.toList());
-        this.rightClickCommands = validateCommands(config.getStringList("commands.right-click"));
-        this.leftClickCommands = validateCommands(config.getStringList("commands.left-click"));
         this.permission = config.getString("permission", "");
-        this.cooldown = Math.max(0, config.getInt("cooldown", 0));
+        this.cooldown = config.getInt("cooldown", 0);
+
+        this.leftClickCommands = loadCommands(config, "commands.left-click");
+        this.rightClickCommands = loadCommands(config, "commands.right-click");
+    }
+
+    private List<CommandEntry> loadCommands(ConfigurationSection config, String path) {
+        List<CommandEntry> commands = new ArrayList<>();
+        if (config.contains(path)) {
+            if (config.isList(path)) {
+                // 支持旧格式
+                config.getStringList(path).forEach(cmd -> 
+                    commands.add(new CommandEntry(cmd, false)));
+            } else if (config.isConfigurationSection(path)) {
+                // 新格式
+                ConfigurationSection cmdSection = config.getConfigurationSection(path);
+                for (String key : cmdSection.getKeys(false)) {
+                    if (cmdSection.isConfigurationSection(key)) {
+                        ConfigurationSection entry = cmdSection.getConfigurationSection(key);
+                        String command = entry.getString("command");
+                        boolean asConsole = entry.getBoolean("as-console", false);
+                        commands.add(new CommandEntry(command, asConsole));
+                    }
+                }
+            }
+        }
+        return commands;
+    }
+
+    public void executeCommands(Player player, boolean isRightClick) {
+        List<CommandEntry> commands = isRightClick ? rightClickCommands : leftClickCommands;
+        for (CommandEntry entry : commands) {
+            if (entry.asConsole) {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), 
+                    entry.command.replace("%player%", player.getName()));
+            } else {
+                player.performCommand(entry.command);
+            }
+        }
     }
 
     public ItemStack createItemStack() {
@@ -100,8 +112,8 @@ public class CommandItem {
     public Material getMaterial() { return material; }
     public String getName() { return name; }
     public List<String> getLore() { return new ArrayList<>(lore); }
-    public List<String> getRightClickCommands() { return new ArrayList<>(rightClickCommands); }
-    public List<String> getLeftClickCommands() { return new ArrayList<>(leftClickCommands); }
+    public List<CommandEntry> getRightClickCommands() { return new ArrayList<>(rightClickCommands); }
+    public List<CommandEntry> getLeftClickCommands() { return new ArrayList<>(leftClickCommands); }
     public String getPermission() { return permission; }
     public int getCooldown() { return cooldown; }
 

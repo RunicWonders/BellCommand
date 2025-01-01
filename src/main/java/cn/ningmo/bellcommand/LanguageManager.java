@@ -10,6 +10,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
+import cn.ningmo.bellcommand.utils.ColorUtils;
+
 public class LanguageManager {
     private final BellCommand plugin;
     private FileConfiguration langConfig;
@@ -51,15 +53,35 @@ public class LanguageManager {
     public String getMessage(String path, Map<String, String> placeholders) {
         String message = langConfig.getString(path);
         if (message == null) {
-            return "Missing message: " + path;
+            plugin.getLogger().warning("找不到语言键: " + path);
+            return "§c[错误] 找不到语言键: " + path;
         }
         
         // 替换占位符
-        for (Map.Entry<String, String> entry : placeholders.entrySet()) {
-            message = message.replace("%" + entry.getKey() + "%", entry.getValue());
+        if (placeholders != null) {
+            for (Map.Entry<String, String> entry : placeholders.entrySet()) {
+                message = message.replace("%" + entry.getKey() + "%", entry.getValue());
+            }
         }
         
-        return message;
+        // 根据输出目标处理颜色
+        if (path.startsWith("messages.debug.")) {
+            // 调试信息输出到控制台
+            return ColorUtils.translateConsoleColors(message);
+        } else {
+            // 玩家消息
+            return ColorUtils.translatePlayerColors(message);
+        }
+    }
+    
+    public String getConsoleMessage(String path, Map<String, String> placeholders) {
+        String message = getMessage(path, placeholders);
+        return ColorUtils.translateConsoleColors(message);
+    }
+    
+    public String getPlayerMessage(String path, Map<String, String> placeholders) {
+        String message = getMessage(path, placeholders);
+        return ColorUtils.translatePlayerColors(message);
     }
     
     public void reload() {

@@ -7,6 +7,7 @@ update-source:
   enabled: true # 是否启用更新检查
   source: "github" # 更新源类型 (支持: github, gitee, custom)
   check-interval: 86400 # 检查间隔（秒），默认24小时
+  reminder-interval: 14400 # 提醒间隔（秒），默认4小时
   custom-url: "" # 自定义更新源URL，仅在 source 为 custom 时生效
   github:
     owner: "ning-g-mo" # GitHub 仓库所有者
@@ -17,23 +18,27 @@ update-source:
 
 # 命令物品设置
 items:
-  clock: # 物品ID，用于配置中引用
-    item-id: CLOCK # 物品类型
-    name: "&6时钟命令物品" # 显示名称
-    lore: # 物品说明
+  clock:
+    item-id: CLOCK
+    name: "&6时钟命令物品"
+    lore:
       - "&7右键点击执行命令"
       - "&7左键点击执行命令"
     commands:
-      right-click: # 右键命令列表
-        - "say 这是右键命令1"
-        - "me 正在使用命令物品"
-      left-click: # 左键命令列表
-        - "say 这是左键命令1"
-        - "me 使用了左键命令"
-    permission: "bellcommand.item.clock" # 使用权限
-    cooldown: 5 # 命令冷却时间(秒)
+      right-click:
+        - command: "say 这是右键命令1"
+          as-console: true  # true表示以控制台身份执行，false表示以玩家身份执行
+        - command: "me 正在使用命令物品"
+          as-console: false
+      left-click:
+        - command: "say 这是左键命令1"
+          as-console: true
+        - command: "me 使用了左键命令"
+          as-console: false
+    permission: "bellcommand.item.clock"
+    cooldown: 5
 
-  compass: # 另一个命令物品示例
+  compass:
     item-id: COMPASS
     name: "&a指南针命令物品"
     lore:
@@ -41,9 +46,11 @@ items:
       - "&7左键打开传送菜单"
     commands:
       right-click:
-        - "spawn"
+        - command: "spawn"
+          as-console: false
       left-click:
-        - "tpmenu"
+        - command: "tpmenu"
+          as-console: false
     permission: "bellcommand.item.compass"
     cooldown: 10
 

@@ -18,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import org.bukkit.Bukkit;
 import java.util.stream.Collectors;
+import cn.ningmo.bellcommand.utils.ColorUtils;
 
 public class BellCommand extends JavaPlugin {
 
@@ -57,10 +58,14 @@ public class BellCommand extends JavaPlugin {
         // 输出启动信息
         Map<String, String> placeholders = new HashMap<>();
         placeholders.put("version", getDescription().getVersion());
-        getLogger().info(languageManager.getMessage("messages.plugin.enable", placeholders));
+        getLogger().info(ColorUtils.translateConsoleColors(
+            languageManager.getMessage("messages.plugin.enable", placeholders)
+        ));
         
         if (debug) {
-            getLogger().info(languageManager.getMessage("messages.plugin.debug-enabled"));
+            getLogger().info(ColorUtils.translateConsoleColors(
+                languageManager.getMessage("messages.plugin.debug-enabled")
+            ));
         }
         
         if (getServer().getName().toLowerCase().contains("nukkit") || 
@@ -82,7 +87,7 @@ public class BellCommand extends JavaPlugin {
         
         // 清理资源
         if (itemManager != null) {
-            itemManager.cleanupCooldowns();
+            itemManager.disable();
         }
         
         // 清空缓存
@@ -91,7 +96,7 @@ public class BellCommand extends JavaPlugin {
         languageManager = null;
         
         // 最后输出日志
-        getLogger().info(disableMessage);
+        getLogger().info(ColorUtils.translateConsoleColors(disableMessage));
         
         updateManager = null;
     }
@@ -353,14 +358,12 @@ public class BellCommand extends JavaPlugin {
         if (!command.getName().equalsIgnoreCase("bellcommand")) {
             return false;
         }
-        
-        if (args.length == 0) {
-            Map<String, String> placeholders = new HashMap<>();
-            placeholders.put("version", getDescription().getVersion());
-            sender.sendMessage(languageManager.getMessage("messages.plugin.version", placeholders));
+
+        if (args.length == 0 || args[0].equalsIgnoreCase("help")) {
+            sender.sendMessage(languageManager.getMessage("messages.command.help"));
             return true;
         }
-        
+
         if (args[0].equalsIgnoreCase("reload")) {
             if (!sender.hasPermission("bellcommand.reload")) {
                 sender.sendMessage(languageManager.getMessage("messages.command.no-permission"));
@@ -370,7 +373,9 @@ public class BellCommand extends JavaPlugin {
             try {
                 reloadConfig();
                 loadConfiguration();
+                // 重新加载语言文件
                 languageManager.reload();
+                // 重新加载物品管理器
                 itemManager.reload();
                 
                 sender.sendMessage(languageManager.getMessage("messages.command.reload-success"));
@@ -387,11 +392,11 @@ public class BellCommand extends JavaPlugin {
                     e.printStackTrace();
                 }
             }
-            updateManager.reload();
             return true;
         }
-        
-        return false;
+
+        sender.sendMessage(languageManager.getMessage("messages.command.unknown"));
+        return true;
     }
 
     // 用于其他类访问调试模式状态

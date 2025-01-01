@@ -1,5 +1,5 @@
 name: BellCommand
-version: 1.0.1
+version: 1.0.2
 main: cn.ningmo.bellcommand.BellCommand
 api-version: 1.13
 author: ningmengchongshui

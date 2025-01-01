@@ -1,9 +1,11 @@
 package cn.ningmo.bellcommand.item;
 
 import cn.ningmo.bellcommand.BellCommand;
+import cn.ningmo.bellcommand.utils.ColorUtils;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -12,7 +14,7 @@ public class CommandItemManager {
     private final BellCommand plugin;
     private final Map<String, CommandItem> items;
     private final Map<String, Map<String, Long>> cooldowns; // playerId -> (itemId -> lastUseTime)
-    private int cleanupTaskId = -1;
+    private BukkitTask cleanupTask;
 
     public CommandItemManager(BellCommand plugin) {
         this.plugin = plugin;
@@ -27,14 +29,19 @@ public class CommandItemManager {
         ConfigurationSection itemsSection = plugin.getConfig().getConfigurationSection("items");
         if (itemsSection == null) {
             if (plugin.isDebugEnabled()) {
-                plugin.getLogger().warning("配置文件中没有找到 items 部分");
+                plugin.getLogger().warning(ColorUtils.translateConsoleColors(
+                    plugin.getLanguageManager().getMessage("messages.debug.config.no-items")
+                ));
             }
             return;
         }
 
         if (plugin.isDebugEnabled()) {
-            plugin.getLogger().info("开始加载命令物品...");
-            plugin.getLogger().info("找到 " + itemsSection.getKeys(false).size() + " 个物品配置");
+            Map<String, String> placeholders = new HashMap<>();
+            placeholders.put("count", String.valueOf(itemsSection.getKeys(false).size()));
+            plugin.getLogger().info(ColorUtils.translateConsoleColors(
+                plugin.getLanguageManager().getMessage("messages.debug.config.items-loaded", placeholders)
+            ));
         }
 
         for (String id : itemsSection.getKeys(false)) {
@@ -147,10 +154,10 @@ public class CommandItemManager {
         startCleanupTask();
     }
 
-    public void shutdown() {
-        if (cleanupTaskId != -1) {
-            plugin.getServer().getScheduler().cancelTask(cleanupTaskId);
-            cleanupTaskId = -1;
+    public void disable() {
+        if (cleanupTask != null) {
+            cleanupTask.cancel();
+            cleanupTask = null;
         }
         cleanupCooldowns();
         items.clear();
@@ -160,23 +167,29 @@ public class CommandItemManager {
     public void cleanupCooldowns() {
         long now = System.currentTimeMillis();
         cooldowns.forEach((playerId, playerCooldowns) -> {
-            playerCooldowns.entrySet().removeIf(entry -> 
-                now >= entry.getValue() + (getItem(entry.getKey()).getCooldown() * 1000L));
+            playerCooldowns.entrySet().removeIf(entry -> {
+                CommandItem item = items.get(entry.getKey());
+                if (item == null) return true;
+                
+                long cooldownEnd = entry.getValue() + (item.getCooldown() * 1000L);
+                return now >= cooldownEnd;
+            });
+            
+            // 如果玩家没有任何冷却中的物品，移除该玩家的记录
+            if (playerCooldowns.isEmpty()) {
+                cooldowns.remove(playerId);
+            }
         });
-        cooldowns.entrySet().removeIf(entry -> entry.getValue().isEmpty());
     }
     
     private void startCleanupTask() {
-        if (cleanupTaskId != -1) {
-            plugin.getServer().getScheduler().cancelTask(cleanupTaskId);
+        if (cleanupTask != null) {
+            cleanupTask.cancel();
         }
         
-        cleanupTaskId = plugin.getServer().getScheduler().runTaskTimerAsynchronously(
-            plugin, 
-            this::cleanupCooldowns, 
-            6000L, 
-            6000L
-        ).getTaskId();
+        // 每5分钟清理一次过期的冷却时间
+        cleanupTask = plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, 
+            this::cleanupCooldowns, 6000L, 6000L);
     }
 
     public void clearCache() {
