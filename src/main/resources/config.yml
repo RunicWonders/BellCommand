@@ -1,63 +1,200 @@
-# 插件设置
-debug: false # 调试模式，设置为true时会输出更多信息
-language: "zh_CN" # 语言设置 (支持: zh_CN, en_US, zh_TW, ja_JP)
+# BellCommand 配置文件
+# 版本: 1.1.0
+# 作者: 柠枺
+# 
+# 配置文件说明:
+# 1. 所有带有 '#' 的行都是注释，不会影响插件运行
+# 2. 颜色代码使用 '&' 符号，例如 &a 代表绿色
+# 3. 在命令中可以使用 %player% 代表玩家名称
+# 4. 确保修改配置后使用 /bellcommand reload 重载插件
 
-# 更新源设置
-update-source:
-  enabled: true # 是否启用更新检查
-  source: "github" # 更新源类型 (支持: github, gitee, custom)
-  check-interval: 86400 # 检查间隔（秒），默认24小时
-  reminder-interval: 14400 # 提醒间隔（秒），默认4小时
-  custom-url: "" # 自定义更新源URL，仅在 source 为 custom 时生效
-  github:
-    owner: "ning-g-mo" # GitHub 仓库所有者
-    repo: "BellCommand" # GitHub 仓库名称
-  gitee:
-    owner: "ning-g-mo" # Gitee 仓库所有者
-    repo: "BellCommand" # Gitee 仓库名称
-
-# 命令物品设置
-items:
-  clock:
-    item-id: CLOCK
-    name: "&6时钟命令物品"
-    lore:
-      - "&7右键点击执行命令"
-      - "&7左键点击执行命令"
-    commands:
-      right-click:
-        - command: "say 这是右键命令1"
-          as-console: true  # true表示以控制台身份执行，false表示以玩家身份执行
-        - command: "me 正在使用命令物品"
-          as-console: false
-      left-click:
-        - command: "say 这是左键命令1"
-          as-console: true
-        - command: "me 使用了左键命令"
-          as-console: false
-    permission: "bellcommand.item.clock"
-    cooldown: 5
-
-  compass:
-    item-id: COMPASS
-    name: "&a指南针命令物品"
-    lore:
-      - "&7右键传送到出生点"
-      - "&7左键打开传送菜单"
-    commands:
-      right-click:
-        - command: "spawn"
-          as-console: false
-      left-click:
-        - command: "tpmenu"
-          as-console: false
-    permission: "bellcommand.item.compass"
-    cooldown: 10
-
-# 物品默认设置
-default-settings:
-  cooldown: 5 # 默认冷却时间(秒)
-  permission-required: true # 是否需要权限
-
-# 配置版本号，用于后续升级时的配置迁移
+# 配置文件版本，请勿修改
 config-version: 1
+
+# 调试模式
+# 启用后会输出更多的调试信息，帮助排查问题
+debug: false
+
+# 语言设置
+# 可选值: zh_CN (简体中文), en_US (英文), zh_TW (繁体中文), ja_JP (日文)
+language: zh_CN
+
+# 更新检查设置
+update-source:
+  # 是否启用自动更新检查
+  enabled: true
+  # 更新源类型: github, gitee, custom
+  source: github
+  # 检查更新间隔（秒）
+  check-interval: 86400
+  # 发现新版本时的提醒间隔（秒）
+  reminder-interval: 14400
+  # GitHub 更新源配置
+  github:
+    owner: ning-g-mo
+    repo: BellCommand
+  # 自定义更新源配置(未经测试)
+  custom:
+    # 自定义更新检查URL
+    # 服务器需要返回JSON格式，包含以下字段：
+    # {
+    #   "version": "1.0.0",        # 最新版本号
+    #   "download": "下载链接",     # 可选，下载链接
+    #   "description": "更新说明"   # 可选，更新说明
+    # }
+    check-url: "https://your-api.com/bellcommand/version"
+    # 是否验证 SSL 证书（如果使用自签名证书，可以设置为 false）
+    verify-ssl: true
+    # 自定义请求头（可选）
+    headers:
+      Authorization: "your-token"
+      User-Agent: "BellCommand-UpdateChecker"
+
+# 命令物品配置
+# 每个物品的配置格式如下:
+# items:
+#   物品ID:
+#     item-id: 物品类型 (Minecraft 物品ID)
+#     name: 物品显示名称 (支持颜色代码)
+#     lore: 物品说明 (支持颜色代码)
+#     permission: 使用权限
+#     cooldown: 冷却时间 (秒)
+#     commands:
+#       left-click/right-click:
+#         序号:
+#           command: 要执行的命令
+#           as-console: 是否以控制台身份执行
+items:
+  # 示例物品 - 传送回家
+  # 这个物品允许玩家快速传送回家或设置家
+  home:
+    # 物品类型，必须是有效的 Minecraft 物品ID
+    item-id: CLOCK
+    # 物品显示名称，支持颜色代码
+    name: "&6菜单"
+    # 物品说明，每行一条，支持颜色代码
+    lore:
+      - "&7左键点击: &f打开菜单"
+      - "&7右键点击: &f打开菜单"
+      - "&e冷却时间: &f3秒"
+    # 使用此物品需要的权限
+    permission: "bellcommand.item.home"
+    # 使用冷却时间（秒）
+    cooldown: 3
+    # 物品的命令配置
+    commands:
+      # 左键点击时执行的命令
+      left-click:
+        1:
+          command: "cd"
+          as-console: false  # false 表示以玩家身份执行
+      # 右键点击时执行的命令
+      right-click:
+        1:
+          command: "cd"
+          as-console: false
+
+  # 示例物品 - 补充饥饿度
+  # 这个物品可以立即恢复饥饿度或获得食物
+  feed:
+    item-id: BREAD
+    name: "&a补充饥饿度"
+    lore:
+      - "&7左键点击: &f恢复饥饿度"
+      - "&7右键点击: &f给予食物"
+      - "&e冷却时间: &f30秒"
+    permission: "bellcommand.item.feed"
+    cooldown: 30
+    commands:
+      left-click:
+        1:
+          command: "feed %player%"
+          as-console: true   # true 表示以控制台身份执行
+      right-click:
+        1:
+          command: "give %player% bread 16"
+          as-console: true
+
+  # 示例物品 - 工作台
+  # 这个物品提供便携式工作台和末影箱访问
+  workbench:
+    item-id: CRAFTING_TABLE
+    name: "&b便携工作台"
+    lore:
+      - "&7左键点击: &f打开工作台"
+      - "&7右键点击: &f打开末影箱"
+      - "&e无冷却时间"
+    permission: "bellcommand.item.workbench"
+    cooldown: 0
+    commands:
+      left-click:
+        1:
+          command: "workbench %player%"
+          as-console: true
+      right-click:
+        1:
+          command: "enderchest %player%"
+          as-console: true
+
+# 高级配置示例
+# 以下是一些更复杂的配置示例，展示插件的高级功能
+
+  # 多命令示例 - 奖励箱
+  reward:
+    item-id: CHEST
+    name: "&d每日奖励"
+    lore:
+      - "&7左键点击: &f领取每日奖励"
+      - "&7右键点击: &f查看剩余时间"
+      - "&e冷却时间: &f86400秒(24小时)"
+    permission: "bellcommand.item.reward"
+    cooldown: 86400
+    commands:
+      left-click:
+        1:
+          command: "give %player% diamond 1"
+          as-console: true
+        2:
+          command: "eco give %player% 1000"
+          as-console: true
+        3:
+          command: "tell %player% 你获得了 1 个钻石和 1000 金币!"
+          as-console: true
+      right-click:
+        1:
+          command: "cd check %player%"
+          as-console: true
+
+  # 组合命令示例 - 随机传送
+  rtp:
+    item-id: COMPASS
+    name: "&5随机传送"
+    lore:
+      - "&7左键点击: &f随机传送"
+      - "&7右键点击: &f返回上一个位置"
+      - "&e冷却时间: &f60秒"
+      - "&c注意: &f传送可能需要几秒钟"
+    permission: "bellcommand.item.rtp"
+    cooldown: 60
+    commands:
+      left-click:
+        1:
+          command: "title %player% actionbar &a正在寻找安全的位置..."
+          as-console: true
+        2:
+          command: "rtp %player%"
+          as-console: true
+      right-click:
+        1:
+          command: "back"
+          as-console: false
+
+# 配置文件使用提示:
+# 1. 物品ID必须是唯一的，不能重复
+# 2. item-id 必须是有效的 Minecraft 物品ID
+# 3. 权限节点建议使用插件名称作为前缀
+# 4. 冷却时间设置为 0 表示无冷却
+# 5. 命令中的 %player% 会被替换为玩家名称
+# 6. as-console: true 表示以控制台身份执行命令
+# 7. 可以为同一个动作（左键/右键）配置多个命令
+# 8. 确保所有命令都是服务器支持的

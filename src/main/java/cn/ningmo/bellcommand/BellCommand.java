@@ -19,6 +19,8 @@ import java.nio.file.StandardCopyOption;
 import org.bukkit.Bukkit;
 import java.util.stream.Collectors;
 import cn.ningmo.bellcommand.utils.ColorUtils;
+import java.io.IOException;
+import java.util.List;
 
 public class BellCommand extends JavaPlugin {
 
@@ -34,16 +36,38 @@ public class BellCommand extends JavaPlugin {
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
-        // 初始化语言管理器
-        languageManager = new LanguageManager(this);
         
-        // 加载配置文件
-        loadConfiguration();
-        
-        // 初始化物品管理器
-        itemManager = new CommandItemManager(this);
-        
-        // 注册命令和监听器
+        try {
+            // 初始化语言管理器
+            languageManager = new LanguageManager(this);
+            
+            // 加载配置文件
+            loadConfiguration();
+            
+            // 初始化物品管理器
+            itemManager = new CommandItemManager(this);
+            
+            // 注册命令和监听器
+            registerCommands();
+            getServer().getPluginManager().registerEvents(new ItemClickListener(this), this);
+            
+            // 输出启动信息
+            logStartupInfo();
+            
+            // 初始化更新管理器
+            updateManager = new UpdateManager(this);
+            updateManager.checkForUpdates();
+            
+        } catch (Exception e) {
+            getLogger().severe("插件启动失败: " + e.getMessage());
+            if (debug) {
+                e.printStackTrace();
+            }
+            getServer().getPluginManager().disablePlugin(this);
+        }
+    }
+
+    private void registerCommands() {
         if (getCommand("clock") != null) {
             getCommand("clock").setExecutor(this::onCommand);
         }
@@ -53,9 +77,9 @@ public class BellCommand extends JavaPlugin {
         if (getCommand("bellcommand") != null) {
             getCommand("bellcommand").setExecutor(this::onBellCommand);
         }
-        getServer().getPluginManager().registerEvents(new ItemClickListener(this), this);
-        
-        // 输出启动信息
+    }
+
+    private void logStartupInfo() {
         Map<String, String> placeholders = new HashMap<>();
         placeholders.put("version", getDescription().getVersion());
         getLogger().info(ColorUtils.translateConsoleColors(
@@ -72,105 +96,192 @@ public class BellCommand extends JavaPlugin {
             getServer().getName().toLowerCase().contains("bedrock")) {
             getLogger().info(languageManager.getMessage("messages.plugin.bedrock-detected"));
         }
-        
-        // 初始化更新管理器
-        updateManager = new UpdateManager(this);
-        updateManager.checkForUpdates();
     }
 
     @Override
     public void onDisable() {
-        // 先保存日志消息
         String disableMessage = languageManager != null ? 
             languageManager.getMessage("messages.plugin.disable") : 
             "BellCommand 插件已关闭!";
         
-        // 清理资源
+        cleanup();
+        
+        getLogger().info(ColorUtils.translateConsoleColors(disableMessage));
+    }
+
+    private void cleanup() {
         if (itemManager != null) {
             itemManager.disable();
+            itemManager = null;
         }
         
-        // 清空缓存
-        itemManager = null;
+        if (updateManager != null) {
+            updateManager = null;
+        }
+        
         config = null;
         languageManager = null;
-        
-        // 最后输出日志
-        getLogger().info(ColorUtils.translateConsoleColors(disableMessage));
-        
-        updateManager = null;
     }
 
     private void loadConfiguration() {
         try {
-            // 备份旧配置
-            if (getConfig().contains("config-version")) {
-                File configFile = new File(getDataFolder(), "config.yml");
-                File backupFile = new File(getDataFolder(), "config.backup.yml");
-                if (configFile.exists()) {
-                    Files.copy(configFile.toPath(), backupFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                }
-            }
-            
-            saveDefaultConfig();
-            reloadConfig();
-            config = getConfig();
-            debug = config.getBoolean("debug", false);
-            
-            // 添加调试信息
-            if (debug) {
-                Map<String, String> placeholders = new HashMap<>();
-                placeholders.put("count", String.valueOf(config.getConfigurationSection("items").getKeys(false).size()));
-                getLogger().info(languageManager.getMessage("messages.debug.config.items-loaded", placeholders));
-                
-                // 输出每个物品的信息
-                for (String id : config.getConfigurationSection("items").getKeys(false)) {
-                    ConfigurationSection itemSection = config.getConfigurationSection("items." + id);
-                    placeholders.clear();
-                    placeholders.put("id", id);
-                    placeholders.put("name", itemSection.getString("name"));
-                    placeholders.put("type", itemSection.getString("item-id"));
-                    getLogger().info(languageManager.getMessage("messages.debug.config.item-entry", placeholders));
-                }
-            }
-            
-            // 验证配置完整性
-            ConfigurationSection itemsSection = config.getConfigurationSection("items");
-            if (itemsSection == null) {
-                getLogger().warning("配置文件中缺少items部分，将使用默认配置");
-                saveResource("config.yml", true);
-                reloadConfig();
-                config = getConfig();
-            }
-            
-            // 验证每个物品的配置
-            if (itemsSection != null) {
-                for (String id : itemsSection.getKeys(false)) {
-                    ConfigurationSection itemSection = itemsSection.getConfigurationSection(id);
-                    if (itemSection == null) continue;
-                    
-                    String itemId = itemSection.getString("item-id");
-                    if (Material.matchMaterial(itemId) == null) {
-                        getLogger().warning("无效的物品ID: " + itemId + " (在物品 " + id + " 中)");
-                    }
-                }
-            }
-            
-            // 验证配置版本
-            int configVersion = config.getInt("config-version", 0);
-            if (configVersion < 1) {
-                getLogger().warning("配置文件版本过低，将使用新版本配置");
-                saveResource("config.yml", true);
-                reloadConfig();
-                config = getConfig();
-            }
-            
+            backupConfig();
+            initializeConfig();
+            validateConfig();
+            loadDebugMode();
+            validateItems();
         } catch (Exception e) {
-            getLogger().severe("加载配置文件时发生错误: " + e.getMessage());
-            if (debug) {
-                e.printStackTrace();
+            handleConfigError(e);
+        }
+    }
+
+    private void backupConfig() throws IOException {
+        if (getConfig().contains("config-version")) {
+            File configFile = new File(getDataFolder(), "config.yml");
+            File backupFile = new File(getDataFolder(), "config.backup.yml");
+            if (configFile.exists()) {
+                Files.copy(configFile.toPath(), backupFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                if (debug) {
+                    getLogger().info("配置文件已备份到: config.backup.yml");
+                }
             }
         }
+    }
+
+    private void initializeConfig() {
+        saveDefaultConfig();
+        reloadConfig();
+        config = getConfig();
+    }
+
+    private void validateConfig() {
+        int configVersion = config.getInt("config-version", 0);
+        if (configVersion < 1) {
+            getLogger().warning("配置文件版本过低，将使用新版本配置");
+            saveResource("config.yml", true);
+            reloadConfig();
+            config = getConfig();
+        }
+        
+        // 验证必需的配置节点
+        String[] requiredSections = {"items", "update-source", "language"};
+        for (String section : requiredSections) {
+            if (!config.contains(section)) {
+                getLogger().warning("配置文件缺少必需的节点: " + section);
+                getLogger().warning("将使用默认配置");
+                saveResource("config.yml", true);
+                reloadConfig();
+                config = getConfig();
+                break;
+            }
+        }
+    }
+
+    private void loadDebugMode() {
+        debug = config.getBoolean("debug", false);
+        if (debug) {
+            getLogger().info("调试模式已启用");
+        }
+    }
+
+    private void validateItems() {
+        ConfigurationSection itemsSection = config.getConfigurationSection("items");
+        if (itemsSection == null) {
+            getLogger().warning("配置文件中缺少items部分，将使用默认配置");
+            return;
+        }
+
+        if (debug) {
+            Map<String, String> placeholders = new HashMap<>();
+            placeholders.put("count", String.valueOf(itemsSection.getKeys(false).size()));
+            getLogger().info(languageManager.getMessage("messages.debug.config.items-loaded", placeholders));
+        }
+
+        for (String id : itemsSection.getKeys(false)) {
+            validateItem(id, itemsSection.getConfigurationSection(id));
+        }
+    }
+
+    private void validateItem(String id, ConfigurationSection itemSection) {
+        if (itemSection == null) {
+            getLogger().warning("物品 " + id + " 的配置无效");
+            return;
+        }
+
+        // 验证必需的物品属性
+        String[] requiredFields = {"item-id", "name"};
+        for (String field : requiredFields) {
+            if (!itemSection.contains(field)) {
+                getLogger().warning("物品 " + id + " 缺少必需的属性: " + field);
+                continue;
+            }
+        }
+
+        // 验证物品类型
+        String itemId = itemSection.getString("item-id");
+        if (Material.matchMaterial(itemId) == null) {
+            getLogger().warning("无效的物品ID: " + itemId + " (在物品 " + id + " 中)");
+        }
+
+        // 验证命令配置
+        validateItemCommands(id, itemSection);
+
+        if (debug) {
+            Map<String, String> placeholders = new HashMap<>();
+            placeholders.put("id", id);
+            placeholders.put("name", itemSection.getString("name"));
+            placeholders.put("type", itemId);
+            getLogger().info(languageManager.getMessage("messages.debug.config.item-entry", placeholders));
+        }
+    }
+
+    private void validateItemCommands(String id, ConfigurationSection itemSection) {
+        ConfigurationSection commands = itemSection.getConfigurationSection("commands");
+        if (commands == null) {
+            getLogger().warning("物品 " + id + " 没有配置命令");
+            return;
+        }
+
+        validateCommandSection(id, commands, "left-click");
+        validateCommandSection(id, commands, "right-click");
+    }
+
+    private void validateCommandSection(String id, ConfigurationSection commands, String clickType) {
+        if (!commands.contains(clickType)) {
+            if (debug) {
+                getLogger().info("物品 " + id + " 没有配置 " + clickType + " 命令");
+            }
+            return;
+        }
+
+        if (commands.isList(clickType)) {
+            List<String> cmdList = commands.getStringList(clickType);
+            if (cmdList.isEmpty()) {
+                getLogger().warning("物品 " + id + " 的 " + clickType + " 命令列表为空");
+            }
+        } else if (commands.isConfigurationSection(clickType)) {
+            ConfigurationSection cmdSection = commands.getConfigurationSection(clickType);
+            for (String key : cmdSection.getKeys(false)) {
+                if (!cmdSection.isConfigurationSection(key)) {
+                    getLogger().warning("物品 " + id + " 的 " + clickType + " 命令 " + key + " 配置格式无效");
+                }
+            }
+        } else {
+            getLogger().warning("物品 " + id + " 的 " + clickType + " 命令配置格式无效");
+        }
+    }
+
+    private void handleConfigError(Exception e) {
+        getLogger().severe("加载配置文件时发生错误: " + e.getMessage());
+        if (debug) {
+            e.printStackTrace();
+        }
+        
+        // 尝试加载默认配置
+        getLogger().warning("尝试加载默认配置...");
+        saveResource("config.yml", true);
+        reloadConfig();
+        config = getConfig();
     }
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {

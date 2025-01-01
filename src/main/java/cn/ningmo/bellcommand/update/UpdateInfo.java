@@ -4,11 +4,17 @@ public class UpdateInfo {
     private final String currentVersion;
     private final String latestVersion;
     private final String downloadUrl;
+    private final String description;
 
     public UpdateInfo(String currentVersion, String latestVersion, String downloadUrl) {
+        this(currentVersion, latestVersion, downloadUrl, null);
+    }
+
+    public UpdateInfo(String currentVersion, String latestVersion, String downloadUrl, String description) {
         this.currentVersion = currentVersion;
         this.latestVersion = latestVersion;
         this.downloadUrl = downloadUrl;
+        this.description = description;
     }
 
     public boolean isUpdateAvailable() {
@@ -41,5 +47,9 @@ public class UpdateInfo {
 
     public String getDownloadUrl() {
         return downloadUrl;
+    }
+
+    public String getDescription() {
+        return description;
     }
 } 
