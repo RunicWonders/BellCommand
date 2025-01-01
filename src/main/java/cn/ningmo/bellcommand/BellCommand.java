@@ -53,6 +53,12 @@ public class BellCommand extends JavaPlugin {
             updateManager = new UpdateManager(this);
             updateManager.checkForUpdates();
             
+            // 设置调试模式
+            debug = getConfig().getBoolean("debug", false);
+            if (debug) {
+                getLogger().info(languageManager.getMessage("messages.plugin.debug-enabled"));
+            }
+            
             // 输出启动信息
             logStartupInfo();
             

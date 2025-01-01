@@ -1,7 +1,7 @@
 messages:
   # 插件系统消息
   plugin:
-    enable: "&a插件已启用 &7(v%version%)"
+    enable: "&a插件已启用"
     disable: "&c插件已禁用"
     debug-enabled: "&e调试模式已启用"
     bedrock-detected: "§e[BellCommand] 检测到基岩版服务器，部分功能可能不可用"
@@ -40,8 +40,8 @@ messages:
   # 命令相关消息
   command:
     # 通用命令消息
-    player-only: "§c[BellCommand] 该命令只能由玩家执行"
-    no-permission: "§c[BellCommand] 你没有权限执行此命令"
+    player-only: "&c该命令只能由玩家执行"
+    no-permission: "&c你没有权限执行此命令"
     unknown: "§c[BellCommand] 未知命令，使用 /bc help 查看帮助"
     help: |
       §6=== BellCommand 帮助 ===
@@ -52,8 +52,8 @@ messages:
       §6=====================
     
     # 重载命令消息
-    reload-success: "§a[BellCommand] 配置文件重载成功"
-    reload-failed: "§c[BellCommand] 配置文件重载失败"
+    reload-success: "&a配置重载成功"
+    reload-failed: "&c配置重载失败，请查看控制台获取详细信息"
     reload-debug: "§e[BellCommand] 调试信息已输出到控制台"
     
     # 物品列表命令消息
@@ -64,21 +64,21 @@ messages:
     give-success: "&a成功给予 &f%player% &f%amount% 个 &6%item%"
     
     # 物品操作消息
-    invalid-item: "§c[BellCommand] 错误: 未找到ID为 §e%id% §c的命令物品"
-    item-exists: "§c[BellCommand] 你已经拥有 §6%item% §c了"
-    item-given: "§a[BellCommand] 成功获得命令物品 §6%item%"
-    item-removed: "§a[BellCommand] 已移除命令物品 §6%item%"
-    no-item-found: "§c[BellCommand] 未找到可移除的命令物品"
+    invalid-item: "&c无效的物品ID"
+    item-exists: "&c该物品已存在"
+    item-given: "&a已给予命令物品"
+    item-removed: "&a已移除命令物品"
+    no-item-found: "&c未找到命令物品"
     
     # 使用限制消息
-    cooldown: "§c[BellCommand] 物品正在冷却中，还需等待 §e%seconds% §c秒"
+    cooldown: "&e请等待 %time% 秒后再使用"
     
     auto-give: "§a[BellCommand] 你获得了命令物品 §6%item%"
     
   # 错误消息
   error:
-    no-permission-use: "§c[BellCommand] 你没有权限使用该物品"
-    reload-error: "§c[BellCommand] 重载配置时发生错误: §e%error%"
+    no-permission-use: "&c你没有权限使用此物品"
+    reload-error: "&c重载配置时发生错误"
     invalid-material: "§c[BellCommand] 无效的物品类型: §e%material%"
     command-failed: "§c[BellCommand] 命令执行失败: §e%command%"
     invalid-config: "§c[BellCommand] 配置文件格式错误: §e%error%"
@@ -92,7 +92,7 @@ messages:
   debug:
     # 配置相关调试
     config:
-      items-loaded: "&e[调试] &f已成功加载 &6%count% &f个命令物品"
+      items-loaded: "&a[调试] 已加载 %count% 个物品配置"
       item-entry: "&e[调试] &f物品: &6%id% &f(名称: &6%name%&f, 类型: &6%type%&f)"
       config-reloaded: "§e[调试] 配置文件已重新加载"
       config-version: "§e[调试] 配置文件版本: §6%version%"
@@ -135,4 +135,47 @@ messages:
       dropped: "§7[BellCommand] 玩家 %player% 丢弃了命令物品 %item%"
       removed: "§7[BellCommand] 命令物品 %item% 已被清理"
       not-found: "§c[BellCommand] 找不到ID为 %id% 的命令物品"
-      auto-given: "§7[BellCommand] 自动给予玩家 %player% 命令物品 %item%" 
+      auto-given: "§7[BellCommand] 自动给予玩家 %player% 命令物品 %item%"
+    
+    # 调试消息
+    floodgate:
+      detected: "&a[调试] 检测到 Floodgate API，将支持基岩版玩家命令"
+      not-detected: "&e[调试] 未检测到 Floodgate API，基岩版玩家将使用 Java 版命令"
+    listener:
+      initialized: "&a[调试] 物品点击监听器已初始化"
+    interaction:
+      detected: "&7[调试] 玩家 %player% 触发了交互事件"
+      no-item: "&7[调试] 交互事件中没有物品"
+      not-command-item: "&7[调试] 交互的物品不是命令物品"
+    permission:
+      denied: "&c[调试] 玩家 %player% 没有权限 %permission%"
+    cooldown:
+      active: "&e[调试] 玩家 %player% 的物品 %item% 正在冷却中"
+    command:
+      executing: "&a[调试] 玩家 %player% 使用 %type% 触发物品 %item% 的命令"
+      command-result: "&7[调试] 命令执行%result%"
+    config:
+      no-items: "&e[调试] 配置文件中没有物品配置"
+      items-loaded: "&a[调试] 已加载 %count% 个物品配置"
+  
+  # 调试消息
+  debug:
+    floodgate:
+      detected: "&a[调试] 检测到 Floodgate API，将支持基岩版玩家命令"
+      not-detected: "&e[调试] 未检测到 Floodgate API，基岩版玩家将使用 Java 版命令"
+    listener:
+      initialized: "&a[调试] 物品点击监听器已初始化"
+    interaction:
+      detected: "&7[调试] 玩家 %player% 触发了交互事件"
+      no-item: "&7[调试] 交互事件中没有物品"
+      not-command-item: "&7[调试] 交互的物品不是命令物品"
+    permission:
+      denied: "&c[调试] 玩家 %player% 没有权限 %permission%"
+    cooldown:
+      active: "&e[调试] 玩家 %player% 的物品 %item% 正在冷却中"
+    command:
+      executing: "&a[调试] 玩家 %player% 使用 %type% 触发物品 %item% 的命令"
+      command-result: "&7[调试] 命令执行%result%"
+    config:
+      no-items: "&e[调试] 配置文件中没有物品配置"
+      items-loaded: "&a[调试] 已加载 %count% 个物品配置" 

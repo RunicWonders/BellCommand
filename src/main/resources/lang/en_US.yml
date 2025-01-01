@@ -1,27 +1,27 @@
 messages:
   # Plugin system messages
   plugin:
-    enable: "&aPlugin enabled &7(v%version%)"
+    enable: "&aPlugin enabled"
     disable: "&cPlugin disabled"
     debug-enabled: "&eDebug mode enabled"
-    bedrock-detected: "&eBedrock server detected, some features may not be available"
-    version: "&6Version: v%version%"
+    bedrock-detected: "§e[BellCommand] Bedrock server detected, some features may not be available"
+    version: "§6[BellCommand] Version: v%version%"
     floodgate-detected: "&aFloodgate detected, Bedrock support enabled"
     bedrock-player-detected: "&7Detected Bedrock player: &f%player%"
     startup-failed: "&cPlugin startup failed: %error%"
-    loading-default-config: "&eTrying to load default configuration..."
-    config-backup-success: "&7Configuration file backed up to: config.backup.yml"
-    config-error: "&cError loading configuration file: %error%"
+    loading-default-config: "&eTrying to load default config..."
+    config-backup-success: "&7Config file backed up to: config.backup.yml"
+    config-error: "&cError loading config file: %error%"
     
     config:
-      version-not-found: "&cConfiguration version not found, possibly an old config file"
-      version-too-low: "&cConfiguration version too low, current: v%current%, required: v%required%"
-      version-too-high: "&cConfiguration version higher than supported, current: v%current%, supported: v%required%"
-      version-mismatch: "&cConfiguration version mismatch! Please delete the old config file and restart the server"
-      no-commands: "&eItem %id% has no %type% commands configured"
-      empty-commands: "&cItem %id% has empty %type% command list"
-      invalid-command-format: "&cInvalid command format for item %id% %type% command %key%"
-      invalid-command-section: "&cInvalid command section for item %id% %type%"
+      version-not-found: "§c[BellCommand] Config version not found, might be an old config file"
+      version-too-low: "§c[BellCommand] Config version too low, current: v%current%, required: v%required%"
+      version-too-high: "§c[BellCommand] Config version higher than supported, current: v%current%, supported: v%required%"
+      version-mismatch: "§c[BellCommand] Config version mismatch! Please delete old config and restart server"
+      no-commands: "&eItem %id% has no %type% commands"
+      empty-commands: "&cItem %id%'s %type% command list is empty"
+      invalid-command-format: "&cInvalid command format for item %id%'s %type% command %key%"
+      invalid-command-section: "&cInvalid command section for item %id%'s %type% commands"
     
     # Update source messages
     update:
@@ -43,40 +43,40 @@ messages:
     no-permission: "&cYou don't have permission to use this command"
     unknown: "&cUnknown command, use /bc help for help"
     help: |
-      &6=== BellCommand Help ===
-      &f/bc give <player> <itemID> [amount] &7- Give command items
-      &f/bc list &7- View available command items
-      &f/bc reload &7- Reload plugin configuration
-      &f/bc help &7- Show this help message
-      &6=====================
+      §6=== BellCommand Help ===
+      §f/bc give <player> <itemID> [amount] §7- Give command items
+      §f/bc list §7- List available command items
+      §f/bc reload §7- Reload plugin config
+      §f/bc help §7- Show this help message
+      §6=====================
     
     # Reload command messages
     reload-success: "&aConfiguration reloaded successfully"
-    reload-failed: "&cConfiguration reload failed"
+    reload-failed: "&cFailed to reload configuration, check console for details"
     reload-debug: "&eDebug information has been output to console"
     
     # Item list command messages
     list-empty: "&cNo command items available"
-    list-header: "&6=== Command Item List ==="
+    list-header: "&6=== Command Items List ==="
     list-item: "&7- %id%: &f%name%"
     give-usage: "&cUsage: /bc give <player> <itemID> [amount]"
     give-success: "&aGave &f%amount% &6%item% &ato &f%player%"
     
     # Item operation messages
-    invalid-item: "&cError: Command item &e%id% &cnot found"
-    item-exists: "&cYou already have &6%item%"
-    item-given: "&aReceived command item &6%item%"
-    item-removed: "&aRemoved command item &6%item%"
-    no-item-found: "&cNo removable command items found"
+    invalid-item: "&cInvalid item ID"
+    item-exists: "&cItem already exists"
+    item-given: "&aCommand item given"
+    item-removed: "&aCommand item removed"
+    no-item-found: "&cNo command item found"
     
     # Usage restriction messages
-    cooldown: "&cItem is on cooldown, wait &e%seconds% &cseconds"
+    cooldown: "&ePlease wait %time% seconds before using again"
     auto-give: "&aYou received command item &6%item%"
     
   # Error messages
   error:
     no-permission-use: "&cYou don't have permission to use this item"
-    reload-error: "&cError reloading configuration: &e%error%"
+    reload-error: "&cError occurred while reloading"
     invalid-material: "&cInvalid item material: &e%material%"
     command-failed: "&cCommand execution failed: &e%command%"
     invalid-config: "&cInvalid configuration format: &e%error%"
@@ -90,7 +90,7 @@ messages:
   debug:
     # Configuration debug
     config:
-      items-loaded: "&e[Debug] &fSuccessfully loaded &6%count% &fcommand items"
+      items-loaded: "&a[Debug] Loaded %count% items from config"
       item-entry: "&e[Debug] &fItem: &6%id% &f(Name: &6%name%&f, Type: &6%type%&f)"
       config-reloaded: "&e[Debug] Configuration file reloaded"
       config-version: "&e[Debug] Config version: &6%version%"
@@ -98,15 +98,15 @@ messages:
       
     # Interaction event debug
     interact:
-      event-start: "&e[Debug] Interaction event - Player: &6%player% &eAction: &6%action% &eSneak: &6%sneaking% &eBedrock: &6%is_bedrock%"
-      command-type: "&e[Debug] Execute command type: &6%type%"
-      player: "&e[Debug] Player: &6%player%"
-      action: "&e[Debug] Interaction type: &6%action%"
-      item-id: "&e[Debug] Item ID: &6%id%"
-      item-name: "&e[Debug] Item name: &6%name%"
-      cooldown-check: "&e[Debug] Checking cooldown: &6%seconds%&e seconds"
-      permission-check: "&e[Debug] Permission check: &6%result%"
-      command-count: "&e[Debug] Commands to execute: &6%count%"
+      event-start: "§e[Debug] Interaction event - Player: §6%player% §eAction: §6%action% §eSneaking: §6%sneaking% §eBedrock: §6%is_bedrock%"
+      command-type: "§e[Debug] Command type: §6%type%"
+      player: "§e[Debug] Player: §6%player%"
+      action: "§e[Debug] Action type: §6%action%"
+      item-id: "§e[Debug] Item ID: §6%id%"
+      item-name: "§e[Debug] Item name: §6%name%"
+      cooldown-check: "§e[Debug] Cooldown check: §6%seconds%§e seconds"
+      permission-check: "§e[Debug] Permission check: §6%result%"
+      command-count: "§e[Debug] Commands to execute: §6%count%"
       
     # Command execution debug
     command:
@@ -133,4 +133,48 @@ messages:
       dropped: "&7Player %player% dropped command item %item%"
       removed: "&7Command item %item% has been cleaned up"
       not-found: "&cCommand item with ID %id% not found"
-      auto-given: "&7Automatically gave command item %item% to player %player%" 
+      auto-given: "&7Automatically gave command item %item% to player %player%"
+      
+    # Floodgate debug
+    floodgate:
+      detected: "&a[Debug] Floodgate API detected, Bedrock commands will be supported"
+      not-detected: "&e[Debug] Floodgate API not detected, Bedrock players will use Java commands"
+      
+    # Listener debug
+    listener:
+      initialized: "&a[Debug] Item click listener initialized"
+      
+    # Interaction debug
+    interaction:
+      detected: "&7[Debug] Player %player% triggered interaction event"
+      no-item: "&7[Debug] No item in interaction event"
+      not-command-item: "&7[Debug] Interacted item is not a command item"
+      
+    # Permission debug
+    permission:
+      denied: "&c[Debug] Player %player% lacks permission %permission%"
+      
+    # Cooldown debug
+    cooldown:
+      active: "&e[Debug] Player %player%'s item %item% is in cooldown"
+      
+    # Command debug
+    command:
+      executing: "&a[Debug] Player %player% using %type% triggered item %item%'s commands"
+      command-result: "&7[Debug] Command execution %result%"
+      
+    # Config debug
+    config:
+      no-items: "&e[Debug] No items found in config"
+      
+    # Interaction debug
+    interact:
+      event-start: "§e[Debug] Interaction event - Player: §6%player% §eAction: §6%action% §eSneaking: §6%sneaking% §eBedrock: §6%is_bedrock%"
+      command-type: "§e[Debug] Command type: §6%type%"
+      player: "§e[Debug] Player: §6%player%"
+      action: "§e[Debug] Action type: §6%action%"
+      item-id: "§e[Debug] Item ID: §6%id%"
+      item-name: "§e[Debug] Item name: §6%name%"
+      cooldown-check: "§e[Debug] Cooldown check: §6%seconds%§e seconds"
+      permission-check: "§e[Debug] Permission check: §6%result%"
+      command-count: "§e[Debug] Commands to execute: §6%count%" 

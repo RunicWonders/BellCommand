@@ -1,11 +1,11 @@
 messages:
   # 插件系統消息
   plugin:
-    enable: "&a插件已啟用 &7(v%version%)"
+    enable: "&a插件已啟用"
     disable: "&c插件已禁用"
     debug-enabled: "&e調試模式已啟用"
-    bedrock-detected: "&e檢測到基岩版伺服器，部分功能可能不可用"
-    version: "&6版本: v%version%"
+    bedrock-detected: "§e[BellCommand] 檢測到基岩版伺服器，部分功能可能不可用"
+    version: "§6[BellCommand] 版本: v%version%"
     floodgate-detected: "&a已檢測到 Floodgate，基岩版支持已啟用"
     bedrock-player-detected: "&7檢測到基岩版玩家: &f%player%"
     startup-failed: "&c插件啟動失敗: %error%"
@@ -14,10 +14,10 @@ messages:
     config-error: "&c加載配置文件時發生錯誤: %error%"
     
     config:
-      version-not-found: "&c未找到配置文件版本號，可能是舊版本配置文件"
-      version-too-low: "&c配置文件版本過低，當前版本: v%current%，所需版本: v%required%"
-      version-too-high: "&c配置文件版本高於插件支持的版本，當前版本: v%current%，支持版本: v%required%"
-      version-mismatch: "&c配置文件版本不匹配！請刪除舊的配置文件並重啟伺服器"
+      version-not-found: "§c[BellCommand] 未找到配置文件版本號，可能是舊版本配置文件"
+      version-too-low: "§c[BellCommand] 配置文件版本過低，當前版本: v%current%，所需版本: v%required%"
+      version-too-high: "§c[BellCommand] 配置文件版本高於插件支持的版本，當前版本: v%current%，支持版本: v%required%"
+      version-mismatch: "§c[BellCommand] 配置文件版本不匹配！請刪除舊的配置文件並重啟伺服器"
       no-commands: "&e物品 %id% 沒有配置 %type% 命令"
       empty-commands: "&c物品 %id% 的 %type% 命令列表為空"
       invalid-command-format: "&c物品 %id% 的 %type% 命令 %key% 配置格式無效"
@@ -43,16 +43,16 @@ messages:
     no-permission: "&c你沒有權限執行此命令"
     unknown: "&c未知命令，使用 /bc help 查看幫助"
     help: |
-      &6=== BellCommand 幫助 ===
-      &f/bc give <玩家> <物品ID> [數量] &7- 給予命令物品
-      &f/bc list &7- 查看可用的命令物品
-      &f/bc reload &7- 重載插件配置
-      &f/bc help &7- 顯示此幫助信息
-      &6=====================
+      §6=== BellCommand 幫助 ===
+      §f/bc give <玩家> <物品ID> [數量] §7- 給予命令物品
+      §f/bc list §7- 查看可用的命令物品
+      §f/bc reload §7- 重載插件配置
+      §f/bc help §7- 顯示此幫助信息
+      §6=====================
     
     # 重載命令消息
-    reload-success: "&a配置文件重載成功"
-    reload-failed: "&c配置文件重載失敗"
+    reload-success: "&a配置重載成功"
+    reload-failed: "&c配置重載失敗，請查看控制台獲取詳細信息"
     reload-debug: "&e調試信息已輸出到控制台"
     
     # 物品列表命令消息
@@ -63,20 +63,20 @@ messages:
     give-success: "&a成功給予 &f%player% &f%amount% 個 &6%item%"
     
     # 物品操作消息
-    invalid-item: "&c錯誤: 未找到ID為 &e%id% &c的命令物品"
-    item-exists: "&c你已經擁有 &6%item% &c了"
-    item-given: "&a成功獲得命令物品 &6%item%"
-    item-removed: "&a已移除命令物品 &6%item%"
-    no-item-found: "&c未找到可移除的命令物品"
+    invalid-item: "&c無效的物品ID"
+    item-exists: "&c該物品已存在"
+    item-given: "&a已給予命令物品"
+    item-removed: "&a已移除命令物品"
+    no-item-found: "&c未找到命令物品"
     
     # 使用限制消息
-    cooldown: "&c物品正在冷卻中，還需等待 &e%seconds% &c秒"
+    cooldown: "&e請等待 %time% 秒後再使用"
     auto-give: "&a你獲得了命令物品 &6%item%"
     
   # 錯誤消息
   error:
-    no-permission-use: "&c你沒有權限使用該物品"
-    reload-error: "&c重載配置時發生錯誤: &e%error%"
+    no-permission-use: "&c你沒有權限使用此物品"
+    reload-error: "&c重載配置時發生錯誤"
     invalid-material: "&c無效的物品類型: &e%material%"
     command-failed: "&c命令執行失敗: &e%command%"
     invalid-config: "&c配置文件格式錯誤: &e%error%"
@@ -90,7 +90,7 @@ messages:
   debug:
     # 配置相關調試
     config:
-      items-loaded: "&e[調試] &f已成功加載 &6%count% &f個命令物品"
+      items-loaded: "&a[調試] 已加載 %count% 個物品配置"
       item-entry: "&e[調試] &f物品: &6%id% &f(名稱: &6%name%&f, 類型: &6%type%&f)"
       config-reloaded: "&e[調試] 配置文件已重新加載"
       config-version: "&e[調試] 配置文件版本: &6%version%"
@@ -98,15 +98,15 @@ messages:
       
     # 交互事件調試
     interact:
-      event-start: "&e[調試] 交互事件觸發 - 玩家: &6%player% &e動作: &6%action% &e蹲下: &6%sneaking% &e基岩版: &6%is_bedrock%"
-      command-type: "&e[調試] 執行命令類型: &6%type%"
-      player: "&e[調試] 玩家: &6%player%"
-      action: "&e[調試] 交互類型: &6%action%"
-      item-id: "&e[調試] 物品ID: &6%id%"
-      item-name: "&e[調試] 物品名稱: &6%name%"
-      cooldown-check: "&e[調試] 檢查冷卻時間: &6%seconds%&e秒"
-      permission-check: "&e[調試] 權限檢查: &6%result%"
-      command-count: "&e[調試] 待執行命令數: &6%count%"
+      event-start: "§e[調試] 交互事件 - 玩家: §6%player% §e動作: §6%action% §e蹲下: §6%sneaking% §e基岩版: §6%is_bedrock%"
+      command-type: "§e[調試] 命令類型: §6%type%"
+      player: "§e[調試] 玩家: §6%player%"
+      action: "§e[調試] 交互類型: §6%action%"
+      item-id: "§e[調試] 物品ID: §6%id%"
+      item-name: "§e[調試] 物品名稱: §6%name%"
+      cooldown-check: "§e[調試] 冷卻檢查: §6%seconds%§e 秒"
+      permission-check: "§e[調試] 權限檢查: §6%result%"
+      command-count: "§e[調試] 待執行命令數: §6%count%"
       
     # 命令執行調試
     command:
@@ -133,4 +133,32 @@ messages:
       dropped: "&7玩家 %player% 丟棄了命令物品 %item%"
       removed: "&7命令物品 %item% 已被清理"
       not-found: "&c找不到ID為 %id% 的命令物品"
-      auto-given: "&7自動給予玩家 %player% 命令物品 %item%" 
+      auto-given: "&7自動給予玩家 %player% 命令物品 %item%"
+      floodgate:
+        detected: "&a[調試] 檢測到 Floodgate API，將支持基岩版玩家命令"
+        not-detected: "&e[調試] 未檢測到 Floodgate API，基岩版玩家將使用 Java 版命令"
+      listener:
+        initialized: "&a[調試] 物品點擊監聽器已初始化"
+      interaction:
+        detected: "&7[調試] 玩家 %player% 觸發了交互事件"
+        no-item: "&7[調試] 交互事件中沒有物品"
+        not-command-item: "&7[調試] 交互的物品不是命令物品"
+      permission:
+        denied: "&c[調試] 玩家 %player% 沒有權限 %permission%"
+      cooldown:
+        active: "&e[調試] 玩家 %player% 的物品 %item% 正在冷卻中"
+      command:
+        executing: "&a[調試] 玩家 %player% 使用 %type% 觸發物品 %item% 的命令"
+        command-result: "&7[調試] 命令執行%result%"
+      config:
+        no-items: "&e[調試] 配置文件中沒有物品配置"
+      interact:
+        event-start: "§e[調試] 交互事件 - 玩家: §6%player% §e動作: §6%action% §e蹲下: §6%sneaking% §e基岩版: §6%is_bedrock%"
+        command-type: "§e[調試] 命令類型: §6%type%"
+        player: "§e[調試] 玩家: §6%player%"
+        action: "§e[調試] 交互類型: §6%action%"
+        item-id: "§e[調試] 物品ID: §6%id%"
+        item-name: "§e[調試] 物品名稱: §6%name%"
+        cooldown-check: "§e[調試] 冷卻檢查: §6%seconds%§e 秒"
+        permission-check: "§e[調試] 權限檢查: §6%result%"
+        command-count: "§e[調試] 待執行命令數: §6%count%" 
