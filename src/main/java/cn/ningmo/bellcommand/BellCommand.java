@@ -186,7 +186,7 @@ public class BellCommand extends JavaPlugin {
         Map<String, String> placeholders = new HashMap<>();
         placeholders.put("version", getDescription().getVersion());
         getLogger().info(ColorUtils.translateConsoleColors(
-            languageManager.getMessage("messages.plugin.enable", placeholders)
+            languageManager.getMessage("messages.plugin.version", placeholders)
         ));
         
         if (debug) {
@@ -201,6 +201,9 @@ public class BellCommand extends JavaPlugin {
         int requiredVersion = 2;
         
         if (currentVersion == 0) {
+            getLogger().severe(ColorUtils.translateConsoleColors(
+                languageManager.getMessage("messages.plugin.config.version-not-found")
+            ));
             return false;
         }
         
@@ -208,11 +211,13 @@ public class BellCommand extends JavaPlugin {
             Map<String, String> placeholders = new HashMap<>();
             placeholders.put("current", String.valueOf(currentVersion));
             placeholders.put("required", String.valueOf(requiredVersion));
-            getLogger().warning(languageManager.getMessage(
-                currentVersion < requiredVersion ? 
-                "messages.plugin.config.version-too-low" : 
-                "messages.plugin.config.version-too-high", 
-                placeholders
+            getLogger().warning(ColorUtils.translateConsoleColors(
+                languageManager.getMessage(
+                    currentVersion < requiredVersion ? 
+                    "messages.plugin.config.version-too-low" : 
+                    "messages.plugin.config.version-too-high", 
+                    placeholders
+                )
             ));
             return false;
         }

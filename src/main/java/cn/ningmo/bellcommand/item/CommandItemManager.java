@@ -77,11 +77,22 @@ public class CommandItemManager {
                     items.put(id, item);
                     
                     if (plugin.isDebugEnabled()) {
-                        plugin.getLogger().info("已加载物品: " + id + " (" + item.getName() + ")");
+                        Map<String, String> placeholders = new HashMap<>();
+                        placeholders.put("id", id);
+                        placeholders.put("name", item.getName());
+                        placeholders.put("type", itemSection.getString("item-id", "CLOCK"));
+                        plugin.getLogger().info(ColorUtils.translateConsoleColors(
+                            plugin.getLanguageManager().getMessage("messages.debug.config.item-entry", placeholders)
+                        ));
                     }
                 } catch (Exception e) {
                     if (plugin.isDebugEnabled()) {
-                        plugin.getLogger().warning("加载物品 " + id + " 时出错: " + e.getMessage());
+                        Map<String, String> placeholders = new HashMap<>();
+                        placeholders.put("id", id);
+                        placeholders.put("error", e.getMessage());
+                        plugin.getLogger().warning(ColorUtils.translateConsoleColors(
+                            plugin.getLanguageManager().getMessage("messages.error.invalid-config", placeholders)
+                        ));
                         e.printStackTrace();
                     }
                 }
@@ -89,7 +100,11 @@ public class CommandItemManager {
         }
 
         if (plugin.isDebugEnabled()) {
-            plugin.getLogger().info("命令物品加载完成，共 " + items.size() + " 个物品");
+            Map<String, String> placeholders = new HashMap<>();
+            placeholders.put("count", String.valueOf(items.size()));
+            plugin.getLogger().info(ColorUtils.translateConsoleColors(
+                plugin.getLanguageManager().getMessage("messages.debug.config.items-loaded", placeholders)
+            ));
         }
     }
 

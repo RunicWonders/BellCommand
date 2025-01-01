@@ -41,7 +41,15 @@ public class CommandItem {
         this.id = id;
         this.material = Material.valueOf(config.getString("item-id", "CLOCK").toUpperCase());
         this.name = ColorUtils.translateColors(config.getString("name", "命令物品"));
-        this.lore = ColorUtils.translateColors(config.getStringList("lore"));
+        
+        // 处理物品说明
+        List<String> rawLore = config.getStringList("lore");
+        if (rawLore.isEmpty()) {
+            rawLore = new ArrayList<>();
+            rawLore.add("&7右键点击使用");
+        }
+        this.lore = ColorUtils.translateColors(rawLore);
+        
         this.permission = config.getString("permission", "");
         this.cooldown = config.getInt("cooldown", 0);
         this.commands = new HashMap<>();
@@ -59,12 +67,16 @@ public class CommandItem {
                         if (cmdSection != null) {
                             String cmd = cmdSection.getString("command");
                             boolean asConsole = cmdSection.getBoolean("as-console", false);
-                            typeCommands.add(new CommandEntry(cmd, asConsole));
+                            if (cmd != null && !cmd.isEmpty()) {
+                                typeCommands.add(new CommandEntry(cmd, asConsole));
+                            }
                         }
                     }
                 }
                 
-                commands.put(type, typeCommands);
+                if (!typeCommands.isEmpty()) {
+                    commands.put(type, typeCommands);
+                }
             }
         }
     }
