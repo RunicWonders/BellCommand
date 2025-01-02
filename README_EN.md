@@ -23,7 +23,6 @@ BellCommand is a powerful Minecraft plugin that allows server administrators to 
 - Command cooldown settings
 - Multi-language support
 - Debug mode
-- Real-time configuration reload
 - Automatic update checking
 
 ## Commands
