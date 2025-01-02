@@ -1,11 +1,11 @@
 messages:
   # Messages système du plugin
   plugin:
-    enable: "&aPlugin activé &7(v%version%)"
+    enable: "&aPlugin activé"
     disable: "&cPlugin désactivé"
     debug-enabled: "&eMode débogage activé"
-    bedrock-detected: "&eServeur Bedrock détecté, certaines fonctionnalités peuvent ne pas être disponibles"
-    version: "&6Version: v%version%"
+    bedrock-detected: "§e[BellCommand] Serveur Bedrock détecté, certaines fonctionnalités peuvent ne pas être disponibles"
+    version: "§6[BellCommand] Version: v%version%"
     floodgate-detected: "&aFloodgate détecté, support Bedrock activé"
     bedrock-player-detected: "&7Joueur Bedrock détecté: &f%player%"
     startup-failed: "&cÉchec du démarrage du plugin: %error%"
@@ -14,46 +14,45 @@ messages:
     config-error: "&cErreur lors du chargement du fichier de configuration: %error%"
     
     config:
-      version-not-found: "&cVersion de configuration non trouvée, possiblement un ancien fichier"
-      version-too-low: "&cVersion de configuration trop ancienne, actuelle: v%current%, requise: v%required%"
-      version-too-high: "&cVersion de configuration plus récente que supportée, actuelle: v%current%, supportée: v%required%"
-      version-mismatch: "&cVersion de configuration incompatible! Veuillez supprimer l'ancien fichier et redémarrer le serveur"
+      version-not-found: "§c[BellCommand] Version de configuration non trouvée, peut-être une ancienne version"
+      version-too-low: "§c[BellCommand] Version de configuration trop ancienne, actuelle: v%current%, requise: v%required%"
+      version-too-high: "§c[BellCommand] Version de configuration plus récente que supportée, actuelle: v%current%, supportée: v%required%"
+      version-mismatch: "§c[BellCommand] Version de configuration incompatible! Veuillez supprimer l'ancienne configuration et redémarrer le serveur"
       no-commands: "&eL'item %id% n'a pas de commandes %type% configurées"
-      empty-commands: "&cLa liste de commandes %type% de l'item %id% est vide"
-      invalid-command-format: "&cFormat de commande invalide pour l'item %id% commande %type% %key%"
-      invalid-command-section: "&cSection de commande invalide pour l'item %id% %type%"
+      empty-commands: "&cLa liste des commandes %type% pour l'item %id% est vide"
+      invalid-command-format: "&cFormat de commande invalide pour la commande %type% %key% de l'item %id%"
+      invalid-command-section: "&cSection de commande invalide pour les commandes %type% de l'item %id%"
     
-    # Messages de mise à jour
     update:
-      checking: "&eRecherche de mises à jour..."
-      available: "&eNouvelle version disponible! Actuelle: v%current%, Dernière: v%latest%"
-      up-to-date: "&aLe plugin est à jour (v%version%)"
-      check-failed: "&cÉchec de la vérification des mises à jour: %error%"
-      download-start: "&eDémarrage du téléchargement de la mise à jour..."
-      download-success: "&aMise à jour téléchargée, sera appliquée au prochain redémarrage"
-      download-failed: "&cÉchec du téléchargement de la mise à jour: &e%error%"
-      invalid-source: "&cSource de mise à jour invalide: %source%"
-      source-disabled: "&eVérification des mises à jour désactivée"
-      reminder: "&eRappel: Nouvelle version disponible! Actuelle: v%current%, Dernière: v%latest%"
-      download-url: "&eURL de téléchargement: %url%"
+      checking: "§e[BellCommand] Vérification des mises à jour..."
+      available: "§e[BellCommand] Nouvelle version disponible! Actuelle: v%current%, Dernière: v%latest%"
+      up-to-date: "§a[BellCommand] Le plugin est à jour (v%version%)"
+      check-failed: "§c[BellCommand] Échec de la vérification des mises à jour: %error%"
+      download-start: "§e[BellCommand] Début du téléchargement..."
+      download-success: "§a[BellCommand] Mise à jour téléchargée, sera appliquée au prochain redémarrage"
+      download-failed: "§c[BellCommand] Échec du téléchargement: §e%error%"
+      invalid-source: "§c[BellCommand] Source de mise à jour invalide: %source%"
+      source-disabled: "§e[BellCommand] Vérification des mises à jour désactivée"
+      reminder: "§e[BellCommand] Rappel: Nouvelle version disponible! Actuelle: v%current%, Dernière: v%latest%"
+      download-url: "§e[BellCommand] URL de téléchargement: %url%"
   
   # Messages de commande
   command:
     player-only: "&cCette commande ne peut être exécutée que par un joueur"
     no-permission: "&cVous n'avez pas la permission d'utiliser cette commande"
-    unknown: "&cCommande inconnue, utilisez /bc help pour l'aide"
+    unknown: "§c[BellCommand] Commande inconnue, utilisez /bc help pour l'aide"
     help: |
-      &6=== Aide BellCommand ===
-      &f/bc give <joueur> <itemID> [quantité] &7- Donner des items de commande
-      &f/bc list &7- Voir les items de commande disponibles
-      &f/bc reload &7- Recharger la configuration
-      &f/bc help &7- Afficher ce message d'aide
-      &6=====================
+      §6=== Aide BellCommand ===
+      §f/bc give <joueur> <itemID> [quantité] §7- Donner des items de commande
+      §f/bc list §7- Voir les items de commande disponibles
+      §f/bc reload §7- Recharger la configuration du plugin
+      §f/bc help §7- Afficher ce message d'aide
+      §6=====================
     
     # Messages de rechargement
     reload-success: "&aConfiguration rechargée avec succès"
-    reload-failed: "&cÉchec du rechargement de la configuration"
-    reload-debug: "&eInformations de débogage envoyées dans la console"
+    reload-failed: "&cÉchec du rechargement de la configuration, consultez la console pour plus de détails"
+    reload-debug: "§e[BellCommand] Informations de débogage envoyées à la console"
     
     # Messages de liste d'items
     list-empty: "&cAucun item de commande disponible"
@@ -63,25 +62,25 @@ messages:
     give-success: "&aDonné &f%amount% &6%item% &aà &f%player%"
     
     # Messages d'opération sur les items
-    invalid-item: "&cErreur: Item de commande &e%id% &cnon trouvé"
-    item-exists: "&cVous avez déjà &6%item%"
-    item-given: "&aReçu l'item de commande &6%item%"
-    item-removed: "&aItem de commande &6%item% &asupprimé"
-    no-item-found: "&cAucun item de commande supprimable trouvé"
+    invalid-item: "&cID d'item invalide"
+    item-exists: "&cCet item existe déjà"
+    item-given: "&aItem de commande donné"
+    item-removed: "&aItem de commande supprimé"
+    no-item-found: "&cAucun item de commande trouvé"
     
     # Messages de restriction d'utilisation
-    cooldown: "&cItem en recharge, attendez &e%seconds% &csecondes"
-    auto-give: "&aVous avez reçu l'item de commande &6%item%"
+    cooldown: "&eVeuillez attendre %time% secondes avant de réutiliser"
+    auto-give: "§a[BellCommand] Vous avez reçu l'item de commande §6%item%"
     
   # Messages d'erreur
   error:
     no-permission-use: "&cVous n'avez pas la permission d'utiliser cet item"
-    reload-error: "&cErreur lors du rechargement: &e%error%"
-    invalid-material: "&cMatériau d'item invalide: &e%material%"
-    command-failed: "&cÉchec de l'exécution de la commande: &e%command%"
-    invalid-config: "&cFormat de configuration invalide: &e%error%"
-    command-error: "&cErreur lors de l'exécution de la commande: &e%error%"
-    no-permission: "&cVous n'avez pas la permission de faire cela"
+    reload-error: "&cErreur lors du rechargement de la configuration"
+    invalid-material: "§c[BellCommand] Type de matériau invalide: §e%material%"
+    command-failed: "§c[BellCommand] Échec de l'exécution de la commande: §e%command%"
+    invalid-config: "§c[BellCommand] Format de configuration invalide: §e%error%"
+    command-error: "§c[BellCommand] Erreur lors de l'exécution de la commande: §e%error%"
+    no-permission: "&cVous n'avez pas la permission d'exécuter cette commande"
     player-not-found: "&cJoueur non trouvé: %player%"
     item-not-found: "&cItem non trouvé: %item%"
     invalid-amount: "&cQuantité invalide"
@@ -90,47 +89,67 @@ messages:
   debug:
     # Débogage de configuration
     config:
-      items-loaded: "&e[Debug] &fChargé &6%count% &fitems de commande"
+      items-loaded: "&a[Debug] Chargé %count% configurations d'items"
       item-entry: "&e[Debug] &fItem: &6%id% &f(Nom: &6%name%&f, Type: &6%type%&f)"
-      config-reloaded: "&e[Debug] Fichier de configuration rechargé"
-      config-version: "&e[Debug] Version de config: &6%version%"
-      language-loaded: "&e[Debug] Fichier de langue chargé: &6%language%"
+      config-reloaded: "§e[Debug] Fichier de configuration rechargé"
+      config-version: "§e[Debug] Version de configuration: §6%version%"
+      language-loaded: "§e[Debug] Fichier de langue chargé: §6%language%"
       
     # Débogage d'événement d'interaction
     interact:
-      event-start: "&e[Debug] Événement d'interaction - Joueur: &6%player% &eAction: &6%action% &eAccroupi: &6%sneaking% &eBedrock: &6%is_bedrock%"
-      command-type: "&e[Debug] Type de commande à exécuter: &6%type%"
-      player: "&e[Debug] Joueur: &6%player%"
-      action: "&e[Debug] Type d'interaction: &6%action%"
-      item-id: "&e[Debug] ID de l'item: &6%id%"
-      item-name: "&e[Debug] Nom de l'item: &6%name%"
-      cooldown-check: "&e[Debug] Vérification du cooldown: &6%seconds%&e secondes"
-      permission-check: "&e[Debug] Vérification des permissions: &6%result%"
-      command-count: "&e[Debug] Commandes à exécuter: &6%count%"
+      event-start: "§e[Debug] Événement d'interaction déclenché - Joueur: §6%player% §eAction: §6%action% §eAccroupi: §6%sneaking% §eBedrock: §6%is_bedrock%"
+      command-type: "§e[Debug] Type de commande: §6%type%"
+      player: "§e[Debug] Joueur: §6%player%"
+      action: "§e[Debug] Type d'interaction: §6%action%"
+      item-id: "§e[Debug] ID de l'item: §6%id%"
+      item-name: "§e[Debug] Nom de l'item: §6%name%"
+      cooldown-check: "§e[Debug] Vérification du cooldown: §6%seconds%§e secondes"
+      permission-check: "§e[Debug] Vérification des permissions: §6%result%"
+      command-count: "§e[Debug] Nombre de commandes à exécuter: §6%count%"
       
     # Débogage d'exécution de commande
     command:
-      item-given: "&e[Debug] Item donné: &6%item% &eau joueur &6%player%"
-      item-removed: "&e[Debug] Item retiré: &6%item% &edu joueur &6%player%"
-      command-execute: "&e[Debug] Exécution de la commande: &6%command%"
-      command-result: "&e[Debug] Résultat de l'exécution: &6%result%"
-      execute-as-console: "&e[Debug] Exécution en tant que console: &6%command%"
-      execute-as-player: "&e[Debug] Exécution en tant que joueur: &6%command%"
-      cooldown-start: "&e[Debug] Début du cooldown: &6%cooldown%&e secondes"
+      item-given: "§e[Debug] Item donné: §6%item% §eau joueur §6%player%"
+      item-removed: "§e[Debug] Item retiré: §6%item% §edu joueur §6%player%"
+      command-execute: "§e[Debug] Exécution de la commande: §6%command%"
+      command-result: "§e[Debug] Résultat de l'exécution: §6%result%"
+      execute-as-console: "§e[Debug] Exécution en tant que console: §6%command%"
+      execute-as-player: "§e[Debug] Exécution en tant que joueur: §6%command%"
+      cooldown-start: "§e[Debug] Début du cooldown: §6%cooldown%§e secondes"
       
     # Débogage de mise à jour
     update:
-      source-init: "&e[Debug] Initialisation de la source de mise à jour: %source%"
-      response: "&e[Debug] Réponse de vérification de mise à jour: %response%"
-      check-start: "&e[Debug] Début de la vérification de mise à jour"
-      parse-version: "&e[Debug] Analyse de la version: &6%version%"
-      download-url: "&e[Debug] URL de téléchargement: &6%url%"
-      download-progress: "&e[Debug] Progression du téléchargement: &6%progress%%"
-      check-interval: "&e[Debug] Intervalle de vérification: &6%interval%&e secondes"
+      source-init: "§e[Debug] Initialisation de la source de mise à jour: %source%"
+      response: "§e[Debug] Réponse de vérification de mise à jour: %response%"
+      check-start: "§e[Debug] Début de la vérification des mises à jour"
+      parse-version: "§e[Debug] Analyse de la version: §6%version%"
+      download-url: "§e[Debug] URL de téléchargement: §6%url%"
+      download-progress: "§e[Debug] Progression du téléchargement: §6%progress%%"
+      check-interval: "§e[Debug] Intervalle de vérification des mises à jour: §6%interval%§e secondes"
       
     # Débogage d'item
     item:
-      dropped: "&7Le joueur %player% a lâché l'item de commande %item%"
-      removed: "&7L'item de commande %item% a été nettoyé"
-      not-found: "&cItem de commande avec l'ID %id% non trouvé"
-      auto-given: "&7Donné automatiquement l'item de commande %item% au joueur %player%" 
+      dropped: "§7[BellCommand] Le joueur %player% a jeté l'item de commande %item%"
+      removed: "§7[BellCommand] L'item de commande %item% a été nettoyé"
+      not-found: "§c[BellCommand] Item de commande avec l'ID %id% non trouvé"
+      auto-given: "§7[BellCommand] Don automatique de l'item de commande %item% au joueur %player%"
+    
+    floodgate:
+      detected: "&a[Debug] API Floodgate détectée, commandes des joueurs Bedrock supportées"
+      not-detected: "&e[Debug] API Floodgate non détectée, les joueurs Bedrock utiliseront les commandes Java"
+    listener:
+      initialized: "&a[Debug] Écouteur de clic d'item initialisé"
+    interaction:
+      detected: "&7[Debug] Le joueur %player% a déclenché un événement d'interaction"
+      no-item: "&7[Debug] Pas d'item dans l'événement d'interaction"
+      not-command-item: "&7[Debug] L'item interagi n'est pas un item de commande"
+    permission:
+      denied: "&c[Debug] Le joueur %player% n'a pas la permission %permission%"
+    cooldown:
+      active: "&e[Debug] L'item %item% du joueur %player% est en cooldown"
+    command:
+      executing: "&a[Debug] Le joueur %player% utilise %type% pour déclencher les commandes de l'item %item%"
+      command-result: "&7[Debug] Exécution de la commande %result%"
+    config:
+      no-items: "&e[Debug] Aucune configuration d'item dans le fichier de configuration"
+      items-loaded: "&a[Debug] Chargé %count% configurations d'items" 
