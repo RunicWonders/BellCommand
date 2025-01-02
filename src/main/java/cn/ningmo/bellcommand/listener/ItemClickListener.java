@@ -27,14 +27,20 @@ public class ItemClickListener implements Listener {
         
         // 输出 Floodgate 检测结果
         if (hasFloodgate) {
-            plugin.getLogger().info(plugin.getLanguageManager().getMessage("messages.plugin.floodgate-detected"));
+            plugin.getLogger().info(ColorUtils.translateConsoleColors(
+                plugin.getLanguageManager().getMessage("messages.plugin.floodgate-detected")
+            ));
         } else {
-            plugin.getLogger().info(plugin.getLanguageManager().getMessage("messages.plugin.floodgate-not-detected"));
+            plugin.getLogger().info(ColorUtils.translateConsoleColors(
+                plugin.getLanguageManager().getMessage("messages.plugin.floodgate-not-detected")
+            ));
         }
         
         if (plugin.isDebugEnabled()) {
-            plugin.getLogger().info(plugin.getLanguageManager().getMessage(
-                hasFloodgate ? "messages.debug.floodgate.detected" : "messages.debug.floodgate.not-detected"
+            plugin.getLogger().info(ColorUtils.translateConsoleColors(
+                plugin.getLanguageManager().getMessage(
+                    hasFloodgate ? "messages.debug.floodgate.detected" : "messages.debug.floodgate.not-detected"
+                )
             ));
         }
     }

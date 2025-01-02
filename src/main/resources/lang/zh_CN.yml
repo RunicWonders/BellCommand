@@ -157,6 +157,8 @@ messages:
     config:
       no-items: "&e[调试] 配置文件中没有物品配置"
       items-loaded: "&a[调试] 已加载 %count% 个物品配置"
+      performance:
+        slow-operation: "&e[性能] %message%: %time%ms"
   
   # 调试消息
   debug:

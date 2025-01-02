@@ -1,6 +1,7 @@
 package cn.ningmo.bellcommand.update;
 
 import cn.ningmo.bellcommand.BellCommand;
+import cn.ningmo.bellcommand.utils.ColorUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -54,8 +55,9 @@ public class UpdateManager {
     public void checkForUpdates() {
         if (!enabled || updateSource == null) {
             if (plugin.isDebugEnabled()) {
-                plugin.getLogger().info(plugin.getLanguageManager()
-                    .getMessage("messages.plugin.update.source-disabled"));
+                plugin.getLogger().info(ColorUtils.translateConsoleColors(
+                    plugin.getLanguageManager().getMessage("messages.plugin.update.source-disabled")
+                ));
             }
             return;
         }
@@ -66,51 +68,52 @@ public class UpdateManager {
                 return;
             }
             lastCheck = now;
-        }
 
-        plugin.getLogger().info(plugin.getLanguageManager()
-            .getMessage("messages.plugin.update.checking"));
+            if (plugin.isDebugEnabled()) {
+                plugin.getLogger().info(ColorUtils.translateConsoleColors(
+                    plugin.getLanguageManager().getMessage("messages.plugin.update.checking")
+                ));
+            }
 
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
-                if (plugin.isDebugEnabled()) {
-                    plugin.getLogger().info(plugin.getLanguageManager()
-                        .getMessage("messages.debug.update.check-start"));
-                }
-
                 UpdateInfo updateInfo = updateSource.checkUpdate();
                 if (updateInfo != null) {
                     if (updateInfo.isUpdateAvailable()) {
                         Map<String, String> placeholders = new HashMap<>();
                         placeholders.put("current", updateInfo.getCurrentVersion());
                         placeholders.put("latest", updateInfo.getLatestVersion());
-                        plugin.getLogger().info(plugin.getLanguageManager()
-                            .getMessage("messages.plugin.update.available", placeholders));
+                        plugin.getLogger().info(ColorUtils.translateConsoleColors(
+                            plugin.getLanguageManager().getMessage("messages.plugin.update.available", placeholders)
+                        ));
                         
+                        placeholders.clear();
                         placeholders.put("url", updateInfo.getDownloadUrl());
-                        plugin.getLogger().info(plugin.getLanguageManager()
-                            .getMessage("messages.plugin.update.download-url", placeholders));
+                        plugin.getLogger().info(ColorUtils.translateConsoleColors(
+                            plugin.getLanguageManager().getMessage("messages.plugin.update.download-url", placeholders)
+                        ));
                         
                         scheduleUpdateReminder(updateInfo);
                     } else {
                         if (plugin.isDebugEnabled()) {
                             Map<String, String> placeholders = new HashMap<>();
                             placeholders.put("version", updateInfo.getCurrentVersion());
-                            plugin.getLogger().info(plugin.getLanguageManager()
-                                .getMessage("messages.plugin.update.up-to-date", placeholders));
+                            plugin.getLogger().info(ColorUtils.translateConsoleColors(
+                                plugin.getLanguageManager().getMessage("messages.plugin.update.up-to-date", placeholders)
+                            ));
                         }
                     }
                 }
             } catch (Exception e) {
                 Map<String, String> placeholders = new HashMap<>();
                 placeholders.put("error", e.getMessage());
-                plugin.getLogger().warning(plugin.getLanguageManager()
-                    .getMessage("messages.plugin.update.check-failed", placeholders));
+                plugin.getLogger().warning(ColorUtils.translateConsoleColors(
+                    plugin.getLanguageManager().getMessage("messages.plugin.update.check-failed", placeholders)
+                ));
                 if (plugin.isDebugEnabled()) {
                     e.printStackTrace();
                 }
             }
-        });
+        }
     }
 
     private void scheduleUpdateReminder(UpdateInfo updateInfo) {

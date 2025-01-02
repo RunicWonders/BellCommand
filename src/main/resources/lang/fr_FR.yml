@@ -94,6 +94,8 @@ messages:
       config-reloaded: "§e[Debug] Fichier de configuration rechargé"
       config-version: "§e[Debug] Version de configuration: §6%version%"
       language-loaded: "§e[Debug] Fichier de langue chargé: §6%language%"
+      no-items: "&e[Debug] Aucune configuration d'item dans le fichier de configuration"
+      items-loaded: "&a[Debug] Chargé %count% configurations d'items"
       
     # Débogage d'événement d'interaction
     interact:
@@ -152,4 +154,10 @@ messages:
       command-result: "&7[Debug] Exécution de la commande %result%"
     config:
       no-items: "&e[Debug] Aucune configuration d'item dans le fichier de configuration"
-      items-loaded: "&a[Debug] Chargé %count% configurations d'items" 
+      items-loaded: "&a[Debug] Chargé %count% configurations d'items"
+      performance:
+        slow-operation: "&e[Performance] %message%: %time%ms"
+    
+    # Débogage de performance
+    performance:
+      slow-operation: "&e[Performance] %message%: %time%ms" 

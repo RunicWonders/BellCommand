@@ -94,6 +94,7 @@ messages:
       config-reloaded: "§e[デバッグ] 設定ファイルを再読み込みしました"
       config-version: "§e[デバッグ] 設定バージョン: §6%version%"
       language-loaded: "§e[デバッグ] 言語ファイルを読み込みました: §6%language%"
+      no-items: "&e[デバッグ] 設定ファイルにアイテム設定がありません"
       
     # インタラクションイベントデバッグ
     interact:
@@ -152,4 +153,6 @@ messages:
       command-result: "&7[デバッグ] コマンド実行%result%"
     config:
       no-items: "&e[デバッグ] 設定ファイルにアイテム設定がありません"
-      items-loaded: "&a[デバッグ] %count% 個のアイテム設定を読み込みました" 
+      items-loaded: "&a[デバッグ] %count% 個のアイテム設定を読み込みました"
+    performance:
+      slow-operation: "&e[パフォーマンス] %message%: %time%ms" 

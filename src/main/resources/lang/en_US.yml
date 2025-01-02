@@ -95,6 +95,8 @@ messages:
       config-reloaded: "§e[Debug] Configuration file reloaded"
       config-version: "§e[Debug] Config version: §6%version%"
       language-loaded: "§e[Debug] Language file loaded: §6%language%"
+      no-items: "&e[Debug] No item configurations in config file"
+      items-loaded: "&a[Debug] Loaded %count% item configurations"
       
     # Interaction event debug
     interact:
@@ -166,4 +168,10 @@ messages:
     # Config debug
     config:
       no-items: "&e[Debug] No item configurations in config file"
-      items-loaded: "&a[Debug] Loaded %count% item configurations" 
+      items-loaded: "&a[Debug] Loaded %count% item configurations"
+      performance:
+        slow-operation: "&e[Performance] %message%: %time%ms"
+      
+    # Performance debug
+    performance:
+      slow-operation: "&e[Performance] %message%: %time%ms" 

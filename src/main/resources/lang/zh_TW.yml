@@ -87,7 +87,7 @@ messages:
       config-reloaded: "§e[除錯] 設定檔已重新載入"
       config-version: "§e[除錯] 設定檔版本: §6%version%"
       language-loaded: "§e[除錯] 已載入語言檔: §6%language%"
-      
+      no-items: "&e[除錯] 設定檔中沒有物品設定"
     interact:
       event-start: "§e[除錯] 互動事件觸發 - 玩家: §6%player% §e動作: §6%action% §e蹲下: §6%sneaking% §e基岩版: §6%is_bedrock%"
       command-type: "§e[除錯] 執行指令類型: §6%type%"
@@ -141,4 +141,9 @@ messages:
       command-result: "&7[除錯] 指令執行%result%"
     config:
       no-items: "&e[除錯] 設定檔中沒有物品設定"
-      items-loaded: "&a[除錯] 已載入 %count% 個物品設定" 
+      items-loaded: "&a[除錯] 已載入 %count% 個物品設定"
+    performance:
+      slow-operation: "&e[效能] %message%: %time%ms"
+  
+  performance:
+    slow-operation: "&e[效能] %message%: %time%ms" 
