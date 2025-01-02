@@ -26,9 +26,11 @@ public class ItemClickListener implements Listener {
         try {
             Class.forName("org.geysermc.floodgate.api.FloodgateApi");
             detected = true;
-            plugin.getLogger().info(plugin.getLanguageManager().getMessage("messages.debug.floodgate.detected"));
+            plugin.getLogger().info(plugin.getLanguageManager().getMessage("messages.plugin.floodgate-detected"));
         } catch (ClassNotFoundException e) {
-            plugin.getLogger().info(plugin.getLanguageManager().getMessage("messages.debug.floodgate.not-detected"));
+            if (plugin.isDebugEnabled()) {
+                plugin.getLogger().info(plugin.getLanguageManager().getMessage("messages.debug.floodgate.not-detected"));
+            }
         }
         this.hasFloodgate = detected;
         
@@ -41,6 +43,18 @@ public class ItemClickListener implements Listener {
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         ItemStack item = event.getItem();
+        
+        // 检查是否是基岩版玩家
+        if (hasFloodgate && FloodgateApi.getInstance().isFloodgatePlayer(player.getUniqueId())) {
+            if (plugin.isDebugEnabled()) {
+                Map<String, String> placeholders = new HashMap<>();
+                placeholders.put("player", player.getName());
+                plugin.getLogger().info(plugin.getLanguageManager().getMessage(
+                    "messages.plugin.bedrock-player-detected",
+                    placeholders
+                ));
+            }
+        }
         
         if (plugin.isDebugEnabled()) {
             plugin.getLogger().info(String.format(
@@ -100,24 +114,7 @@ public class ItemClickListener implements Listener {
         }
 
         // 确定命令类型
-        String commandType;
-        if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
-            if (player.isSneaking()) {
-                commandType = "shift-left-click";
-            } else {
-                commandType = hasFloodgate && FloodgateApi.getInstance().isFloodgatePlayer(player.getUniqueId()) 
-                    ? "bedrock-left-click" 
-                    : "left-click";
-            }
-        } else {
-            if (player.isSneaking()) {
-                commandType = "shift-right-click";
-            } else {
-                commandType = hasFloodgate && FloodgateApi.getInstance().isFloodgatePlayer(player.getUniqueId())
-                    ? "bedrock-right-click"
-                    : "right-click";
-            }
-        }
+        String commandType = determineCommandType(event, player);
 
         if (plugin.isDebugEnabled()) {
             Map<String, String> placeholders = new HashMap<>();
@@ -133,5 +130,26 @@ public class ItemClickListener implements Listener {
         // 执行命令
         itemManager.executeCommands(player, commandItem, commandType);
         event.setCancelled(true);
+    }
+
+    private String determineCommandType(PlayerInteractEvent event, Player player) {
+        boolean isLeftClick = event.getAction() == Action.LEFT_CLICK_AIR || 
+                            event.getAction() == Action.LEFT_CLICK_BLOCK;
+        boolean isShifting = player.isSneaking();
+        boolean isBedrockPlayer = hasFloodgate && FloodgateApi.getInstance().isFloodgatePlayer(player.getUniqueId());
+
+        if (isBedrockPlayer) {
+            if (isShifting) {
+                return isLeftClick ? "bedrock-shift-left-click" : "bedrock-shift-right-click";
+            } else {
+                return isLeftClick ? "bedrock-left-click" : "bedrock-right-click";
+            }
+        } else {
+            if (isShifting) {
+                return isLeftClick ? "shift-left-click" : "shift-right-click";
+            } else {
+                return isLeftClick ? "left-click" : "right-click";
+            }
+        }
     }
 } 

@@ -9,11 +9,14 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class LanguageManager {
     private final BellCommand plugin;
     private FileConfiguration langConfig;
     private String language;
+    private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("%([^%]+)%");
 
     public LanguageManager(BellCommand plugin) {
         this.plugin = plugin;
@@ -48,7 +51,7 @@ public class LanguageManager {
     }
 
     private void saveDefaultLanguageFiles() {
-        String[] languages = {"zh_CN", "en_US", "zh_TW"};
+        String[] languages = {"zh_CN", "en_US", "zh_TW", "ja_JP", "fr_FR"};
         for (String lang : languages) {
             File langFile = new File(plugin.getDataFolder(), "lang/" + lang + ".yml");
             if (!langFile.exists()) {
@@ -66,12 +69,27 @@ public class LanguageManager {
     }
 
     public String getMessage(String path, Map<String, String> placeholders) {
-        String message = getMessage(path);
-        if (placeholders != null) {
-            for (Map.Entry<String, String> entry : placeholders.entrySet()) {
-                message = message.replace("%" + entry.getKey() + "%", entry.getValue());
-            }
+        String message = langConfig.getString(path);
+        if (message == null) {
+            return "§c缺少语言键: " + path;
         }
+
+        // 先处理占位符，再处理颜色代码
+        if (placeholders != null) {
+            StringBuffer result = new StringBuffer();
+            Matcher matcher = PLACEHOLDER_PATTERN.matcher(message);
+            
+            while (matcher.find()) {
+                String placeholder = matcher.group(1);
+                String replacement = placeholders.getOrDefault(placeholder, matcher.group());
+                // 转义特殊字符
+                replacement = Matcher.quoteReplacement(replacement);
+                matcher.appendReplacement(result, replacement);
+            }
+            matcher.appendTail(result);
+            message = result.toString();
+        }
+
         return ColorUtils.translateColors(message);
     }
 

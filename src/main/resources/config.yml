@@ -168,8 +168,7 @@ auto-give:
   join: true  # 进服时自动给予 (Auto-give on join)
   respawn: true  # 重生时自动给予 (Auto-give on respawn)
   items:  # 要自动给予的物品ID列表 (List of item IDs to auto-give)
-    - "example_item"
-    - "another_item"
+    - "home"
 
 auto-cleanup:
   enabled: true  # 是否自动清理掉落的命令物品 (Whether to automatically clean up dropped command items)
