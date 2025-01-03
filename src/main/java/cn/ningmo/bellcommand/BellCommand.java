@@ -36,7 +36,9 @@ public class BellCommand extends JavaPlugin {
             
             // 检查配置文件版本
             if (!checkConfigVersion()) {
-                getLogger().severe(languageManager.getMessage("messages.plugin.config.version-mismatch"));
+                getLogger().severe(ColorUtils.translateConsoleColors(
+                    languageManager.getMessage("messages.plugin.config.version-mismatch")
+                ));
                 getServer().getPluginManager().disablePlugin(this);
                 return;
             }
@@ -56,14 +58,18 @@ public class BellCommand extends JavaPlugin {
             // 设置调试模式
             debug = getConfig().getBoolean("debug", false);
             if (debug) {
-                getLogger().info(languageManager.getMessage("messages.plugin.debug-enabled"));
+                getLogger().info(ColorUtils.translateConsoleColors(
+                    languageManager.getMessage("messages.plugin.debug-enabled")
+                ));
             }
             
             // 输出启动信息
             logStartupInfo();
             
         } catch (Exception e) {
-            getLogger().severe("插件启动失败: " + e.getMessage());
+            getLogger().severe(ColorUtils.translateConsoleColors(
+                languageManager.getMessage("messages.plugin.startup-failed", Map.of("error", e.getMessage()))
+            ));
             if (debug) {
                 e.printStackTrace();
             }

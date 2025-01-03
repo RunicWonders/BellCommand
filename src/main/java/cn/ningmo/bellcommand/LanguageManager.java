@@ -15,7 +15,6 @@ import java.util.regex.Pattern;
 public class LanguageManager {
     private final BellCommand plugin;
     private FileConfiguration langConfig;
-    private String language;
     private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("%([^%]+)%");
 
     public LanguageManager(BellCommand plugin) {
@@ -24,39 +23,34 @@ public class LanguageManager {
     }
 
     private void loadLanguage() {
-        // 获取配置文件中设置的语言
-        language = plugin.getConfig().getString("language", "zh_CN");
-        
-        // 保存默认语言文件
-        saveDefaultLanguageFiles();
+        // 确保语言文件目录存在
+        File langDir = new File(plugin.getDataFolder(), "lang");
+        if (!langDir.exists()) {
+            langDir.mkdirs();
+        }
         
         // 加载语言文件
-        File langFile = new File(plugin.getDataFolder(), "lang/" + language + ".yml");
+        File langFile = new File(langDir, "messages.yml");
         if (!langFile.exists()) {
-            plugin.getLogger().warning("找不到语言文件: " + language + ".yml，将使用默认语言");
-            language = "zh_CN";
-            langFile = new File(plugin.getDataFolder(), "lang/zh_CN.yml");
+            try {
+                plugin.saveResource("lang/messages.yml", false);
+            } catch (Exception e) {
+                plugin.getLogger().warning("找不到语言文件: messages.yml，将使用默认语言");
+                // 如果找不到语言文件，创建一个空的配置
+                langConfig = new YamlConfiguration();
+                return;
+            }
         }
 
         langConfig = YamlConfiguration.loadConfiguration(langFile);
 
         // 加载默认语言文件作为后备
-        InputStream defLangStream = plugin.getResource("lang/" + language + ".yml");
+        InputStream defLangStream = plugin.getResource("lang/messages.yml");
         if (defLangStream != null) {
             YamlConfiguration defLangConfig = YamlConfiguration.loadConfiguration(
                 new InputStreamReader(defLangStream, StandardCharsets.UTF_8)
             );
             langConfig.setDefaults(defLangConfig);
-        }
-    }
-
-    private void saveDefaultLanguageFiles() {
-        String[] languages = {"zh_CN", "en_US", "zh_TW", "ja_JP", "fr_FR"};
-        for (String lang : languages) {
-            File langFile = new File(plugin.getDataFolder(), "lang/" + lang + ".yml");
-            if (!langFile.exists()) {
-                plugin.saveResource("lang/" + lang + ".yml", false);
-            }
         }
     }
 
@@ -95,9 +89,5 @@ public class LanguageManager {
 
     public void reload() {
         loadLanguage();
-    }
-
-    public String getLanguage() {
-        return language;
     }
 } 
