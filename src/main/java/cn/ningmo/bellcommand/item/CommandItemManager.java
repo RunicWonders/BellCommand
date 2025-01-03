@@ -123,8 +123,9 @@ public class CommandItemManager {
         }
 
         for (CommandItem.CommandEntry command : commands) {
+            String processedCommand = null;
             try {
-                String processedCommand = command.getCommand()
+                processedCommand = command.getCommand()
                     .replace("%player%", player.getName())
                     .replace("%uuid%", player.getUniqueId().toString());
 
@@ -143,13 +144,20 @@ public class CommandItemManager {
 
                 if (plugin.isDebugEnabled()) {
                     Map<String, String> placeholders = new HashMap<>();
-                    placeholders.put("result", success ? "成功" : "失败");
-                    plugin.getLogger().info(plugin.getLanguageManager()
-                        .getMessage("messages.debug.command.command-result", placeholders));
+                    placeholders.put("command", processedCommand);
+                    placeholders.put("result", success ? "success" : "failed");
+                    plugin.getLogger().info(ColorUtils.translateConsoleColors(
+                        plugin.getLanguageManager().getMessage("messages.debug.command.command-result", placeholders)
+                    ));
                 }
             } catch (Exception e) {
                 if (plugin.isDebugEnabled()) {
-                    plugin.getLogger().warning("执行命令时出错: " + e.getMessage());
+                    Map<String, String> placeholders = new HashMap<>();
+                    placeholders.put("command", processedCommand != null ? processedCommand : "unknown");
+                    placeholders.put("error", e.getMessage());
+                    plugin.getLogger().warning(ColorUtils.translateConsoleColors(
+                        plugin.getLanguageManager().getMessage("messages.error.command-error", placeholders)
+                    ));
                     e.printStackTrace();
                 }
             }

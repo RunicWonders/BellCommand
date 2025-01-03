@@ -11,6 +11,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import cn.ningmo.bellcommand.BellCommand;
 import cn.ningmo.bellcommand.item.CommandItem;
 import cn.ningmo.bellcommand.item.CommandItemManager;
+import cn.ningmo.bellcommand.utils.ColorUtils;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -68,7 +69,12 @@ public class AutoGiveListener implements Listener {
                 public void run() {
                     event.getItemDrop().remove();
                     if (plugin.isDebugEnabled()) {
-                        plugin.getLogger().info("已清理掉玩家 " + event.getPlayer().getName() + " 丢弃的命令物品");
+                        Map<String, String> placeholders = new HashMap<>();
+                        placeholders.put("player", event.getPlayer().getName());
+                        placeholders.put("item", commandItem.getId());
+                        plugin.getLogger().info(ColorUtils.translateConsoleColors(
+                            plugin.getLanguageManager().getMessage("messages.debug.item.removed", placeholders)
+                        ));
                     }
                 }
             }.runTaskLater(plugin, delay);

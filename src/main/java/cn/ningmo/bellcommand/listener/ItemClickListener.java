@@ -50,20 +50,33 @@ public class ItemClickListener implements Listener {
         Player player = event.getPlayer();
         ItemStack item = event.getItem();
 
+        // 检查是否是基岩版玩家
+        if (hasFloodgate && FloodgateApi.getInstance().isFloodgatePlayer(player.getUniqueId())) {
+            if (plugin.isDebugEnabled()) {
+                Map<String, String> placeholders = new HashMap<>();
+                placeholders.put("player", player.getName());
+                plugin.getLogger().info(ColorUtils.translateConsoleColors(
+                    plugin.getLanguageManager().getMessage("messages.plugin.bedrock-player-detected", placeholders)
+                ));
+            }
+        }
+
+        // 检查物品是否为空
         if (item == null) {
             if (plugin.isDebugEnabled()) {
                 plugin.getLogger().info(ColorUtils.translateConsoleColors(
-                    plugin.getLanguageManager().getMessage("messages.debug.interaction.no-item")
+                    plugin.getLanguageManager().getMessage("messages.debug.interact.no-item")
                 ));
             }
             return;
         }
 
+        // 获取命令物品
         CommandItem commandItem = itemManager.getCommandItem(item);
         if (commandItem == null) {
             if (plugin.isDebugEnabled()) {
                 plugin.getLogger().info(ColorUtils.translateConsoleColors(
-                    plugin.getLanguageManager().getMessage("messages.debug.interaction.not-command-item")
+                    plugin.getLanguageManager().getMessage("messages.debug.interact.not-command-item")
                 ));
             }
             return;
@@ -114,6 +127,7 @@ public class ItemClickListener implements Listener {
             placeholders.put("item", commandItem.getId());
             placeholders.put("action", event.getAction().toString());
             placeholders.put("sneaking", String.valueOf(player.isSneaking()));
+            placeholders.put("is_bedrock", String.valueOf(hasFloodgate && FloodgateApi.getInstance().isFloodgatePlayer(player.getUniqueId())));
             plugin.getLogger().info(ColorUtils.translateConsoleColors(
                 plugin.getLanguageManager().getMessage("messages.debug.interact.event-start", placeholders)
             ));

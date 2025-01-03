@@ -96,7 +96,8 @@ messages:
       config-version: "§e[Debug] Config version: §6%version%"
       language-loaded: "§e[Debug] Language file loaded: §6%language%"
       no-items: "&e[Debug] No item configurations in config file"
-      items-loaded: "&a[Debug] Loaded %count% item configurations"
+      performance:
+        slow-operation: "&e[Performance] %message%: %time%ms"
       
     # Interaction event debug
     interact:
@@ -109,6 +110,8 @@ messages:
       cooldown-check: "§e[Debug] Checking cooldown: §6%seconds%§e seconds"
       permission-check: "§e[Debug] Permission check: §6%result%"
       command-count: "§e[Debug] Commands to execute: §6%count%"
+      no-item: "§7[Debug] No item in interaction event"
+      not-command-item: "§7[Debug] Interacted item is not a command item"
       
     # Command execution debug
     command:
@@ -119,6 +122,8 @@ messages:
       execute-as-console: "§e[Debug] Executing as console: §6%command%"
       execute-as-player: "§e[Debug] Executing as player: §6%command%"
       cooldown-start: "§e[Debug] Starting cooldown: §6%cooldown%§e seconds"
+      executing: "&a[Debug] Player %player% using %type% triggered commands for item %item%"
+      command-result: "&7[Debug] Command execution %result%"
       
     # Update source debug
     update:
@@ -132,46 +137,28 @@ messages:
       
     # Item debug
     item:
-      dropped: "§7[BellCommand] Player %player% dropped command item %item%"
-      removed: "§7[BellCommand] Command item %item% has been cleaned up"
-      not-found: "§c[BellCommand] Command item with ID %id% not found"
-      auto-given: "§7[BellCommand] Automatically gave command item %item% to player %player%"
-      
+      dropped: "§7[Debug] Player %player% dropped command item %item%"
+      removed: "§7[Debug] Command item %item% has been cleaned up"
+      not-found: "§c[Debug] Command item with ID %id% not found"
+      auto-given: "§7[Debug] Automatically gave command item %item% to player %player%"
+    
     # Floodgate debug
     floodgate:
       detected: "&a[Debug] Floodgate API detected, Bedrock player commands will be supported"
       not-detected: "&e[Debug] Floodgate API not detected, Bedrock players will use Java commands"
-      
+    
     # Listener debug
     listener:
       initialized: "&a[Debug] Item click listener initialized"
-      
-    # Interaction debug
-    interaction:
-      detected: "&7[Debug] Player %player% triggered interaction event"
-      no-item: "&7[Debug] No item in interaction event"
-      not-command-item: "&7[Debug] Interacted item is not a command item"
-      
+    
     # Permission debug
     permission:
       denied: "&c[Debug] Player %player% lacks permission %permission%"
-      
+    
     # Cooldown debug
     cooldown:
       active: "&e[Debug] Player %player%'s item %item% is on cooldown"
-      
-    # Command debug
-    command:
-      executing: "&a[Debug] Player %player% using %type% triggered commands for item %item%"
-      command-result: "&7[Debug] Command execution %result%"
-      
-    # Config debug
-    config:
-      no-items: "&e[Debug] No item configurations in config file"
-      items-loaded: "&a[Debug] Loaded %count% item configurations"
-      performance:
-        slow-operation: "&e[Performance] %message%: %time%ms"
-      
-    # Performance debug
-    performance:
-      slow-operation: "&e[Performance] %message%: %time%ms" 
+  
+  # Performance monitoring
+  performance:
+    slow-operation: "&e[Performance] %message%: %time%ms" 

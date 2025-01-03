@@ -98,6 +98,9 @@ messages:
       config-reloaded: "§e[调试] 配置文件已重新加载"
       config-version: "§e[调试] 配置文件版本: §6%version%"
       language-loaded: "§e[调试] 已加载语言文件: §6%language%"
+      no-items: "&e[调试] 配置文件中没有物品配置"
+      performance:
+        slow-operation: "&e[性能] %message%: %time%ms"
       
     # 交互事件调试
     interact:
@@ -122,6 +125,8 @@ messages:
       execute-as-console: "§e[调试] 以控制台身份执行命令: §6%command%"
       execute-as-player: "§e[调试] 以玩家身份执行命令: §6%command%"
       cooldown-start: "§e[调试] 开始计算冷却时间: §6%cooldown%§e秒"
+      executing: "&a[调试] 玩家 %player% 使用 %type% 触发物品 %item% 的命令"
+      command-result: "&7[调试] 命令执行%result%"
       
     # 更新源调试信息
     update:
@@ -135,52 +140,28 @@ messages:
       
     # 物品相关调试
     item:
-      dropped: "§7[BellCommand] 玩家 %player% 丢弃了命令物品 %item%"
-      removed: "§7[BellCommand] 命令物品 %item% 已被清理"
-      not-found: "§c[BellCommand] 找不到ID为 %id% 的命令物品"
-      auto-given: "§7[BellCommand] 自动给予玩家 %player% 命令物品 %item%"
+      dropped: "§7[调试] 玩家 %player% 丢弃了命令物品 %item%"
+      removed: "§7[调试] 命令物品 %item% 已被清理"
+      not-found: "§c[调试] 找不到ID为 %id% 的命令物品"
+      auto-given: "§7[调试] 自动给予玩家 %player% 命令物品 %item%"
     
-    # 调试消息
+    # Floodgate 相关调试
     floodgate:
       detected: "&a[调试] 检测到 Floodgate API，将支持基岩版玩家命令"
       not-detected: "&e[调试] 未检测到 Floodgate API，基岩版玩家将使用 Java 版命令"
+    
+    # 监听器调试
     listener:
       initialized: "&a[调试] 物品点击监听器已初始化"
-    interaction:
-      detected: "&7[调试] 玩家 %player% 触发了交互事件"
-      no-item: "&7[调试] 交互事件中没有物品"
-      not-command-item: "&7[调试] 交互的物品不是命令物品"
+    
+    # 权限调试
     permission:
       denied: "&c[调试] 玩家 %player% 没有权限 %permission%"
+    
+    # 冷却调试
     cooldown:
       active: "&e[调试] 玩家 %player% 的物品 %item% 正在冷却中"
-    command:
-      executing: "&a[调试] 玩家 %player% 使用 %type% 触发物品 %item% 的命令"
-      command-result: "&7[调试] 命令执行%result%"
-    config:
-      no-items: "&e[调试] 配置文件中没有物品配置"
-      items-loaded: "&a[调试] 已加载 %count% 个物品配置"
-      performance:
-        slow-operation: "&e[性能] %message%: %time%ms"
   
-  # 调试消息
-  debug:
-    floodgate:
-      detected: "&a[调试] 检测到 Floodgate API，将支持基岩版玩家命令"
-      not-detected: "&e[调试] 未检测到 Floodgate API，基岩版玩家将使用 Java 版命令"
-    listener:
-      initialized: "&a[调试] 物品点击监听器已初始化"
-    interaction:
-      detected: "&7[调试] 玩家 %player% 触发了交互事件"
-      no-item: "&7[调试] 交互事件中没有物品"
-      not-command-item: "&7[调试] 交互的物品不是命令物品"
-    permission:
-      denied: "&c[调试] 玩家 %player% 没有权限 %permission%"
-    cooldown:
-      active: "&e[调试] 玩家 %player% 的物品 %item% 正在冷却中"
-    command:
-      executing: "&a[调试] 玩家 %player% 使用 %type% 触发物品 %item% 的命令"
-      command-result: "&7[调试] 命令执行%result%"
-    config:
-      no-items: "&e[调试] 配置文件中没有物品配置"
-      items-loaded: "&a[调试] 已加载 %count% 个物品配置" 
+  # 性能监控
+  performance:
+    slow-operation: "&e[性能] %message%: %time%ms" 
