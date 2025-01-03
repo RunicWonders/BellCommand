@@ -12,6 +12,7 @@ messages:
     loading-default-config: "&eデフォルト設定を読み込んでいます..."
     config-backup-success: "&7設定ファイルをバックアップしました: config.backup.yml"
     config-error: "&c設定ファイルの読み込み中にエラーが発生しました: %error%"
+    auto-give: "§a[BellCommand] コマンドアイテム §6%item% §aを受け取りました"
     
     config:
       version-not-found: "§c[BellCommand] 設定バージョンが見つかりません。古いバージョンの可能性があります"

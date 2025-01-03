@@ -12,6 +12,7 @@ messages:
     loading-default-config: "&eTrying to load default configuration..."
     config-backup-success: "&7Configuration file backed up to: config.backup.yml"
     config-error: "&cError loading configuration file: %error%"
+    auto-give: "§a[BellCommand] You received command item §6%item%"
     
     config:
       version-not-found: "§c[BellCommand] Configuration version not found, possibly an old version"
@@ -71,7 +72,6 @@ messages:
     
     # Usage restriction messages
     cooldown: "&ePlease wait %time% seconds before using again"
-    auto-give: "§a[BellCommand] You received command item §6%item%"
     
   # Error messages
   error:

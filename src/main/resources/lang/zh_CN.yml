@@ -12,6 +12,7 @@ messages:
     loading-default-config: "&e尝试加载默认配置..."
     config-backup-success: "&7配置文件已备份到: config.backup.yml"
     config-error: "&c加载配置文件时发生错误: %error%"
+    auto-give: "§a[BellCommand] 你获得了命令物品 §6%item%"
     
     config:
       version-not-found: "§c[BellCommand] 未找到配置文件版本号，可能是旧版本配置文件"
@@ -109,6 +110,8 @@ messages:
       cooldown-check: "§e[调试] 检查冷却时间: §6%seconds%§e秒"
       permission-check: "§e[调试] 权限检查: §6%result%"
       command-count: "§e[调试] 待执行命令数: §6%count%"
+      no-item: "§7[调试] 交互事件中没有物品"
+      not-command-item: "§7[调试] 交互的物品不是命令物品"
       
     # 命令执行调试
     command:

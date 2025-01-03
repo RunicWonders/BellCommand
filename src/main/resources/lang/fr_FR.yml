@@ -12,6 +12,7 @@ messages:
     loading-default-config: "&eChargement de la configuration par défaut..."
     config-backup-success: "&7Fichier de configuration sauvegardé dans: config.backup.yml"
     config-error: "&cErreur lors du chargement du fichier de configuration: %error%"
+    auto-give: "§a[BellCommand] Vous avez reçu l'item de commande §6%item%"
     
     config:
       version-not-found: "§c[BellCommand] Version de configuration non trouvée, peut-être une ancienne version"
