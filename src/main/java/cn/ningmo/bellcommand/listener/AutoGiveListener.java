@@ -93,7 +93,9 @@ public class AutoGiveListener implements Listener {
                     Map<String, String> placeholders = new HashMap<>();
                     placeholders.put("player", player.getName());
                     placeholders.put("item", item.getName());
-                    plugin.getLogger().info(plugin.getLanguageManager().getMessage("messages.auto-give", placeholders));
+                    plugin.getLogger().info(ColorUtils.translateConsoleColors(
+                        plugin.getLanguageManager().getMessage("messages.plugin.auto-give", placeholders)
+                    ));
                 }
             }
         }

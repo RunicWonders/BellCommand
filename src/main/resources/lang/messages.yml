@@ -74,8 +74,6 @@ messages:
     # 使用限制消息
     cooldown: "&e请等待 %time% 秒后再使用"
     
-    auto-give: "§a[BellCommand] 你获得了命令物品 §6%item%"
-    
   # 错误消息
   error:
     no-permission-use: "&c你没有权限使用此物品"
@@ -126,7 +124,6 @@ messages:
       execute-as-player: "§e[调试] 以玩家身份执行命令: §6%command%"
       cooldown-start: "§e[调试] 开始计算冷却时间: §6%cooldown%§e秒"
       executing: "&a[调试] 玩家 %player% 使用 %type% 触发物品 %item% 的命令"
-      command-result: "&7[调试] 命令执行%result%"
       
     # 更新源调试信息
     update:
