@@ -13,16 +13,17 @@ jobs:
     permissions:
       contents: write
       packages: write
+      actions: write
 
     steps:
     - uses: actions/checkout@v4
-    
-    - name: Delete Package Versions
-      uses: actions/delete-package-versions@v4
       with:
-        package-name: 'cn.ningmo.bellcommand'
-        package-type: 'maven'
-        min-versions-to-keep: 1
+        fetch-depth: 0
+    
+    - name: Get Commit Message
+      id: commit
+      run: |
+        echo "message=$(git log -1 --pretty=%B)" >> $GITHUB_OUTPUT
         
     - name: Set up JDK 21
       uses: actions/setup-java@v4
@@ -41,8 +42,13 @@ jobs:
         name: BellCommand
         path: target/bellcommand-*.jar
         
-    - name: Publish to GitHub Packages Apache Maven
-      run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: auto-release
+        name: Auto Release
+        body: |
+          ${{ steps.commit.outputs.message }}
+        files: target/bellcommand-*.jar
       env:
-        GITHUB_TOKEN: ${{ github.token }}
-        GITHUB_REPOSITORY: ${{ github.repository }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
