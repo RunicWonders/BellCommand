@@ -86,15 +86,35 @@ public class AutoGiveListener implements Listener {
         for (String itemId : itemIds) {
             CommandItem item = itemManager.getItem(itemId);
             if (item != null) {
-                ItemStack itemStack = item.createItemStack();
-                player.getInventory().addItem(itemStack);
+                // 检查玩家背包中是否已经有这个命令物品
+                boolean hasItem = false;
+                for (ItemStack invItem : player.getInventory().getContents()) {
+                    if (invItem != null && itemManager.getCommandItem(invItem) != null && 
+                        itemManager.getCommandItem(invItem).getId().equals(itemId)) {
+                        hasItem = true;
+                        break;
+                    }
+                }
                 
-                if (plugin.isDebugEnabled()) {
+                // 如果玩家没有这个物品，才给予
+                if (!hasItem) {
+                    ItemStack itemStack = item.createItemStack();
+                    player.getInventory().addItem(itemStack);
+                    
+                    if (plugin.isDebugEnabled()) {
+                        Map<String, String> placeholders = new HashMap<>();
+                        placeholders.put("player", player.getName());
+                        placeholders.put("item", item.getName());
+                        plugin.getLogger().info(ColorUtils.translateConsoleColors(
+                            plugin.getLanguageManager().getMessage("messages.plugin.auto-give", placeholders)
+                        ));
+                    }
+                } else if (plugin.isDebugEnabled()) {
                     Map<String, String> placeholders = new HashMap<>();
                     placeholders.put("player", player.getName());
                     placeholders.put("item", item.getName());
                     plugin.getLogger().info(ColorUtils.translateConsoleColors(
-                        plugin.getLanguageManager().getMessage("messages.plugin.auto-give", placeholders)
+                        plugin.getLanguageManager().getMessage("messages.debug.item.auto-given", placeholders)
                     ));
                 }
             }
