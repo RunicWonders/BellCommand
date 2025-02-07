@@ -86,6 +86,7 @@ messages:
     player-not-found: "&c找不到玩家: %player%"
     item-not-found: "&c找不到物品: %item%"
     invalid-amount: "&c无效的数量"
+    inventory-full: "&c你的背包已满，无法自动给予物品: %item%"
   
   # 调试信息
   debug:
@@ -161,4 +162,4 @@ messages:
   
   # 性能监控
   performance:
-    slow-operation: "&e[性能] %message%: %time%ms" 
+    slow-operation: "&e[性能] %message%: %time%ms"
