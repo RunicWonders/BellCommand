@@ -13,6 +13,9 @@ messages:
     config-backup-success: "&7配置文件已备份到: config.backup.yml"
     config-error: "&c加载配置文件时发生错误: %error%"
     auto-give: "§a[BellCommand] 你获得了命令物品 §6%item%"
+    first-join:
+      welcome: "&a欢迎首次来到服务器！你获得了一些特殊物品"
+      items-given: "&e你获得了以下物品："
     
     config:
       version-not-found: "§c[BellCommand] 未找到配置文件版本号，可能是旧版本配置文件"
@@ -72,7 +75,7 @@ messages:
     no-item-found: "&c未找到命令物品"
     
     # 使用限制消息
-    cooldown: "&e请等待 %time% 秒后再使用"
+    cooldown: "&e请等待 %.1f 秒后再使用"
     
   # 错误消息
   error:
@@ -142,6 +145,7 @@ messages:
       removed: "§7[调试] 命令物品 %item% 已被清理"
       not-found: "§c[调试] 找不到ID为 %id% 的命令物品"
       auto-given: "§7[调试] 自动给予玩家 %player% 命令物品 %item%"
+      first-join-given: "&7[调试] 首次加入玩家 %player% 获得了物品 %item%"
     
     # Floodgate 相关调试
     floodgate:
@@ -158,7 +162,8 @@ messages:
     
     # 冷却调试
     cooldown:
-      active: "&e[调试] 玩家 %player% 的物品 %item% 正在冷却中"
+      active: "&e[调试] 玩家 %player% 的物品 %item% 正在冷却中 (剩余: %.1f秒)"
+      check: "§e[调试] 检查冷却时间 - 玩家: §6%player% §e物品: §6%item% §e上次使用: §6%last_use% §e当前: §6%current%"
   
   # 性能监控
   performance:

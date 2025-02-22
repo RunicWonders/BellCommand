@@ -16,7 +16,7 @@ public class CommandItem {
     private final String name;
     private final List<String> lore;
     private final String permission;
-    private final int cooldown;
+    private final double cooldown;
     private final Map<String, List<CommandEntry>> commands;
 
     public static class CommandEntry {
@@ -51,7 +51,7 @@ public class CommandItem {
         this.lore = ColorUtils.translateColors(rawLore);
         
         this.permission = config.getString("permission", "");
-        this.cooldown = config.getInt("cooldown", 0);
+        this.cooldown = config.getDouble("cooldown", 0.0);
         this.commands = new HashMap<>();
         
         // 加载命令
@@ -93,7 +93,7 @@ public class CommandItem {
         return permission;
     }
 
-    public int getCooldown() {
+    public double getCooldown() {
         return cooldown;
     }
 

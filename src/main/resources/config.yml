@@ -1,5 +1,5 @@
 # BellCommand 配置文件 (BellCommand Configuration File)
-# 版本: 1.2.1 (Version: 1.2.0)
+# 版本: 1.2.2 (Version: 1.2.2)
 # 作者: 柠枺 (Author: Ningmo)
 
 # 配置文件说明 (Configuration File Instructions):
@@ -108,17 +108,17 @@ items:
     item-id: CLOCK
     name: "&6菜单 (&6Menu)"
     lore:
-      - "&7左键点击: &f打开菜单 (&7Left-click: &fOpen Menu)"
-      - "&7右键点击: &f打开菜单 (&7Right-click: &fOpen Menu)"
-      - "&7蹲下左键: &f打开高级菜单 (&7Crouch + Left-click: &fOpen Advanced Menu)"
-      - "&7蹲下右键: &f打开设置菜单 (&7Crouch + Right-click: &fOpen Settings Menu)"
-      - "&7基岩版左键: &f打开基岩版菜单 (&7Bedrock Edition Left-click: &fOpen Bedrock Menu)"
-      - "&7基岩版右键: &f打开基岩版设置 (&7Bedrock Edition Right-click: &fOpen Bedrock Settings)"
-      - "&7基岩版蹲下左键: &f打开基岩版高级菜单 (&7Bedrock Edition Crouch + Left-click: &fOpen Advanced Bedrock Menu)"
-      - "&7基岩版蹲下右键: &f打开基岩版高级设置 (&7Bedrock Edition Crouch + Right-click: &fOpen Advanced Bedrock Settings)"
-      - "&e冷却时间: &f3秒 (&eCooldown Time: &f3 seconds)"
+      - "&7左键点击: &f打开菜单"
+      - "&7右键点击: &f打开菜单"
+      - "&7蹲下左键: &f打开高级菜单"
+      - "&7蹲下右键: &f打开设置菜单"
+      - "&7基岩版左键: &f打开基岩版菜单"
+      - "&7基岩版右键: &f打开基岩版设置"
+      - "&7基岩版蹲下左键: &f打开基岩版高级菜单"
+      - "&7基岩版蹲下右键: &f打开基岩版高级设置"
+      - "&e冷却时间: &f1.5秒"
     permission: "bellcommand.item.home"
-    cooldown: 3
+    cooldown: 1.5  # 冷却时间(秒)，支持小数点，基于玩家游戏时间计算
     commands:
       left-click:
         1:
@@ -164,11 +164,17 @@ items:
 # 8. 确保所有命令都是服务器支持的 (Ensure all commands are supported by the server)
 
 auto-give:
-  enabled: true  # 是否启用自动给予功能 (Whether to enable auto-give feature)
-  join: true  # 进服时自动给予 (Auto-give on join)
-  respawn: true  # 重生时自动给予 (Auto-give on respawn)
-  items:  # 要自动给予的物品ID列表 (List of item IDs to auto-give)
+  enabled: true
+  join: true
+  first-join: true  # 是否仅在首次加入时给予
+  respawn: true
+  items:
     - "home"
+  first-join-items:  # 首次加入时额外给予的物品
+    - "tutorial_book"
+    - "welcome_kit"
+  save-history: true  # 是否保存玩家获取记录
+  history-file: "player-history.yml"  # 玩家记录文件名
 
 auto-cleanup:
   enabled: true  # 是否自动清理掉落的命令物品 (Whether to automatically clean up dropped command items)

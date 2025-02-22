@@ -5,13 +5,13 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.awt.Color;
 
 public class ColorUtils {
     private static final Pattern HEX_PATTERN = Pattern.compile("#[a-fA-F0-9]{6}");
-    private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("%([^%]+)%");
 
     /**
-     * 转换颜色代码（支持 & 和 § 以及 RGB 十六进制颜色）
+     * 转换颜色代码（支持 & 和 §）
      * @param text 要转换的文本
      * @return 转换后的文本
      */
@@ -20,14 +20,14 @@ public class ColorUtils {
             return "";
         }
 
-        // 转换十六进制颜色代码
+        // 1.13 不支持十六进制颜色，将其转换为最接近的传统颜色
         Matcher matcher = HEX_PATTERN.matcher(text);
         StringBuffer buffer = new StringBuffer();
         
         while (matcher.find()) {
             String hexColor = matcher.group();
-            String bukkitColor = hexColor.replace("#", "§x§" + String.join("§", hexColor.substring(1).split("")));
-            matcher.appendReplacement(buffer, bukkitColor);
+            ChatColor nearestColor = getNearestChatColor(hexColor);
+            matcher.appendReplacement(buffer, "&" + nearestColor.getChar());
         }
         matcher.appendTail(buffer);
         text = buffer.toString();
@@ -38,8 +38,6 @@ public class ColorUtils {
 
     /**
      * 转换列表中所有文本的颜色代码
-     * @param list 要转换的文本列表
-     * @return 转换后的文本列表
      */
     public static List<String> translateColors(List<String> list) {
         if (list == null) {
@@ -54,31 +52,26 @@ public class ColorUtils {
     }
 
     /**
-     * 转换控制台颜色代码（仅支持 & 和 §）
-     * @param text 要转换的文本
-     * @return 转换后的文本
+     * 转换控制台颜色代码
      */
     public static String translateConsoleColors(String text) {
         if (text == null) {
             return "";
         }
-        String result = text;
         
         // 转换十六进制颜色代码为近似的传统颜色代码
-        Matcher matcher = HEX_PATTERN.matcher(result);
+        Matcher matcher = HEX_PATTERN.matcher(text);
         while (matcher.find()) {
             String hexColor = matcher.group();
             ChatColor nearestColor = getNearestChatColor(hexColor);
-            result = result.replace(hexColor, "&" + nearestColor.getChar());
+            text = text.replace(hexColor, "&" + nearestColor.getChar());
         }
         
-        return ChatColor.translateAlternateColorCodes('&', result);
+        return ChatColor.translateAlternateColorCodes('&', text);
     }
 
     /**
      * 移除所有颜色代码
-     * @param text 要处理的文本
-     * @return 移除颜色代码后的文本
      */
     public static String stripColors(String text) {
         if (text == null) {
@@ -89,8 +82,6 @@ public class ColorUtils {
 
     /**
      * 获取最接近的传统颜色代码
-     * @param hexColor 十六进制颜色代码
-     * @return 最接近的ChatColor
      */
     private static ChatColor getNearestChatColor(String hexColor) {
         // 移除#号
@@ -107,7 +98,7 @@ public class ColorUtils {
         // 遍历所有传统颜色找到最接近的
         for (ChatColor color : ChatColor.values()) {
             if (color.isColor()) {
-                java.awt.Color javaColor = color.asBungee().getColor();
+                Color javaColor = getColorFromChatColor(color);
                 double distance = getColorDistance(r, g, b, 
                     javaColor.getRed(), javaColor.getGreen(), javaColor.getBlue());
                 
@@ -119,6 +110,31 @@ public class ColorUtils {
         }
         
         return nearestColor;
+    }
+
+    /**
+     * 从ChatColor获取java.awt.Color
+     */
+    private static Color getColorFromChatColor(ChatColor chatColor) {
+        switch (chatColor) {
+            case BLACK: return new Color(0x000000);
+            case DARK_BLUE: return new Color(0x0000AA);
+            case DARK_GREEN: return new Color(0x00AA00);
+            case DARK_AQUA: return new Color(0x00AAAA);
+            case DARK_RED: return new Color(0xAA0000);
+            case DARK_PURPLE: return new Color(0xAA00AA);
+            case GOLD: return new Color(0xFFAA00);
+            case GRAY: return new Color(0xAAAAAA);
+            case DARK_GRAY: return new Color(0x555555);
+            case BLUE: return new Color(0x5555FF);
+            case GREEN: return new Color(0x55FF55);
+            case AQUA: return new Color(0x55FFFF);
+            case RED: return new Color(0xFF5555);
+            case LIGHT_PURPLE: return new Color(0xFF55FF);
+            case YELLOW: return new Color(0xFFFF55);
+            case WHITE: return new Color(0xFFFFFF);
+            default: return new Color(0xFFFFFF);
+        }
     }
 
     /**

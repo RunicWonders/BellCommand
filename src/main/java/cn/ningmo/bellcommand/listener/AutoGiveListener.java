@@ -15,6 +15,8 @@ import cn.ningmo.bellcommand.utils.ColorUtils;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.io.File;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 public class AutoGiveListener implements Listener {
     private final BellCommand plugin;
@@ -27,13 +29,23 @@ public class AutoGiveListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        if (!plugin.getConfig().getBoolean("auto-give.enabled") || 
-            !plugin.getConfig().getBoolean("auto-give.join")) {
+        if (!plugin.getConfig().getBoolean("auto-give.enabled")) {
             return;
         }
 
         Player player = event.getPlayer();
-        giveItems(player);
+        boolean isFirstJoin = !player.hasPlayedBefore();
+        
+        // 检查是否启用首次加入限制
+        if (plugin.getConfig().getBoolean("auto-give.first-join")) {
+            if (isFirstJoin) {
+                // 给予首次加入物品
+                giveFirstJoinItems(player);
+            }
+        } else if (plugin.getConfig().getBoolean("auto-give.join")) {
+            // 正常的加入物品给予
+            giveItems(player);
+        }
     }
 
     @EventHandler
@@ -149,6 +161,80 @@ public class AutoGiveListener implements Listener {
                 plugin.getLogger().info(ColorUtils.translateConsoleColors(
                     plugin.getLanguageManager().getMessage("messages.debug.item.auto-given", placeholders)
                 ));
+            }
+        }
+    }
+
+    private void giveFirstJoinItems(Player player) {
+        // 给予普通物品
+        if (plugin.getConfig().getBoolean("auto-give.join")) {
+            giveItems(player);
+        }
+        
+        // 给予首次加入专属物品
+        List<String> firstJoinItems = plugin.getConfig().getStringList("auto-give.first-join-items");
+        if (firstJoinItems == null || firstJoinItems.isEmpty()) {
+            return;
+        }
+
+        for (String itemId : firstJoinItems) {
+            CommandItem item = itemManager.getItem(itemId);
+            if (item == null) {
+                if (plugin.isDebugEnabled()) {
+                    Map<String, String> placeholders = new HashMap<>();
+                    placeholders.put("id", itemId);
+                    plugin.getLogger().warning(ColorUtils.translateConsoleColors(
+                        plugin.getLanguageManager().getMessage("messages.debug.item.not-found", placeholders)
+                    ));
+                }
+                continue;
+            }
+
+            ItemStack itemStack = item.createItemStack();
+            // 检查背包是否已满
+            if (player.getInventory().firstEmpty() == -1) {
+                Map<String, String> placeholders = new HashMap<>();
+                placeholders.put("item", item.getName());
+                player.sendMessage(ColorUtils.translateConsoleColors(
+                    plugin.getLanguageManager().getMessage("messages.inventory-full", placeholders)
+                ));
+                continue;
+            }
+            
+            player.getInventory().addItem(itemStack);
+
+            if (plugin.isDebugEnabled()) {
+                Map<String, String> placeholders = new HashMap<>();
+                placeholders.put("player", player.getName());
+                placeholders.put("item", item.getName());
+                plugin.getLogger().info(ColorUtils.translateConsoleColors(
+                    plugin.getLanguageManager().getMessage("messages.debug.item.first-join-given", placeholders)
+                ));
+            }
+        }
+
+        // 保存玩家获取记录
+        if (plugin.getConfig().getBoolean("auto-give.save-history")) {
+            savePlayerHistory(player);
+        }
+    }
+
+    private void savePlayerHistory(Player player) {
+        try {
+            File historyFile = new File(plugin.getDataFolder(), 
+                plugin.getConfig().getString("auto-give.history-file", "player-history.yml"));
+            YamlConfiguration history = YamlConfiguration.loadConfiguration(historyFile);
+            
+            String uuid = player.getUniqueId().toString();
+            history.set(uuid + ".name", player.getName());
+            history.set(uuid + ".first-join", System.currentTimeMillis());
+            history.set(uuid + ".items-received", true);
+            
+            history.save(historyFile);
+        } catch (Exception e) {
+            if (plugin.isDebugEnabled()) {
+                plugin.getLogger().warning("无法保存玩家历史记录: " + e.getMessage());
+                e.printStackTrace();
             }
         }
     }

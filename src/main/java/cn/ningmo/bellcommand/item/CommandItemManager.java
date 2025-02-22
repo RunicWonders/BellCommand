@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.Material;
+import org.bukkit.Statistic;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class CommandItemManager {
     private final BellCommand plugin;
     private final Map<String, CommandItem> items;
-    private final Map<String, Map<String, Long>> cooldowns; // playerId -> (itemId -> lastUseTime)
+    private final Map<String, Map<String, Integer>> cooldowns; // playerId -> (itemId -> lastUseTick)
     private BukkitTask cleanupTask;
 
     public CommandItemManager(BellCommand plugin) {
@@ -183,51 +184,58 @@ public class CommandItemManager {
         }
 
         String playerId = player.getUniqueId().toString();
-        Map<String, Long> playerCooldowns = cooldowns.computeIfAbsent(playerId, k -> new HashMap<>());
-        Long lastUseTime = playerCooldowns.get(item.getId());
+        Map<String, Integer> playerCooldowns = cooldowns.computeIfAbsent(playerId, k -> new HashMap<>());
+        Integer lastUseTick = playerCooldowns.get(item.getId());
 
-        if (lastUseTime == null) {
-            playerCooldowns.put(item.getId(), System.currentTimeMillis());
+        if (lastUseTick == null) {
+            playerCooldowns.put(item.getId(), player.getStatistic(Statistic.PLAY_ONE_MINUTE));
             return true;
         }
 
-        long timePassed = System.currentTimeMillis() - lastUseTime;
-        if (timePassed >= item.getCooldown() * 1000L) {
-            playerCooldowns.put(item.getId(), System.currentTimeMillis());
+        int currentTick = player.getStatistic(Statistic.PLAY_ONE_MINUTE);
+        int ticksPassed = currentTick - lastUseTick;
+        int cooldownTicks = (int)(item.getCooldown() * 20);
+        if (ticksPassed >= cooldownTicks) {
+            playerCooldowns.put(item.getId(), currentTick);
             return true;
         }
 
         return false;
     }
 
-    public int getRemainingCooldown(Player player, CommandItem item) {
+    public double getRemainingCooldown(Player player, CommandItem item) {
         String playerId = player.getUniqueId().toString();
-        Map<String, Long> playerCooldowns = cooldowns.get(playerId);
+        Map<String, Integer> playerCooldowns = cooldowns.get(playerId);
         if (playerCooldowns == null) {
             return 0;
         }
 
-        Long lastUseTime = playerCooldowns.get(item.getId());
-        if (lastUseTime == null) {
+        Integer lastUseTick = playerCooldowns.get(item.getId());
+        if (lastUseTick == null) {
             return 0;
         }
 
-        long timePassed = System.currentTimeMillis() - lastUseTime;
-        long cooldownMillis = item.getCooldown() * 1000L;
-        long remaining = cooldownMillis - timePassed;
+        int currentTick = player.getStatistic(Statistic.PLAY_ONE_MINUTE);
+        int ticksPassed = currentTick - lastUseTick;
+        int cooldownTicks = (int)(item.getCooldown() * 20);
+        int remainingTicks = cooldownTicks - ticksPassed;
 
-        return remaining > 0 ? (int) (remaining / 1000) : 0;
+        return remainingTicks > 0 ? Math.round(remainingTicks / 20.0 * 10.0) / 10.0 : 0;
     }
 
     private void cleanupCooldowns() {
-        long now = System.currentTimeMillis();
         cooldowns.forEach((playerId, playerCooldowns) -> {
             playerCooldowns.entrySet().removeIf(entry -> {
                 CommandItem item = getItem(entry.getKey());
                 if (item == null) {
                     return true;
                 }
-                return now - entry.getValue() >= item.getCooldown() * 1000L;
+                Player player = plugin.getServer().getPlayer(UUID.fromString(playerId));
+                if (player == null || !player.isOnline()) {
+                    return true;
+                }
+                int ticksPassed = player.getStatistic(Statistic.PLAY_ONE_MINUTE) - entry.getValue();
+                return ticksPassed >= item.getCooldown() * 20;
             });
         });
         cooldowns.entrySet().removeIf(entry -> entry.getValue().isEmpty());
@@ -238,7 +246,7 @@ public class CommandItemManager {
     }
 
     public void resetCooldown(Player player, CommandItem item) {
-        Map<String, Long> playerCooldowns = cooldowns.get(player.getUniqueId().toString());
+        Map<String, Integer> playerCooldowns = cooldowns.get(player.getUniqueId().toString());
         if (playerCooldowns != null) {
             playerCooldowns.remove(item.getId());
             if (playerCooldowns.isEmpty()) {
