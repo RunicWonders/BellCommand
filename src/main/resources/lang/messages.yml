@@ -146,6 +146,12 @@ messages:
       not-found: "§c[调试] 找不到ID为 %id% 的命令物品"
       auto-given: "§7[调试] 自动给予玩家 %player% 命令物品 %item%"
       first-join-given: "&7[调试] 首次加入玩家 %player% 获得了物品 %item%"
+      no-history: "&7[调试] 玩家 %player% 没有历史记录，将给予物品"
+      history-check: "&7[调试] 检查玩家 %player% 的历史记录，已获得物品: %received%"
+      history-saved: "&7[调试] 已保存玩家 %player% 的历史记录"
+      missing: "&7[调试] 玩家 %player% 缺少物品 %item%，将给予"
+      has-all: "&7[调试] 玩家 %player% 已拥有所有命令物品"
+      given: "&7[调试] 已给予玩家 %player% 命令物品 %item%"
     
     # Floodgate 相关调试
     floodgate:

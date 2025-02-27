@@ -41,6 +41,11 @@ public class AutoGiveListener implements Listener {
             if (isFirstJoin) {
                 // 给予首次加入物品
                 giveFirstJoinItems(player);
+            } else {
+                // 检查背包中是否已有命令物品
+                if (shouldGiveItems(player)) {
+                    giveItems(player);
+                }
             }
         } else if (plugin.getConfig().getBoolean("auto-give.join")) {
             // 正常的加入物品给予
@@ -93,11 +98,53 @@ public class AutoGiveListener implements Listener {
         }
     }
 
-    private void giveItems(Player player) {
-        if (!plugin.getConfig().getBoolean("auto-give.enabled")) {
-            return;
+    private boolean shouldGiveItems(Player player) {
+        List<String> itemIds = plugin.getConfig().getStringList("auto-give.items");
+        if (itemIds == null || itemIds.isEmpty()) {
+            return false;
         }
 
+        // 检查玩家背包中是否已有这些命令物品
+        for (String itemId : itemIds) {
+            CommandItem configItem = itemManager.getItem(itemId);
+            if (configItem == null) {
+                continue;
+            }
+
+            boolean hasItem = false;
+            for (ItemStack invItem : player.getInventory().getContents()) {
+                if (invItem != null && itemManager.getCommandItem(invItem) != null &&
+                    itemManager.getCommandItem(invItem).getId().equals(itemId)) {
+                    hasItem = true;
+                    break;
+                }
+            }
+
+            // 如果有任何一个配置的物品不在背包中，就需要给予物品
+            if (!hasItem) {
+                if (plugin.isDebugEnabled()) {
+                    Map<String, String> placeholders = new HashMap<>();
+                    placeholders.put("player", player.getName());
+                    placeholders.put("item", itemId);
+                    plugin.getLogger().info(ColorUtils.translateConsoleColors(
+                        plugin.getLanguageManager().getMessage("messages.debug.item.missing", placeholders)
+                    ));
+                }
+                return true;
+            }
+        }
+
+        if (plugin.isDebugEnabled()) {
+            Map<String, String> placeholders = new HashMap<>();
+            placeholders.put("player", player.getName());
+            plugin.getLogger().info(ColorUtils.translateConsoleColors(
+                plugin.getLanguageManager().getMessage("messages.debug.item.has-all", placeholders)
+            ));
+        }
+        return false;
+    }
+
+    private void giveItems(Player player) {
         List<String> itemIds = plugin.getConfig().getStringList("auto-give.items");
         if (itemIds == null || itemIds.isEmpty()) {
             if (plugin.isDebugEnabled()) {
@@ -121,7 +168,7 @@ public class AutoGiveListener implements Listener {
                 continue;
             }
 
-            // 检查玩家背包中是否已经有这个命令物品
+            // 检查玩家背包中是否已有这个物品
             boolean hasItem = false;
             for (ItemStack invItem : player.getInventory().getContents()) {
                 if (invItem != null && itemManager.getCommandItem(invItem) != null &&
@@ -131,12 +178,11 @@ public class AutoGiveListener implements Listener {
                 }
             }
 
-            // 如果玩家没有这个物品，才给予
+            // 只有当玩家没有这个物品时才给予
             if (!hasItem) {
                 ItemStack itemStack = item.createItemStack();
                 // 检查背包是否已满
                 if (player.getInventory().firstEmpty() == -1) {
-                    // 如果背包已满，则发送一条消息给玩家
                     Map<String, String> placeholders = new HashMap<>();
                     placeholders.put("item", item.getName());
                     player.sendMessage(ColorUtils.translateConsoleColors(
@@ -144,6 +190,7 @@ public class AutoGiveListener implements Listener {
                     ));
                     continue;
                 }
+                
                 player.getInventory().addItem(itemStack);
 
                 if (plugin.isDebugEnabled()) {
@@ -151,16 +198,9 @@ public class AutoGiveListener implements Listener {
                     placeholders.put("player", player.getName());
                     placeholders.put("item", item.getName());
                     plugin.getLogger().info(ColorUtils.translateConsoleColors(
-                        plugin.getLanguageManager().getMessage("messages.plugin.auto-give", placeholders)
+                        plugin.getLanguageManager().getMessage("messages.debug.item.given", placeholders)
                     ));
                 }
-            } else if (plugin.isDebugEnabled()) {
-                Map<String, String> placeholders = new HashMap<>();
-                placeholders.put("player", player.getName());
-                placeholders.put("item", item.getName());
-                plugin.getLogger().info(ColorUtils.translateConsoleColors(
-                    plugin.getLanguageManager().getMessage("messages.debug.item.auto-given", placeholders)
-                ));
             }
         }
     }
@@ -210,31 +250,6 @@ public class AutoGiveListener implements Listener {
                 plugin.getLogger().info(ColorUtils.translateConsoleColors(
                     plugin.getLanguageManager().getMessage("messages.debug.item.first-join-given", placeholders)
                 ));
-            }
-        }
-
-        // 保存玩家获取记录
-        if (plugin.getConfig().getBoolean("auto-give.save-history")) {
-            savePlayerHistory(player);
-        }
-    }
-
-    private void savePlayerHistory(Player player) {
-        try {
-            File historyFile = new File(plugin.getDataFolder(), 
-                plugin.getConfig().getString("auto-give.history-file", "player-history.yml"));
-            YamlConfiguration history = YamlConfiguration.loadConfiguration(historyFile);
-            
-            String uuid = player.getUniqueId().toString();
-            history.set(uuid + ".name", player.getName());
-            history.set(uuid + ".first-join", System.currentTimeMillis());
-            history.set(uuid + ".items-received", true);
-            
-            history.save(historyFile);
-        } catch (Exception e) {
-            if (plugin.isDebugEnabled()) {
-                plugin.getLogger().warning("无法保存玩家历史记录: " + e.getMessage());
-                e.printStackTrace();
             }
         }
     }
