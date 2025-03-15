@@ -75,7 +75,7 @@ messages:
     no-item-found: "&c未找到命令物品"
     
     # 使用限制消息
-    cooldown: "&e请等待 %.1f 秒后再使用"
+    cooldown: "&e请等待 %time% 秒后再使用"
     
   # 错误消息
   error:
