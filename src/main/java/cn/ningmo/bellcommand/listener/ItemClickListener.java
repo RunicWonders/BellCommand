@@ -110,7 +110,7 @@ public class ItemClickListener implements Listener {
             }
             
             Map<String, String> placeholders = new HashMap<>();
-            placeholders.put("time", String.valueOf(itemManager.getRemainingCooldown(player, commandItem)));
+            placeholders.put("time", String.format("%.1f", itemManager.getRemainingCooldown(player, commandItem)));
             player.sendMessage(ColorUtils.translateColors(
                 plugin.getLanguageManager().getMessage("messages.command.cooldown", placeholders)
             ));

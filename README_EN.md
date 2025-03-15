@@ -3,15 +3,16 @@
 [中文版](README.md)
 
 ## Version Info
-Current Version: 1.2.0-beta.1
+Current Version: 1.2.4
 
-This is a beta version with the following features and known issues:
+This is a stable release with the following features:
 - ✅ Complete command item system
-- ✅ Multi-language support (Simplified Chinese, Traditional Chinese, English, Japanese, French)
+- ✅ Language support
 - ✅ Bedrock player support (requires Floodgate)
 - ✅ Auto-give and cleanup features
-- ⚠️ Known performance issues, will be optimized in future versions
-- ⚠️ Recommended to test thoroughly in a test environment before production use
+- ✅ Smart item detection to avoid duplicate items
+- ✅ Performance optimization and stability improvements
+- ✅ Custom update source support (GitHub, Gitee, Custom API)
 
 ## Introduction
 BellCommand is a powerful Minecraft plugin that allows server administrators to create custom items that can execute commands. Players can trigger preset commands by left-clicking or right-clicking these items.
@@ -19,6 +20,8 @@ BellCommand is a powerful Minecraft plugin that allows server administrators to 
 ## Features
 - Custom item appearance and name
 - Different commands for left and right clicks
+- Support for shift+click configurations
+- Special command configurations for Bedrock players
 - Complete permission control system
 - Command cooldown settings
 - Multi-language support
