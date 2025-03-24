@@ -124,42 +124,95 @@ public class CommandItemManager {
         }
 
         for (CommandItem.CommandEntry command : commands) {
-            String processedCommand = null;
-            try {
-                processedCommand = command.getCommand()
-                    .replace("%player%", player.getName())
-                    .replace("%uuid%", player.getUniqueId().toString());
+            final String processedCommand = command.getCommand()
+                .replace("%player%", player.getName())
+                .replace("%uuid%", player.getUniqueId().toString());
 
-                boolean success;
-                if (command.isAsConsole()) {
-                    success = plugin.getServer().dispatchCommand(
-                        plugin.getServer().getConsoleSender(),
-                        processedCommand
-                    );
-                } else {
-                    success = plugin.getServer().dispatchCommand(
-                        player,
-                        processedCommand
-                    );
-                }
+            // 检查是否需要延迟执行
+            if (command.getDelay() > 0) {
+                // 计算延迟的tick数（1秒 = 20tick）
+                long delayTicks = (long) (command.getDelay() * 20);
+                
+                // 使用BukkitScheduler延迟执行命令
+                plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                    try {
+                        boolean success;
+                        if (command.isAsConsole()) {
+                            success = plugin.getServer().dispatchCommand(
+                                plugin.getServer().getConsoleSender(),
+                                processedCommand
+                            );
+                        } else {
+                            // 检查玩家是否仍在线
+                            if (!player.isOnline()) {
+                                if (plugin.isDebugEnabled()) {
+                                    plugin.getLogger().info(ColorUtils.translateConsoleColors(
+                                        plugin.getLanguageManager().getMessage("messages.debug.command.player-offline")
+                                    ));
+                                }
+                                return;
+                            }
+                            success = plugin.getServer().dispatchCommand(
+                                player,
+                                processedCommand
+                            );
+                        }
 
-                if (plugin.isDebugEnabled()) {
-                    Map<String, String> placeholders = new HashMap<>();
-                    placeholders.put("command", processedCommand);
-                    placeholders.put("result", success ? "success" : "failed");
-                    plugin.getLogger().info(ColorUtils.translateConsoleColors(
-                        plugin.getLanguageManager().getMessage("messages.debug.command.command-result", placeholders)
-                    ));
-                }
-            } catch (Exception e) {
-                if (plugin.isDebugEnabled()) {
-                    Map<String, String> placeholders = new HashMap<>();
-                    placeholders.put("command", processedCommand != null ? processedCommand : "unknown");
-                    placeholders.put("error", e.getMessage());
-                    plugin.getLogger().warning(ColorUtils.translateConsoleColors(
-                        plugin.getLanguageManager().getMessage("messages.error.command-error", placeholders)
-                    ));
-                    e.printStackTrace();
+                        if (plugin.isDebugEnabled()) {
+                            Map<String, String> placeholders = new HashMap<>();
+                            placeholders.put("command", processedCommand);
+                            placeholders.put("result", success ? "success" : "failed");
+                            placeholders.put("delay", String.valueOf(command.getDelay()));
+                            plugin.getLogger().info(ColorUtils.translateConsoleColors(
+                                plugin.getLanguageManager().getMessage("messages.debug.command.delayed-command-result", placeholders)
+                            ));
+                        }
+                    } catch (Exception e) {
+                        if (plugin.isDebugEnabled()) {
+                            Map<String, String> placeholders = new HashMap<>();
+                            placeholders.put("command", processedCommand);
+                            placeholders.put("error", e.getMessage());
+                            plugin.getLogger().warning(ColorUtils.translateConsoleColors(
+                                plugin.getLanguageManager().getMessage("messages.error.command-error", placeholders)
+                            ));
+                            e.printStackTrace();
+                        }
+                    }
+                }, delayTicks);
+            } else {
+                // 立即执行命令
+                try {
+                    boolean success;
+                    if (command.isAsConsole()) {
+                        success = plugin.getServer().dispatchCommand(
+                            plugin.getServer().getConsoleSender(),
+                            processedCommand
+                        );
+                    } else {
+                        success = plugin.getServer().dispatchCommand(
+                            player,
+                            processedCommand
+                        );
+                    }
+
+                    if (plugin.isDebugEnabled()) {
+                        Map<String, String> placeholders = new HashMap<>();
+                        placeholders.put("command", processedCommand);
+                        placeholders.put("result", success ? "success" : "failed");
+                        plugin.getLogger().info(ColorUtils.translateConsoleColors(
+                            plugin.getLanguageManager().getMessage("messages.debug.command.command-result", placeholders)
+                        ));
+                    }
+                } catch (Exception e) {
+                    if (plugin.isDebugEnabled()) {
+                        Map<String, String> placeholders = new HashMap<>();
+                        placeholders.put("command", processedCommand != null ? processedCommand : "unknown");
+                        placeholders.put("error", e.getMessage());
+                        plugin.getLogger().warning(ColorUtils.translateConsoleColors(
+                            plugin.getLanguageManager().getMessage("messages.error.command-error", placeholders)
+                        ));
+                        e.printStackTrace();
+                    }
                 }
             }
         }
@@ -254,4 +307,4 @@ public class CommandItemManager {
             }
         }
     }
-} 
+}

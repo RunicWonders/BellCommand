@@ -3,7 +3,7 @@
 [中文版](README.md)
 
 ## Version Info
-Current Version: 1.2.4
+Current Version: 1.3.0
 
 This is a stable release with the following features:
 - ✅ Complete command item system

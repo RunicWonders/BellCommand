@@ -22,10 +22,12 @@ public class CommandItem {
     public static class CommandEntry {
         private final String command;
         private final boolean asConsole;
+        private final double delay; // 延迟执行时间（秒）
 
-        public CommandEntry(String command, boolean asConsole) {
+        public CommandEntry(String command, boolean asConsole, double delay) {
             this.command = command;
             this.asConsole = asConsole;
+            this.delay = delay;
         }
 
         public String getCommand() {
@@ -34,6 +36,10 @@ public class CommandItem {
 
         public boolean isAsConsole() {
             return asConsole;
+        }
+        
+        public double getDelay() {
+            return delay;
         }
     }
 
@@ -67,8 +73,9 @@ public class CommandItem {
                         if (cmdSection != null) {
                             String cmd = cmdSection.getString("command");
                             boolean asConsole = cmdSection.getBoolean("as-console", false);
+                            double delay = cmdSection.getDouble("delay", 0.0); // 获取延迟时间，默认为0秒
                             if (cmd != null && !cmd.isEmpty()) {
-                                typeCommands.add(new CommandEntry(cmd, asConsole));
+                                typeCommands.add(new CommandEntry(cmd, asConsole, delay));
                             }
                         }
                     }

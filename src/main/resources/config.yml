@@ -1,5 +1,5 @@
 # BellCommand 配置文件 (BellCommand Configuration File)
-# 版本: 1.2.4 (Version: 1.2.4)
+# 版本: 1.3.0 (Version: 1.3.0)
 # 作者: 柠枺 (Author: Ningmo)
 
 # 配置文件说明 (Configuration File Instructions):
@@ -74,34 +74,42 @@ update-source:
 #         序号: (Sequence number:)
 #           command: 要执行的命令 (Command to execute)
 #           as-console: 是否以控制台身份执行 (Execute as console)
+#           delay: 延迟执行时间 (秒)，支持小数点 (Delay execution time (seconds), supports decimals)
 #       right-click: # 普通右键命令（Java版） (Normal right-click command (Java Edition))
 #         序号: (Sequence number:)
 #           command: 要执行的命令 (Command to execute)
 #           as-console: 是否以控制台身份执行 (Execute as console)
+#           delay: 延迟执行时间 (秒)，支持小数点 (Delay execution time (seconds), supports decimals)
 #       shift-left-click: # 蹲下时左键命令（Java版） (Left-click command while crouching (Java Edition))
 #         序号: (Sequence number:)
 #           command: 要执行的命令 (Command to execute)
 #           as-console: 是否以控制台身份执行 (Execute as console)
+#           delay: 延迟执行时间 (秒)，支持小数点 (Delay execution time (seconds), supports decimals)
 #       shift-right-click: # 蹲下时右键命令（Java版） (Right-click command while crouching (Java Edition))
 #         序号: (Sequence number:)
 #           command: 要执行的命令 (Command to execute)
 #           as-console: 是否以控制台身份执行 (Execute as console)
+#           delay: 延迟执行时间 (秒)，支持小数点 (Delay execution time (seconds), supports decimals)
 #       bedrock-left-click: # 基岩版左键命令 (Bedrock Edition left-click command)
 #         序号: (Sequence number:)
 #           command: 要执行的命令 (Command to execute)
 #           as-console: 是否以控制台身份执行 (Execute as console)
+#           delay: 延迟执行时间 (秒)，支持小数点 (Delay execution time (seconds), supports decimals)
 #       bedrock-right-click: # 基岩版右键命令 (Bedrock Edition right-click command)
 #         序号: (Sequence number:)
 #           command: 要执行的命令 (Command to execute)
 #           as-console: 是否以控制台身份执行 (Execute as console)
+#           delay: 延迟执行时间 (秒)，支持小数点 (Delay execution time (seconds), supports decimals)
 #       bedrock-shift-left-click: # 基岩版蹲下时左键命令 (Bedrock Edition left-click command while crouching)
 #         序号: (Sequence number:)
 #           command: 要执行的命令 (Command to execute)
 #           as-console: 是否以控制台身份执行 (Execute as console)
+#           delay: 延迟执行时间 (秒)，支持小数点 (Delay execution time (seconds), supports decimals)
 #       bedrock-shift-right-click: # 基岩版蹲下时右键命令 (Bedrock Edition right-click command while crouching)
 #         序号: (Sequence number:)
 #           command: 要执行的命令 (Command to execute)
 #           as-console: 是否以控制台身份执行 (Execute as console)
+#           delay: 延迟执行时间 (秒)，支持小数点 (Delay execution time (seconds), supports decimals)
 items:
   # 示例物品 - 菜单 (Example Item - Menu)
   home:
@@ -153,6 +161,33 @@ items:
           command: "cd bedrock advanced settings"
           as-console: false
 
+  # 示例物品 - 延迟执行命令 (Example Item - Delayed Command Execution)
+  teleport:
+    item-id: ENDER_PEARL
+    name: "&b传送魔珠 (&bTeleport Orb)"
+    lore:
+      - "&7右键点击: &f3秒后传送到主城"
+      - "&7蹲下右键: &f立即传送到主城"
+      - "&e冷却时间: &f10秒"
+    permission: "bellcommand.item.teleport"
+    cooldown: 10
+    commands:
+      right-click:
+        1:
+          command: "title %player% title {\"text\":\"准备传送\",\"color\":\"yellow\"}"
+          as-console: true
+        2:
+          command: "title %player% subtitle {\"text\":\"3秒后传送到主城\",\"color\":\"gold\"}"
+          as-console: true
+        3:
+          command: "spawn"
+          as-console: false
+          delay: 3.0
+      shift-right-click:
+        1:
+          command: "spawn"
+          as-console: false
+
 # 配置文件使用提示 (Configuration File Usage Tips):
 # 1. 物品ID必须是唯一的，不能重复 (Item IDs must be unique and cannot be repeated)
 # 2. item-id 必须是有效的 Minecraft 物品ID (item-id must be a valid Minecraft item ID)
@@ -161,7 +196,8 @@ items:
 # 5. 命令中的 %player% 会被替换为玩家名称 (The %player% in commands will be replaced by the player's name)
 # 6. as-console: true 表示以控制台身份执行命令 (as-console: true means execute as console)
 # 7. 可以为同一个动作（左键/右键）配置多个命令 (Multiple commands can be configured for the same action (left-click/right-click))
-# 8. 确保所有命令都是服务器支持的 (Ensure all commands are supported by the server)
+# 8. 所有命令都是服务器支持的 (Ensure all commands are supported by the server)
+# 9. delay 参数可以设置命令延迟执行的时间（秒），支持小数点 (The delay parameter can set the command execution delay time (seconds), supports decimals)
 
 auto-give:
   enabled: true
