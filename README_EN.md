@@ -3,7 +3,7 @@
 [中文版](README.md)
 
 ## Version Info
-Current Version: 1.3.0
+Current Version: 1.3.1
 
 This is a stable release with the following features:
 - ✅ Complete command item system
@@ -13,6 +13,7 @@ This is a stable release with the following features:
 - ✅ Smart item detection to avoid duplicate items
 - ✅ Performance optimization and stability improvements
 - ✅ Custom update source support (GitHub, Gitee, Custom API)
+- ✅ Action-specific cooldown system
 
 ## Introduction
 BellCommand is a powerful Minecraft plugin that allows server administrators to create custom items that can execute commands. Players can trigger preset commands by left-clicking or right-clicking these items.

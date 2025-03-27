@@ -15,6 +15,14 @@ import java.util.HashMap;
 import org.bukkit.event.EventPriority;
 import cn.ningmo.bellcommand.utils.ColorUtils;
 
+/**
+ * 物品点击监听器
+ * <p>
+ * 处理玩家与命令物品的交互事件
+ * 
+ * @version 1.3.1 增加详细的动作类型冷却提示
+ * @author NingMo
+ */
 public class ItemClickListener implements Listener {
     private final BellCommand plugin;
     private final CommandItemManager itemManager;
@@ -98,7 +106,34 @@ public class ItemClickListener implements Listener {
             return;
         }
 
-        // 检查冷却
+        // 确定命令类型
+        String commandType = determineCommandType(event, player);
+        
+        // 检查动作类型冷却
+        if (!itemManager.checkActionCooldown(player, commandItem, commandType)) {
+            if (plugin.isDebugEnabled()) {
+                Map<String, String> placeholders = new HashMap<>();
+                placeholders.put("player", player.getName());
+                placeholders.put("item", commandItem.getId());
+                placeholders.put("type", commandType);
+                plugin.getLogger().info(ColorUtils.translateConsoleColors(
+                    plugin.getLanguageManager().getMessage("messages.debug.command.action-cooldown-active", placeholders)
+                ));
+            }
+            
+            Map<String, String> placeholders = new HashMap<>();
+            placeholders.put("time", String.format("%.1f", itemManager.getRemainingActionCooldown(player, commandItem, commandType)));
+            placeholders.put("action", getActionDisplayName(commandType));
+            player.sendMessage(ColorUtils.translateColors(
+                plugin.getLanguageManager().getMessage("messages.command.action-cooldown", placeholders)
+            ));
+            player.sendMessage(ColorUtils.translateColors(
+                plugin.getLanguageManager().getMessage("messages.command.other-actions-available")
+            ));
+            return;
+        }
+        
+        // 全局冷却仍然保留，作为整体限制（全冷却模式）
         if (!itemManager.checkCooldown(player, commandItem)) {
             if (plugin.isDebugEnabled()) {
                 Map<String, String> placeholders = new HashMap<>();
@@ -117,9 +152,6 @@ public class ItemClickListener implements Listener {
             return;
         }
 
-        // 确定命令类型
-        String commandType = determineCommandType(event, player);
-        
         if (plugin.isDebugEnabled()) {
             Map<String, String> placeholders = new HashMap<>();
             placeholders.put("player", player.getName());
@@ -157,5 +189,37 @@ public class ItemClickListener implements Listener {
                 return isLeftClick ? "left-click" : "right-click";
             }
         }
+    }
+
+    private String getActionDisplayName(String commandType) {
+        // 获取当前语言环境下的动作名称翻译
+        String actionKey = "action." + commandType.replace("-", "_");
+        String translatedAction = plugin.getLanguageManager().getMessage("messages." + actionKey);
+        
+        // 如果获取到的是错误消息(表示没有对应的翻译)，则使用默认的英文显示
+        if (translatedAction.startsWith("§c缺少语言键")) {
+            switch (commandType) {
+                case "left-click":
+                    return "左键点击 (Left Click)";
+                case "right-click":
+                    return "右键点击 (Right Click)";
+                case "shift-left-click":
+                    return "蹲下左键 (Shift+Left Click)";
+                case "shift-right-click": 
+                    return "蹲下右键 (Shift+Right Click)";
+                case "bedrock-left-click":
+                    return "基岩版左键 (Bedrock Left)";
+                case "bedrock-right-click":
+                    return "基岩版右键 (Bedrock Right)";
+                case "bedrock-shift-left-click":
+                    return "基岩版蹲下左键 (Bedrock Shift+Left)";
+                case "bedrock-shift-right-click":
+                    return "基岩版蹲下右键 (Bedrock Shift+Right)";
+                default:
+                    return commandType;
+            }
+        }
+        
+        return translatedAction;
     }
 } 

@@ -12,16 +12,28 @@ import org.bukkit.Statistic;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * 命令物品管理器类
+ * <p>
+ * 负责加载、管理命令物品及其冷却时间
+ * 
+ * @version 1.3.1 新增动作类型独立冷却功能，不同交互方式（左键/右键等）分别记录冷却时间
+ * @author NingMo
+ */
 public class CommandItemManager {
     private final BellCommand plugin;
     private final Map<String, CommandItem> items;
-    private final Map<String, Map<String, Integer>> cooldowns; // playerId -> (itemId -> lastUseTick)
+    // 全局冷却 playerId -> (itemId -> lastUseTick)
+    private final Map<String, Map<String, Integer>> cooldowns; 
+    // 按动作类型冷却 playerId -> (itemId_actionType -> lastUseTick)
+    private final Map<String, Map<String, Integer>> actionCooldowns;
     private BukkitTask cleanupTask;
 
     public CommandItemManager(BellCommand plugin) {
         this.plugin = plugin;
         this.items = new HashMap<>();
         this.cooldowns = new ConcurrentHashMap<>();
+        this.actionCooldowns = new ConcurrentHashMap<>();
         loadItems();
         startCleanupTask();
     }
@@ -43,6 +55,7 @@ public class CommandItemManager {
         }
         items.clear();
         cooldowns.clear();
+        actionCooldowns.clear();
     }
 
     public void reload() {
@@ -55,7 +68,7 @@ public class CommandItemManager {
         ConfigurationSection itemsSection = plugin.getConfig().getConfigurationSection("items");
         if (itemsSection == null) {
             if (plugin.isDebugEnabled()) {
-                plugin.getLogger().warning(ColorUtils.translateConsoleColors(
+                plugin.getLogger().info(ColorUtils.translateConsoleColors(
                     plugin.getLanguageManager().getMessage("messages.debug.config.no-items")
                 ));
             }
@@ -122,6 +135,16 @@ public class CommandItemManager {
         if (commands == null || commands.isEmpty()) {
             return;
         }
+        
+        // 设置该动作类型的冷却
+        String playerId = player.getUniqueId().toString();
+        String actionKey = item.getId() + "_" + type;
+        Map<String, Integer> playerActionCooldowns = actionCooldowns.computeIfAbsent(playerId, k -> new HashMap<>());
+        playerActionCooldowns.put(actionKey, player.getStatistic(Statistic.PLAY_ONE_MINUTE));
+        
+        // 设置全局冷却（保持原有功能）
+        Map<String, Integer> playerCooldowns = cooldowns.computeIfAbsent(playerId, k -> new HashMap<>());
+        playerCooldowns.put(item.getId(), player.getStatistic(Statistic.PLAY_ONE_MINUTE));
 
         for (CommandItem.CommandEntry command : commands) {
             final String processedCommand = command.getCommand()
@@ -231,6 +254,12 @@ public class CommandItemManager {
         return null;
     }
 
+    /**
+     * 检查物品的全局冷却状态
+     * @param player 玩家
+     * @param item 命令物品
+     * @return 是否可以使用
+     */
     public boolean checkCooldown(Player player, CommandItem item) {
         if (item.getCooldown() <= 0) {
             return true;
@@ -256,6 +285,52 @@ public class CommandItemManager {
         return false;
     }
 
+    /**
+     * 检查物品特定动作类型的冷却状态
+     * @param player 玩家
+     * @param item 命令物品
+     * @param actionType 动作类型
+     * @return 是否可以使用
+     */
+    public boolean checkActionCooldown(Player player, CommandItem item, String actionType) {
+        if (item.getCooldown() <= 0) {
+            return true;
+        }
+
+        String playerId = player.getUniqueId().toString();
+        String actionKey = item.getId() + "_" + actionType;
+        Map<String, Integer> playerActionCooldowns = actionCooldowns.computeIfAbsent(playerId, k -> new HashMap<>());
+        Integer lastUseTick = playerActionCooldowns.get(actionKey);
+
+        if (lastUseTick == null) {
+            return true;
+        }
+
+        int currentTick = player.getStatistic(Statistic.PLAY_ONE_MINUTE);
+        int ticksPassed = currentTick - lastUseTick;
+        int cooldownTicks = (int)(item.getCooldown() * 20);
+        if (ticksPassed >= cooldownTicks) {
+            return true;
+        }
+
+        if (plugin.isDebugEnabled()) {
+            Map<String, String> placeholders = new HashMap<>();
+            placeholders.put("player", player.getName());
+            placeholders.put("item", item.getId());
+            placeholders.put("action", actionType);
+            placeholders.put("last_use", String.valueOf(lastUseTick));
+            placeholders.put("current", String.valueOf(currentTick));
+            plugin.getLogger().info(ColorUtils.translateConsoleColors(
+                plugin.getLanguageManager().getMessage("messages.debug.cooldown.check-action", placeholders)
+            ));
+        }
+
+        return false;
+    }
+
+    /**
+     * 获取物品的全局剩余冷却时间
+     */
     public double getRemainingCooldown(Player player, CommandItem item) {
         String playerId = player.getUniqueId().toString();
         Map<String, Integer> playerCooldowns = cooldowns.get(playerId);
@@ -276,7 +351,32 @@ public class CommandItemManager {
         return remainingTicks > 0 ? Math.round(remainingTicks / 20.0 * 10.0) / 10.0 : 0;
     }
 
+    /**
+     * 获取物品特定动作类型的剩余冷却时间
+     */
+    public double getRemainingActionCooldown(Player player, CommandItem item, String actionType) {
+        String playerId = player.getUniqueId().toString();
+        Map<String, Integer> playerActionCooldowns = actionCooldowns.get(playerId);
+        if (playerActionCooldowns == null) {
+            return 0;
+        }
+
+        String actionKey = item.getId() + "_" + actionType;
+        Integer lastUseTick = playerActionCooldowns.get(actionKey);
+        if (lastUseTick == null) {
+            return 0;
+        }
+
+        int currentTick = player.getStatistic(Statistic.PLAY_ONE_MINUTE);
+        int ticksPassed = currentTick - lastUseTick;
+        int cooldownTicks = (int)(item.getCooldown() * 20);
+        int remainingTicks = cooldownTicks - ticksPassed;
+
+        return remainingTicks > 0 ? Math.round(remainingTicks / 20.0 * 10.0) / 10.0 : 0;
+    }
+
     private void cleanupCooldowns() {
+        // 清理全局冷却
         cooldowns.forEach((playerId, playerCooldowns) -> {
             playerCooldowns.entrySet().removeIf(entry -> {
                 CommandItem item = getItem(entry.getKey());
@@ -292,18 +392,82 @@ public class CommandItemManager {
             });
         });
         cooldowns.entrySet().removeIf(entry -> entry.getValue().isEmpty());
+        
+        // 清理动作类型冷却
+        actionCooldowns.forEach((playerId, playerActionCooldowns) -> {
+            playerActionCooldowns.entrySet().removeIf(entry -> {
+                String[] parts = entry.getKey().split("_", 2);
+                if (parts.length < 2) {
+                    return true; // 无效的格式，清理掉
+                }
+                
+                String itemId = parts[0];
+                CommandItem item = getItem(itemId);
+                if (item == null) {
+                    return true;
+                }
+                
+                Player player = plugin.getServer().getPlayer(UUID.fromString(playerId));
+                if (player == null || !player.isOnline()) {
+                    return true;
+                }
+                
+                int ticksPassed = player.getStatistic(Statistic.PLAY_ONE_MINUTE) - entry.getValue();
+                return ticksPassed >= item.getCooldown() * 20;
+            });
+        });
+        actionCooldowns.entrySet().removeIf(entry -> entry.getValue().isEmpty());
     }
 
     public void resetCooldowns(Player player) {
-        cooldowns.remove(player.getUniqueId().toString());
+        String playerId = player.getUniqueId().toString();
+        cooldowns.remove(playerId);
+        actionCooldowns.remove(playerId);
     }
 
     public void resetCooldown(Player player, CommandItem item) {
-        Map<String, Integer> playerCooldowns = cooldowns.get(player.getUniqueId().toString());
+        String playerId = player.getUniqueId().toString();
+        
+        // 重置全局冷却
+        Map<String, Integer> playerCooldowns = cooldowns.get(playerId);
         if (playerCooldowns != null) {
             playerCooldowns.remove(item.getId());
             if (playerCooldowns.isEmpty()) {
-                cooldowns.remove(player.getUniqueId().toString());
+                cooldowns.remove(playerId);
+            }
+        }
+        
+        // 重置所有动作冷却
+        Map<String, Integer> playerActionCooldowns = actionCooldowns.get(playerId);
+        if (playerActionCooldowns != null) {
+            // 移除所有以物品ID开头的动作冷却
+            playerActionCooldowns.entrySet().removeIf(entry -> entry.getKey().startsWith(item.getId() + "_"));
+            if (playerActionCooldowns.isEmpty()) {
+                actionCooldowns.remove(playerId);
+            }
+        }
+        
+        if (plugin.isDebugEnabled()) {
+            Map<String, String> placeholders = new HashMap<>();
+            placeholders.put("player", player.getName());
+            placeholders.put("item", item.getId());
+            plugin.getLogger().info(ColorUtils.translateConsoleColors(
+                plugin.getLanguageManager().getMessage("messages.debug.cooldown.reset", placeholders)
+            ));
+        }
+    }
+    
+    /**
+     * 重置特定动作类型的冷却
+     */
+    public void resetActionCooldown(Player player, CommandItem item, String actionType) {
+        String playerId = player.getUniqueId().toString();
+        Map<String, Integer> playerActionCooldowns = actionCooldowns.get(playerId);
+        if (playerActionCooldowns != null) {
+            String actionKey = item.getId() + "_" + actionType;
+            playerActionCooldowns.remove(actionKey);
+            if (playerActionCooldowns.isEmpty()) {
+                actionCooldowns.remove(playerId);
             }
         }
     }

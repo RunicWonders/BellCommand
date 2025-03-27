@@ -76,6 +76,8 @@ messages:
     
     # 使用限制消息
     cooldown: "&e请等待 %time% 秒后再使用"
+    action-cooldown: "&e该动作(%action%)冷却中，请等待 %time% 秒后再使用"
+    other-actions-available: "&e提示：其他动作方式仍可使用"
     
   # 错误消息
   error:
@@ -128,6 +130,9 @@ messages:
       execute-as-player: "§e[调试] 以玩家身份执行命令: §6%command%"
       cooldown-start: "§e[调试] 开始计算冷却时间: §6%cooldown%§e秒"
       executing: "&a[调试] 玩家 %player% 使用 %type% 触发物品 %item% 的命令"
+      action-cooldown-active: "§e[调试] 玩家 %player% 的物品 %item% 的动作 %type% 正在冷却中 (剩余: %.1f秒)"
+      player-offline: "§e[调试] 玩家已离线，取消执行延迟命令"
+      delayed-command-result: "§e[调试] 延迟命令执行结果: §6%result% (延迟: %delay%秒)"
       
     # 更新源调试信息
     update:
@@ -169,8 +174,22 @@ messages:
     # 冷却调试
     cooldown:
       active: "&e[调试] 玩家 %player% 的物品 %item% 正在冷却中 (剩余: %.1f秒)"
+      action-specific: "&e[调试] 玩家 %player% 的物品 %item% 的动作 %action% 正在冷却中 (剩余: %.1f秒)"
+      reset: "&7[调试] 重置玩家 %player% 的物品 %item% 的冷却时间"
       check: "§e[调试] 检查冷却时间 - 玩家: §6%player% §e物品: §6%item% §e上次使用: §6%last_use% §e当前: §6%current%"
+      check-action: "§e[调试] 检查动作冷却时间 - 玩家: §6%player% §e物品: §6%item% §e动作: §6%action% §e上次使用: §6%last_use% §e当前: §6%current%"
   
   # 性能监控
   performance:
     slow-operation: "&e[性能] %message%: %time%ms"
+
+  # 动作类型翻译
+  action:
+    left_click: "左键点击"
+    right_click: "右键点击"
+    shift_left_click: "蹲下左键"
+    shift_right_click: "蹲下右键"
+    bedrock_left_click: "基岩版左键"
+    bedrock_right_click: "基岩版右键"
+    bedrock_shift_left_click: "基岩版蹲下左键" 
+    bedrock_shift_right_click: "基岩版蹲下右键"
