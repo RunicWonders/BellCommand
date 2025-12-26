@@ -80,7 +80,8 @@ jobs:
           "version_type": "$VERSION_TYPE",
           "loaders": ["spigot", "paper", "purpur"],
           "project_id": "n18snJd9",
-          "file_parts": ["file_0"]
+          "file_parts": ["file_0"],
+          "dependencies": []
         }
         EOF
         )
