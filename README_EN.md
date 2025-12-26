@@ -3,31 +3,33 @@
 [中文版](README.md)
 
 ## Version Info
-Current Version: 1.3.1
+Current Version: 1.4.0-beta.1
 
-This is a stable release with the following features:
+This is a major Beta release with the following features:
+- ✅ **Config System Overhaul**: Modular multi-folder architecture with real-time hot-reloading (WatchService) and smart auto-migration.
+- ✅ **Consumable Item System**: Support for fixed count, probability-based, and random range consumption modes.
+- ✅ **Enhanced Thread Safety**: Full implementation of ReentrantReadWriteLock for configuration stability under high concurrency.
+- ✅ **Automated Release Pipeline**: Deep integration with GitHub Actions and Modrinth API for automatic publishing.
 - ✅ Complete command item system
 - ✅ Language support
 - ✅ Bedrock player support (requires Floodgate)
-- ✅ Auto-give and cleanup features
-- ✅ Smart item detection to avoid duplicate items
-- ✅ Performance optimization and stability improvements
-- ✅ Custom update source support (GitHub, Gitee, Custom API)
 - ✅ Action-specific cooldown system
+- ✅ Custom update source support (GitHub, Gitee, Custom API)
 
 ## Introduction
 BellCommand is a powerful Minecraft plugin that allows server administrators to create custom items that can execute commands. Players can trigger preset commands by left-clicking or right-clicking these items.
 
 ## Features
-- Custom item appearance and name
-- Different commands for left and right clicks
-- Support for shift+click configurations
-- Special command configurations for Bedrock players
-- Complete permission control system
-- Command cooldown settings
-- Multi-language support
-- Debug mode
-- Automatic update checking
+- **Modular Config Management**: Support for multiple folders (e.g., `Default_config/`) to store item configurations, decoupling item definitions from the main config.
+- **Real-time Hot-Reloading**: Powered by `WatchService` to monitor file changes; modifications take effect instantly without manual reloading.
+- **Consumable Item System**: Support for item consumption based on fixed counts, probabilities, or random ranges to flexibly control item lifespan.
+- **Enhanced Thread Safety**: Implementation of `ReentrantReadWriteLock` for core configuration access, ensuring absolute stability under high concurrency.
+- **Multi-Dimensional Interaction**: Independent command triggers for Left-Click, Right-Click, and Shift+Left/Right-Click.
+- **Deep Bedrock Adaptation**: Dedicated interaction logic and command configurations for Floodgate (Bedrock) players.
+- **Granular Permission Control**: Comprehensive permission system supporting global and item-specific permissions.
+- **Independent Cooldowns**: Different action types (e.g., Left/Right click) can have their own independent cooldown timers.
+- **Internationalization (i18n)**: Robust `LanguageManager` system for real-time switching of system logs and messages.
+- **Automatic Update Alerts**: Integrated update detection for GitHub, Gitee, and custom APIs.
 
 ## Commands
 - `/bc give <player> <itemID> [amount]` - Give command items
