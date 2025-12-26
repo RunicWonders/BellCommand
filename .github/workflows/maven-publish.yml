@@ -81,7 +81,8 @@ jobs:
           "loaders": ["spigot", "paper", "purpur"],
           "project_id": "n18snJd9",
           "file_parts": ["file_0"],
-          "dependencies": []
+          "dependencies": [],
+          "featured": true
         }
         EOF
         )
