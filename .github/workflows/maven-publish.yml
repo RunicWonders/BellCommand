@@ -1,11 +1,12 @@
-# This workflow will build a package using Maven and then publish it to GitHub packages when a release is created
+# This workflow will build a package using Maven and then publish it to GitHub and Modrinth when a tag is pushed
 # For more information see: https://github.com/actions/setup-java/blob/main/docs/advanced-usage.md#apache-maven-with-a-settings-path
 
 name: Maven Package
 
 on:
   push:
-    branches: [ main ]
+    tags:
+      - 'v*'
 
 jobs:
   build:
@@ -27,11 +28,6 @@ jobs:
         git log -1 --pretty=%B >> $GITHUB_OUTPUT
         echo 'EOF' >> $GITHUB_OUTPUT
         
-    - name: Get Version
-      id: version
-      run: |
-        echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
-        
     - name: Set up JDK 21
       uses: actions/setup-java@v4
       with:
@@ -52,10 +48,34 @@ jobs:
     - name: Create Release
       uses: softprops/action-gh-release@v1
       with:
-        tag_name: v${{ steps.version.outputs.version }}
-        name: v${{ steps.version.outputs.version }}
+        tag_name: ${{ github.ref_name }}
+        name: ${{ github.ref_name }}
         body: |
           ${{ steps.commit.outputs.message }}
         files: target/bellcommand-*.jar
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Publish to Modrinth
+      uses: Kirabiru/publish-modrinth@v2
+      with:
+        token: ${{ secrets.MODRINTH_TOKEN }}
+        project_id: n18snJd9
+        version_name: BellCommand ${{ github.ref_name }}
+        version_number: ${{ github.ref_name }}
+        file: target/bellcommand-*.jar
+        loaders: |
+          spigot
+          paper
+          purpur
+        game-versions: |
+          1.13
+          1.14
+          1.15
+          1.16
+          1.17
+          1.18
+          1.19
+          1.20
+          1.21
+        changelog: ${{ steps.commit.outputs.message }}
