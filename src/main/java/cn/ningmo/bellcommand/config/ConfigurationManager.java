@@ -119,39 +119,65 @@ public class ConfigurationManager {
      * 迁移旧版配置到新架构
      */
     private void migrateOldConfig() {
-        if (mainConfig.contains("items")) {
+        boolean hasItems = mainConfig.contains("items");
+        boolean hasAutoGive = mainConfig.contains("auto-give");
+        boolean hasAutoCleanup = mainConfig.contains("auto-cleanup");
+
+        if (hasItems || hasAutoGive || hasAutoCleanup) {
             plugin.getLogger().info(ColorUtils.translateConsoleColors(
                 plugin.getLanguageManager().getMessage("messages.plugin.config.migration-start")
             ));
-            ConfigurationSection itemsSection = mainConfig.getConfigurationSection("items");
-            if (itemsSection != null) {
-                // 1. 备份旧文件
-                backupFile(new File(plugin.getDataFolder(), "config.yml"));
 
-                // 2. 创建新目录和文件
-                File targetDir = new File(plugin.getDataFolder(), "Legacy_config");
-                if (!targetDir.exists()) targetDir.mkdirs();
-                
-                File commandsFile = new File(targetDir, "commands.yml");
-                YamlConfiguration commandsConfig = new YamlConfiguration();
-                commandsConfig.set("items", itemsSection);
-                
-                try {
-                    commandsConfig.save(commandsFile);
-                    
-                    // 3. 更新主配置
-                    mainConfig.set("items", null);
-                    plugin.saveConfig();
-                    
-                    plugin.getLogger().info(ColorUtils.translateConsoleColors(
-                        plugin.getLanguageManager().getMessage("messages.plugin.config.migration-success")
-                    ));
-                } catch (IOException e) {
-                    plugin.getLogger().severe(ColorUtils.translateConsoleColors(
-                        plugin.getLanguageManager().getMessage("messages.plugin.config.migration-failed", 
-                        Map.of("error", e.getMessage()))
-                    ));
+            // 1. 备份旧文件
+            backupFile(new File(plugin.getDataFolder(), "config.yml"));
+
+            // 2. 获取旧设置
+            ConfigurationSection itemsSection = mainConfig.getConfigurationSection("items");
+            ConfigurationSection globalAutoGive = mainConfig.getConfigurationSection("auto-give");
+            ConfigurationSection globalAutoCleanup = mainConfig.getConfigurationSection("auto-cleanup");
+
+            // 3. 创建新目录和文件
+            File targetDir = new File(plugin.getDataFolder(), "Legacy_config");
+            if (!targetDir.exists()) targetDir.mkdirs();
+            
+            File commandsFile = new File(targetDir, "commands.yml");
+            YamlConfiguration commandsConfig = new YamlConfiguration();
+            
+            if (itemsSection != null) {
+                // 如果有旧物品，将全局设置应用到每个物品上
+                for (String key : itemsSection.getKeys(false)) {
+                    ConfigurationSection itemSection = itemsSection.getConfigurationSection(key);
+                    if (itemSection != null) {
+                        // 迁移 auto-give
+                        if (globalAutoGive != null && !itemSection.contains("auto-give")) {
+                            itemSection.set("auto-give", globalAutoGive);
+                        }
+                        // 迁移 auto-cleanup
+                        if (globalAutoCleanup != null && !itemSection.contains("auto-cleanup")) {
+                            itemSection.set("auto-cleanup", globalAutoCleanup);
+                        }
+                    }
                 }
+                commandsConfig.set("items", itemsSection);
+            }
+            
+            try {
+                commandsConfig.save(commandsFile);
+                
+                // 4. 更新主配置，移除已迁移的项
+                mainConfig.set("items", null);
+                mainConfig.set("auto-give", null);
+                mainConfig.set("auto-cleanup", null);
+                plugin.saveConfig();
+                
+                plugin.getLogger().info(ColorUtils.translateConsoleColors(
+                    plugin.getLanguageManager().getMessage("messages.plugin.config.migration-success")
+                ));
+            } catch (IOException e) {
+                plugin.getLogger().severe(ColorUtils.translateConsoleColors(
+                    plugin.getLanguageManager().getMessage("messages.plugin.config.migration-failed", 
+                    Map.of("error", e.getMessage()))
+                ));
             }
         }
     }
