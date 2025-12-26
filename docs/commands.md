@@ -12,8 +12,9 @@
 - bellcommand.list - 允许查看物品列表
 
 ## 命令物品配置
-在 config.yml 中配置命令物品：
+从版本 1.4.0 开始，命令物品定义已移至独立的文件夹（默认为 `Default_config/`）中的 `commands.yml` 文件。
 
+### 基础结构
 ```yaml
 items:
   example_item:
@@ -23,16 +24,39 @@ items:
       - "&7右键点击使用"
     permission: "example.use"
     cooldown: 10
+    # 自动给予配置
+    auto-give:
+      join: true
+      respawn: true
+    # 自动清理配置
+    auto-cleanup:
+      enabled: true
+      delay: 30
     commands:
       right-click:
         1:
           command: "say 你好，%player%!"
           as-console: false
-      shift-right-click:
-        1:
-          command: "gamemode creative"
-          as-console: true
 ```
+
+### 次数性物品 (Consumable)
+从版本 1.4.0-alpha-3 开始，支持配置物品的使用次数和消耗逻辑。
+
+```yaml
+    consumable:
+      enabled: true
+      mode: "COUNT"      # 消耗模式: COUNT, PROBABILITY, RANGE, PROBABILITY_RANGE
+      amount: 1         # 消耗数量 (适用于 COUNT 和 PROBABILITY 模式)
+      probability: 0.5  # 消耗概率 (适用于 PROBABILITY 和 PROBABILITY_RANGE 模式)
+      min-amount: 1     # 最小消耗数量 (适用于 RANGE 和 PROBABILITY_RANGE 模式)
+      max-amount: 3     # 最大消耗数量 (适用于 RANGE 和 PROBABILITY_RANGE 模式)
+```
+
+#### 模式详解：
+- **COUNT**: 每次执行命令固定消耗 `amount` 个物品。
+- **PROBABILITY**: 每次执行命令有 `probability` 的概率消耗 `amount` 个物品。
+- **RANGE**: 每次执行命令随机消耗 `min-amount` 到 `max-amount` 之间的物品数量。
+- **PROBABILITY_RANGE**: 每次执行命令有 `probability` 的概率，随机消耗 `min-amount` 到 `max-amount` 之间的物品数量。
 
 ### 命令类型
 - right-click - 右键点击

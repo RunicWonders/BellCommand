@@ -139,6 +139,10 @@ messages:
       action-cooldown-active: "§e[调试] 玩家 %player% 的物品 %item% 的动作 %type% 正在冷却中 (剩余: %.1f秒)"
       player-offline: "§e[调试] 玩家已离线，取消执行延迟命令"
       delayed-command-result: "§e[调试] 延迟命令执行结果: §6%result% (延迟: %delay%秒)"
+    
+    # 消耗品调试
+    consumable:
+      consumed: "§e[调试] 玩家 §6%player% §e使用的物品 §6%item% §e已消耗 §6%amount% §e个"
       
     # 更新源调试信息
     update:

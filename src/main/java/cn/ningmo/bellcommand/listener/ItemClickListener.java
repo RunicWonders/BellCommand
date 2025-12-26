@@ -166,8 +166,66 @@ public class ItemClickListener implements Listener {
         }
         
         // 执行命令
-        itemManager.executeCommands(player, commandItem, commandType);
-        event.setCancelled(true);
+        if (!commandItem.getCommands(commandType).isEmpty()) {
+            itemManager.executeCommands(player, commandItem, commandType);
+            handleConsumable(player, item, commandItem);
+            event.setCancelled(true);
+        }
+    }
+
+    private void handleConsumable(Player player, ItemStack item, CommandItem commandItem) {
+        CommandItem.ConsumableConfig config = commandItem.getConsumable();
+        if (!config.isEnabled()) return;
+
+        int toRemove = 0;
+        String mode = config.getMode();
+        java.util.Random random = new java.util.Random();
+
+        switch (mode) {
+            case "COUNT":
+                toRemove = config.getAmount();
+                break;
+            case "PROBABILITY":
+                if (random.nextDouble() <= config.getProbability()) {
+                    toRemove = config.getAmount();
+                }
+                break;
+            case "RANGE":
+                int min = config.getMinAmount();
+                int max = config.getMaxAmount();
+                if (max >= min) {
+                    toRemove = random.nextInt(max - min + 1) + min;
+                }
+                break;
+            case "PROBABILITY_RANGE":
+                if (random.nextDouble() <= config.getProbability()) {
+                    int pMin = config.getMinAmount();
+                    int pMax = config.getMaxAmount();
+                    if (pMax >= pMin) {
+                        toRemove = random.nextInt(pMax - pMin + 1) + pMin;
+                    }
+                }
+                break;
+        }
+
+        if (toRemove > 0) {
+            int currentAmount = item.getAmount();
+            if (currentAmount > toRemove) {
+                item.setAmount(currentAmount - toRemove);
+            } else {
+                item.setAmount(0);
+            }
+            
+            if (plugin.isDebugEnabled()) {
+                Map<String, String> placeholders = new HashMap<>();
+                placeholders.put("player", player.getName());
+                placeholders.put("item", commandItem.getId());
+                placeholders.put("amount", String.valueOf(toRemove));
+                plugin.getLogger().info(ColorUtils.translateConsoleColors(
+                    plugin.getLanguageManager().getMessage("messages.debug.consumable.consumed", placeholders)
+                ));
+            }
+        }
     }
 
     private String determineCommandType(PlayerInteractEvent event, Player player) {

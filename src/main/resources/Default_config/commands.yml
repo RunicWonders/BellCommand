@@ -100,3 +100,79 @@ items:
         1:
           command: "backpack"
           as-console: false
+
+  # 示例物品 - 次数性物品 (消耗模式: 固定数量)
+  consumable_count:
+    item-id: BREAD
+    name: "&a消耗性干粮 (&aConsumable Food)"
+    lore:
+      - "&7右键点击: &f获得饱和效果"
+      - "&c使用后消耗 1 个物品"
+    cooldown: 5
+    consumable:
+      enabled: true
+      mode: "COUNT"
+      amount: 1
+    commands:
+      right-click:
+        1:
+          command: "effect give %player% saturation 1 1"
+          as-console: true
+
+  # 示例物品 - 次数性物品 (消耗模式: 概率触发)
+  consumable_prob:
+    item-id: FIREWORK_ROCKET
+    name: "&d概率型烟花 (&dProbability Rocket)"
+    lore:
+      - "&7右键点击: &f发射烟花"
+      - "&e50% 概率消耗 1 个物品"
+    cooldown: 2
+    consumable:
+      enabled: true
+      mode: "PROBABILITY"
+      probability: 0.5
+      amount: 1
+    commands:
+      right-click:
+        1:
+          command: "summon firework_rocket ~ ~1 ~"
+          as-console: true
+
+  # 示例物品 - 次数性物品 (消耗模式: 区间随机)
+  consumable_range:
+    item-id: GOLD_NUGGET
+    name: "&e随机金块 (&eRandom Gold)"
+    lore:
+      - "&7右键点击: &f获得金币"
+      - "&c使用后消耗 1-3 个物品"
+    cooldown: 1
+    consumable:
+      enabled: true
+      mode: "RANGE"
+      min-amount: 1
+      max-amount: 3
+    commands:
+      right-click:
+        1:
+          command: "eco give %player% 10"
+          as-console: true
+
+  # 示例物品 - 次数性物品 (消耗模式: 概率区间随机)
+  consumable_prob_range:
+    item-id: DIAMOND
+    name: "&b幸运钻石 (&bLucky Diamond)"
+    lore:
+      - "&7右键点击: &f尝试获得双倍奖励"
+      - "&e30% 概率消耗 1-2 个物品"
+    cooldown: 3
+    consumable:
+      enabled: true
+      mode: "PROBABILITY_RANGE"
+      probability: 0.3
+      min-amount: 1
+      max-amount: 2
+    commands:
+      right-click:
+        1:
+          command: "eco give %player% 50"
+          as-console: true

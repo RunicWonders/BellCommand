@@ -20,6 +20,41 @@ public class CommandItem {
     private final Map<String, List<CommandEntry>> commands;
     private final AutoGiveConfig autoGive;
     private final AutoCleanupConfig autoCleanup;
+    private final ConsumableConfig consumable;
+
+    public static class ConsumableConfig {
+        private final boolean enabled;
+        private final String mode; // COUNT, PROBABILITY, RANGE, PROBABILITY_RANGE
+        private final int amount;
+        private final double probability;
+        private final int minAmount;
+        private final int maxAmount;
+
+        public ConsumableConfig(ConfigurationSection config) {
+            if (config == null) {
+                this.enabled = false;
+                this.mode = "COUNT";
+                this.amount = 1;
+                this.probability = 1.0;
+                this.minAmount = 1;
+                this.maxAmount = 1;
+            } else {
+                this.enabled = config.getBoolean("enabled", false);
+                this.mode = config.getString("mode", "COUNT").toUpperCase();
+                this.amount = config.getInt("amount", 1);
+                this.probability = config.getDouble("probability", 1.0);
+                this.minAmount = config.getInt("min-amount", 1);
+                this.maxAmount = config.getInt("max-amount", 1);
+            }
+        }
+
+        public boolean isEnabled() { return enabled; }
+        public String getMode() { return mode; }
+        public int getAmount() { return amount; }
+        public double getProbability() { return probability; }
+        public int getMinAmount() { return minAmount; }
+        public int getMaxAmount() { return maxAmount; }
+    }
 
     public static class AutoGiveConfig {
         private final boolean join;
@@ -103,6 +138,7 @@ public class CommandItem {
         this.commands = new HashMap<>();
         this.autoGive = new AutoGiveConfig(config.getConfigurationSection("auto-give"));
         this.autoCleanup = new AutoCleanupConfig(config.getConfigurationSection("auto-cleanup"));
+        this.consumable = new ConsumableConfig(config.getConfigurationSection("consumable"));
         
         // 加载命令
         ConfigurationSection commandsSection = config.getConfigurationSection("commands");
@@ -158,6 +194,10 @@ public class CommandItem {
 
     public AutoCleanupConfig getAutoCleanup() {
         return autoCleanup;
+    }
+
+    public ConsumableConfig getConsumable() {
+        return consumable;
     }
 
     public ItemStack createItemStack() {
