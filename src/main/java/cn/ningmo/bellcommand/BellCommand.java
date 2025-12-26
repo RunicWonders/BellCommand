@@ -7,6 +7,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import cn.ningmo.bellcommand.config.ConfigurationManager;
 import cn.ningmo.bellcommand.item.CommandItem;
 import cn.ningmo.bellcommand.item.CommandItemManager;
 import cn.ningmo.bellcommand.update.UpdateManager;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 public class BellCommand extends JavaPlugin {
     private static BellCommand instance;
     private boolean debug;
+    private ConfigurationManager configurationManager;
     private LanguageManager languageManager;
     private CommandItemManager itemManager;
     private UpdateManager updateManager;
@@ -28,13 +30,16 @@ public class BellCommand extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-        saveDefaultConfig();
         
         try {
-            // 初始化语言管理器
+            // 1. 初始化语言管理器 (优先初始化以便后续日志输出)
             languageManager = new LanguageManager(this);
+
+            // 2. 初始化配置管理器
+            configurationManager = new ConfigurationManager(this);
+            configurationManager.init();
             
-            // 检查配置文件版本
+            // 3. 检查配置文件版本
             if (!checkConfigVersion()) {
                 getLogger().severe(ColorUtils.translateConsoleColors(
                     languageManager.getMessage("messages.plugin.config.version-mismatch")
@@ -43,20 +48,20 @@ public class BellCommand extends JavaPlugin {
                 return;
             }
             
-            // 初始化物品管理器
+            // 4. 初始化物品管理器
             itemManager = new CommandItemManager(this);
             
-            // 注册命令和监听器
+            // 5. 注册命令和监听器
             getCommand("bc").setExecutor(this);
             getServer().getPluginManager().registerEvents(new ItemClickListener(this), this);
             getServer().getPluginManager().registerEvents(new AutoGiveListener(this), this);
             
-            // 初始化更新管理器
+            // 6. 初始化更新管理器
             updateManager = new UpdateManager(this);
             updateManager.checkForUpdates();
             
-            // 设置调试模式
-            debug = getConfig().getBoolean("debug", false);
+            // 7. 设置调试模式
+            debug = configurationManager.getMainConfig().getBoolean("debug", false);
             if (debug) {
                 getLogger().info(ColorUtils.translateConsoleColors(
                     languageManager.getMessage("messages.plugin.debug-enabled")
@@ -67,9 +72,13 @@ public class BellCommand extends JavaPlugin {
             logStartupInfo();
             
         } catch (Exception e) {
-            getLogger().severe(ColorUtils.translateConsoleColors(
-                languageManager.getMessage("messages.plugin.startup-failed", Map.of("error", e.getMessage()))
-            ));
+            if (languageManager != null) {
+                getLogger().severe(ColorUtils.translateConsoleColors(
+                    languageManager.getMessage("messages.plugin.startup-failed", Map.of("error", e.getMessage()))
+                ));
+            } else {
+                getLogger().severe("插件启动失败: " + e.getMessage());
+            }
             if (debug) {
                 e.printStackTrace();
             }
@@ -79,6 +88,10 @@ public class BellCommand extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (configurationManager != null) {
+            configurationManager.stopWatchService();
+        }
+        
         if (itemManager != null) {
             itemManager.disable();
         }
@@ -182,7 +195,9 @@ public class BellCommand extends JavaPlugin {
     }
 
     private void reloadPlugin() {
-        reloadConfig();
+        if (configurationManager != null) {
+            configurationManager.reload();
+        }
         if (itemManager != null) {
             itemManager.reload();
         }
@@ -203,8 +218,8 @@ public class BellCommand extends JavaPlugin {
     }
 
     private boolean checkConfigVersion() {
-        int currentVersion = getConfig().getInt("config-version", 0);
-        int requiredVersion = 2;
+        int currentVersion = configurationManager.getMainConfig().getInt("config-version", 0);
+        int requiredVersion = 3;
         
         if (currentVersion == 0) {
             getLogger().severe(ColorUtils.translateConsoleColors(
@@ -237,6 +252,10 @@ public class BellCommand extends JavaPlugin {
 
     public boolean isDebugEnabled() {
         return debug;
+    }
+
+    public ConfigurationManager getConfigurationManager() {
+        return configurationManager;
     }
 
     public LanguageManager getLanguageManager() {

@@ -1,5 +1,5 @@
 # BellCommand 配置文件 (BellCommand Configuration File)
-# 版本: 1.3.1 (Version: 1.3.1)
+# 版本: 1.4.0-alpha-1 (Version: 1.4.0-alpha-1)
 # 作者: 柠枺 (Author: Ningmo)
 
 # 配置文件说明 (Configuration File Instructions):
@@ -14,8 +14,8 @@
 # - 每个版本的配置文件结构可能不同，更新插件后请参考新版本的配置说明 (Each version of the configuration file structure may differ; refer to the new version's instructions after updating the plugin)
 
 # 配置文件版本，请勿修改 (Configuration file version, do not modify)
-# 当前支持的配置文件版本: 2 (Current supported configuration file version: 2)
-config-version: 2
+# 当前支持的配置文件版本: 3 (Current supported configuration file version: 3)
+config-version: 3
 
 # 调试模式 (Debug Mode)
 # 启用后会输出更多的调试信息，帮助排查问题 (Enabling this outputs more debug information to help troubleshoot issues)
@@ -60,203 +60,26 @@ update-source:
       Authorization: "your-token"
       User-Agent: "BellCommand-UpdateChecker"
 
-# 命令物品配置 (Command Item Configuration)
-# 每个物品的配置格式如下: (Each item's configuration format is as follows:)
-# items:
-#   物品ID: (Item ID:)
-#     item-id: 物品类型 (Minecraft 物品ID) (Item type (Minecraft item ID))
-#     name: 物品显示名称 (支持颜色代码) (Item display name (supports color codes))
-#     lore: 物品说明 (支持颜色代码) (Item description (supports color codes))
-#     permission: 使用权限 (Usage permission)
-#     cooldown: 冷却时间 (秒) (Cooldown time (seconds))
-#     commands: (Commands:)
-#       left-click: # 普通左键命令（Java版） (Normal left-click command (Java Edition))
-#         序号: (Sequence number:)
-#           command: 要执行的命令 (Command to execute)
-#           as-console: 是否以控制台身份执行 (Execute as console)
-#           delay: 延迟执行时间 (秒)，支持小数点 (Delay execution time (seconds), supports decimals)
-#       right-click: # 普通右键命令（Java版） (Normal right-click command (Java Edition))
-#         序号: (Sequence number:)
-#           command: 要执行的命令 (Command to execute)
-#           as-console: 是否以控制台身份执行 (Execute as console)
-#           delay: 延迟执行时间 (秒)，支持小数点 (Delay execution time (seconds), supports decimals)
-#       shift-left-click: # 蹲下时左键命令（Java版） (Left-click command while crouching (Java Edition))
-#         序号: (Sequence number:)
-#           command: 要执行的命令 (Command to execute)
-#           as-console: 是否以控制台身份执行 (Execute as console)
-#           delay: 延迟执行时间 (秒)，支持小数点 (Delay execution time (seconds), supports decimals)
-#       shift-right-click: # 蹲下时右键命令（Java版） (Right-click command while crouching (Java Edition))
-#         序号: (Sequence number:)
-#           command: 要执行的命令 (Command to execute)
-#           as-console: 是否以控制台身份执行 (Execute as console)
-#           delay: 延迟执行时间 (秒)，支持小数点 (Delay execution time (seconds), supports decimals)
-#       bedrock-left-click: # 基岩版左键命令 (Bedrock Edition left-click command)
-#         序号: (Sequence number:)
-#           command: 要执行的命令 (Command to execute)
-#           as-console: 是否以控制台身份执行 (Execute as console)
-#           delay: 延迟执行时间 (秒)，支持小数点 (Delay execution time (seconds), supports decimals)
-#       bedrock-right-click: # 基岩版右键命令 (Bedrock Edition right-click command)
-#         序号: (Sequence number:)
-#           command: 要执行的命令 (Command to execute)
-#           as-console: 是否以控制台身份执行 (Execute as console)
-#           delay: 延迟执行时间 (秒)，支持小数点 (Delay execution time (seconds), supports decimals)
-#       bedrock-shift-left-click: # 基岩版蹲下时左键命令 (Bedrock Edition left-click command while crouching)
-#         序号: (Sequence number:)
-#           command: 要执行的命令 (Command to execute)
-#           as-console: 是否以控制台身份执行 (Execute as console)
-#           delay: 延迟执行时间 (秒)，支持小数点 (Delay execution time (seconds), supports decimals)
-#       bedrock-shift-right-click: # 基岩版蹲下时右键命令 (Bedrock Edition right-click command while crouching)
-#         序号: (Sequence number:)
-#           command: 要执行的命令 (Command to execute)
-#           as-console: 是否以控制台身份执行 (Execute as console)
-#           delay: 延迟执行时间 (秒)，支持小数点 (Delay execution time (seconds), supports decimals)
-
-# 冷却系统说明（Cooldown System Explanation）:
-# 1. 全局冷却：物品设置的冷却时间适用于整个物品的所有交互方式
-# 2. 动作冷却：冷却时间分别应用于每种交互方式（左键、右键、蹲下左键、蹲下右键等）
-# 3. 当左键进入冷却后，右键等其他交互方式仍然可用
-# 4. 这使得同一物品可以有多种独立功能，互不影响
+# 命令物品配置说明 (Command Item Configuration Instructions)
+# ---------------------------------------------------------
+# 本插件现在采用多文件夹架构管理命令物品：
+# 1. 所有的物品配置文件现在存放在独立的文件夹中。
+# 2. 文件夹命名规则：必须以 "_config" 结尾（例如：Default_config, Survival_config）。
+# 3. 每个文件夹内必须包含一个 "commands.yml" 文件。
+# 4. 插件会自动扫描所有符合规则的文件夹并加载其中的物品。
+# 5. 这样做是为了方便对大量物品进行分类管理和权限控制。
 #
-# Global Cooldown: The cooldown time set for an item applies to all interaction methods
-# Action Cooldown: Cooldown time applies separately to each interaction method (left-click, right-click, etc.)
-# When left-click enters cooldown, right-click and other interaction methods remain available
-# This allows a single item to have multiple independent functions that don't affect each other
+# This plugin now uses a multi-folder architecture for managing command items:
+# 1. All item configuration files are now stored in separate folders.
+# 2. Folder naming rule: Must end with "_config" (e.g., Default_config, Survival_config).
+# 3. Each folder must contain a "commands.yml" file.
+# 4. The plugin will automatically scan all compliant folders and load items within them.
+# 5. This is designed for easier category management and permission control of large numbers of items.
+# ---------------------------------------------------------
 
-items:
-  # 示例物品 - 菜单 (Example Item - Menu)
-  home:
-    item-id: CLOCK
-    name: "&6菜单 (&6Menu)"
-    lore:
-      - "&7左键点击: &f打开菜单"
-      - "&7右键点击: &f打开菜单"
-      - "&7蹲下左键: &f打开高级菜单"
-      - "&7蹲下右键: &f打开设置菜单"
-      - "&7基岩版左键: &f打开基岩版菜单"
-      - "&7基岩版右键: &f打开基岩版设置"
-      - "&7基岩版蹲下左键: &f打开基岩版高级菜单"
-      - "&7基岩版蹲下右键: &f打开基岩版高级设置"
-      - "&e冷却时间: &f1.5秒"
-    permission: "bellcommand.item.home"
-    cooldown: 1.5  # 冷却时间(秒)，支持小数点，基于玩家游戏时间计算
-    commands:
-      left-click:
-        1:
-          command: "cd"
-          as-console: false
-      right-click:
-        1:
-          command: "cd"
-          as-console: false
-      shift-left-click:
-        1:
-          command: "cd advanced"
-          as-console: false
-      shift-right-click:
-        1:
-          command: "cd settings"
-          as-console: false
-      bedrock-left-click:
-        1:
-          command: "cd bedrock"
-          as-console: false
-      bedrock-right-click:
-        1:
-          command: "cd bedrock settings"
-          as-console: false
-      bedrock-shift-left-click:
-        1:
-          command: "cd bedrock advanced"
-          as-console: false
-      bedrock-shift-right-click:
-        1:
-          command: "cd bedrock advanced settings"
-          as-console: false
+# 自动清理功能 (Auto-cleanup Feature)
+# ---------------------------------------------------------
+# 注意：自动给予和自动清理功能现在已分拆到各个物品配置中。
+# 您可以在各物品的 commands.yml 中独立配置这些功能。
+# ---------------------------------------------------------
 
-  # 示例物品 - 延迟执行命令 (Example Item - Delayed Command Execution)
-  teleport:
-    item-id: ENDER_PEARL
-    name: "&b传送魔珠 (&bTeleport Orb)"
-    lore:
-      - "&7右键点击: &f3秒后传送到主城"
-      - "&7蹲下右键: &f立即传送到主城"
-      - "&e冷却时间: &f10秒"
-    permission: "bellcommand.item.teleport"
-    cooldown: 10
-    commands:
-      right-click:
-        1:
-          command: "title %player% title {\"text\":\"准备传送\",\"color\":\"yellow\"}"
-          as-console: true
-        2:
-          command: "title %player% subtitle {\"text\":\"3秒后传送到主城\",\"color\":\"gold\"}"
-          as-console: true
-        3:
-          command: "spawn"
-          as-console: false
-          delay: 3.0
-      shift-right-click:
-        1:
-          command: "spawn"
-          as-console: false
-
-  # 示例物品 - 独立冷却功能 (Example Item - Independent Cooldown Functions)
-  multi_tool:
-    item-id: BLAZE_ROD
-    name: "&e多功能工具 (&eMulti-Tool)"
-    lore:
-      - "&7左键点击: &f查看玩家信息 &8(冷却: 3秒)"
-      - "&7右键点击: &f打开背包整理 &8(冷却: 5秒)"
-      - "&7蹲下左键: &f打开商店菜单 &8(冷却: 10秒)"
-      - "&7蹲下右键: &f打开传送系统 &8(冷却: 15秒)"
-      - "&a左右键分别有独立冷却，互不影响"
-    permission: "bellcommand.item.multi_tool"
-    cooldown: 3  # 基础冷却时间
-    commands:
-      left-click:
-        1:
-          command: "playerinfo %player%"
-          as-console: false
-      right-click:
-        1:
-          command: "backpack"
-          as-console: false
-      shift-left-click:
-        1:
-          command: "shop"
-          as-console: false
-      shift-right-click:
-        1:
-          command: "tpmenu"
-          as-console: false
-
-# 配置文件使用提示 (Configuration File Usage Tips):
-# 1. 物品ID必须是唯一的，不能重复 (Item IDs must be unique and cannot be repeated)
-# 2. item-id 必须是有效的 Minecraft 物品ID (item-id must be a valid Minecraft item ID)
-# 3. 权限节点建议使用插件名称作为前缀 (Permission nodes are recommended to use the plugin name as a prefix)
-# 4. 冷却时间设置为 0 表示无冷却 (Setting cooldown to 0 means no cooldown)
-# 5. 命令中的 %player% 会被替换为玩家名称 (The %player% in commands will be replaced by the player's name)
-# 6. as-console: true 表示以控制台身份执行命令 (as-console: true means execute as console)
-# 7. 可以为同一个动作（左键/右键）配置多个命令 (Multiple commands can be configured for the same action (left-click/right-click))
-# 8. 所有命令都是服务器支持的 (Ensure all commands are supported by the server)
-# 9. delay 参数可以设置命令延迟执行的时间（秒），支持小数点 (The delay parameter can set the command execution delay time (seconds), supports decimals)
-# 10. 不同交互方式（左键/右键）拥有独立冷却，实现多功能物品 (Different interaction methods (left-click/right-click) have independent cooldowns, enabling multi-functional items)
-
-auto-give:
-  enabled: true
-  join: true
-  first-join: true  # 是否仅在首次加入时给予
-  respawn: true
-  items:
-    - "home"
-    - "multi_tool"
-  first-join-items:  # 首次加入时额外给予的物品
-    - "tutorial_book"
-    - "welcome_kit"
-    - "teleport"
-  save-history: true  # 是否保存玩家获取记录
-  history-file: "player-history.yml"  # 玩家记录文件名
-
-auto-cleanup:
-  enabled: true  # 是否自动清理掉落的命令物品 (Whether to automatically clean up dropped command items)
-  delay: 30  # 掉落物保留时间(秒) (Drop retention time in seconds)

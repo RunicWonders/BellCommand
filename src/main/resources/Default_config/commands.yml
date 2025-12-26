@@ -1,0 +1,102 @@
+# 物品分类配置文件 (Item Category Configuration File)
+# ---------------------------------------------------------
+# 此文件存放该分类下的所有命令物品定义。
+#
+# items:
+#   物品ID:
+#     item-id: 物品类型 (Minecraft 物品ID)
+#     name: 物品显示名称
+#     lore: 物品说明
+#     permission: 使用权限
+#     cooldown: 冷却时间 (秒)
+#     commands:
+#       left-click: # 左键点击执行的命令
+#         1:
+#           command: "command"
+#           as-console: false
+#           delay: 0
+# ---------------------------------------------------------
+
+items:
+  # 示例物品 - 菜单
+  home:
+    item-id: CLOCK
+    name: "&6菜单 (&6Menu)"
+    lore:
+      - "&7左键点击: &f打开菜单"
+      - "&7右键点击: &f打开菜单"
+      - "&7蹲下左键: &f打开高级菜单"
+      - "&7蹲下右键: &f打开设置菜单"
+      - "&e冷却时间: &f1.5秒"
+    permission: "bellcommand.item.home"
+    cooldown: 1.5
+    auto-give:
+      join: true
+      respawn: true
+    auto-cleanup:
+      enabled: true
+      delay: 30
+    commands:
+      left-click:
+        1:
+          command: "cd"
+          as-console: false
+      right-click:
+        1:
+          command: "cd"
+          as-console: false
+      shift-left-click:
+        1:
+          command: "cd advanced"
+          as-console: false
+      shift-right-click:
+        1:
+          command: "cd settings"
+          as-console: false
+
+  # 示例物品 - 延迟执行命令
+  teleport:
+    item-id: ENDER_PEARL
+    name: "&b传送魔珠 (&bTeleport Orb)"
+    lore:
+      - "&7右键点击: &f3秒后传送到主城"
+      - "&e冷却时间: &f10秒"
+    permission: "bellcommand.item.teleport"
+    cooldown: 10
+    auto-give:
+      first-join: true
+    commands:
+      right-click:
+        1:
+          command: "title %player% title {\"text\":\"准备传送\",\"color\":\"yellow\"}"
+          as-console: true
+        2:
+          command: "spawn"
+          as-console: false
+          delay: 3.0
+
+  # 示例物品 - 独立冷却功能
+  multi_tool:
+    item-id: BLAZE_ROD
+    name: "&e多功能工具 (&eMulti-Tool)"
+    lore:
+      - "&7左键点击: &f查看玩家信息 &8(冷却: 3秒)"
+      - "&7右键点击: &f打开背包整理 &8(冷却: 5秒)"
+      - "&a左右键分别有独立冷却，互不影响"
+    permission: "bellcommand.item.multi_tool"
+    cooldown: 3
+    auto-give:
+      join: true
+      respawn: true
+    auto-cleanup:
+      enabled: true
+      delay: 60
+    commands:
+      left-click:
+        1:
+          command: "playerinfo %player%"
+          as-console: false
+      right-click:
+        1:
+          command: "backpack"
+          as-console: false

@@ -26,6 +26,12 @@ messages:
       empty-commands: "&c物品 %id% 的 %type% 命令列表为空"
       invalid-command-format: "&c物品 %id% 的 %type% 命令 %key% 配置格式无效"
       invalid-command-section: "&c物品 %id% 的 %type% 命令配置格式无效"
+      migration-start: "&e检测到旧版配置架构，正在执行自动迁移..."
+      migration-success: "&a配置迁移成功！旧版物品已移动至 Legacy_config/commands.yml"
+      migration-failed: "&c配置迁移失败: %error%"
+      backup-created: "&7已创建配置文件备份: %file%"
+      hot-reload: "&e检测到文件变更: %file%，正在执行热重载..."
+      load-failed: "&c加载配置文件失败: %file% - %error%"
     
     # 更新源相关消息
     update:

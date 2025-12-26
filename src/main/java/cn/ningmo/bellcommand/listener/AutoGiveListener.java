@@ -29,207 +29,81 @@ public class AutoGiveListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        if (!plugin.getConfig().getBoolean("auto-give.enabled")) {
-            return;
-        }
-
         Player player = event.getPlayer();
         boolean isFirstJoin = !player.hasPlayedBefore();
         
-        // 检查是否启用首次加入限制
-        if (plugin.getConfig().getBoolean("auto-give.first-join")) {
-            if (isFirstJoin) {
-                // 给予首次加入物品
-                giveFirstJoinItems(player);
-            } else {
-                // 检查背包中是否已有命令物品
-                if (shouldGiveItems(player)) {
-                    giveItems(player);
-                }
+        // 遍历所有物品，检查自动给予设置
+        for (CommandItem item : itemManager.getAllItems()) {
+            CommandItem.AutoGiveConfig config = item.getAutoGive();
+            
+            boolean shouldGive = false;
+            if (config.isFirstJoin() && isFirstJoin) {
+                shouldGive = true;
+            } else if (config.isJoin()) {
+                shouldGive = true;
             }
-        } else if (plugin.getConfig().getBoolean("auto-give.join")) {
-            // 正常的加入物品给予
-            giveItems(player);
+
+            if (shouldGive) {
+                giveItemIfNotExists(player, item);
+            }
         }
     }
 
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent event) {
-        if (!plugin.getConfig().getBoolean("auto-give.enabled") || 
-            !plugin.getConfig().getBoolean("auto-give.respawn")) {
-            return;
-        }
-
         Player player = event.getPlayer();
+        
         // 延迟给予物品以确保玩家完全重生
         new BukkitRunnable() {
             @Override
             public void run() {
-                giveItems(player);
+                for (CommandItem item : itemManager.getAllItems()) {
+                    if (item.getAutoGive().isRespawn()) {
+                        giveItemIfNotExists(player, item);
+                    }
+                }
             }
         }.runTaskLater(plugin, 20L); // 1秒后给予物品
     }
 
     @EventHandler
     public void onItemDrop(PlayerDropItemEvent event) {
-        if (!plugin.getConfig().getBoolean("auto-cleanup.enabled")) {
-            return;
-        }
-
         ItemStack droppedItem = event.getItemDrop().getItemStack();
         CommandItem commandItem = itemManager.getCommandItem(droppedItem);
         
-        if (commandItem != null) {
-            int delay = plugin.getConfig().getInt("auto-cleanup.delay", 30) * 20; // 转换为tick
+        if (commandItem != null && commandItem.getAutoCleanup().isEnabled()) {
+            int delay = commandItem.getAutoCleanup().getDelay() * 20; // 转换为tick
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    event.getItemDrop().remove();
-                    if (plugin.isDebugEnabled()) {
-                        Map<String, String> placeholders = new HashMap<>();
-                        placeholders.put("player", event.getPlayer().getName());
-                        placeholders.put("item", commandItem.getId());
-                        plugin.getLogger().info(ColorUtils.translateConsoleColors(
-                            plugin.getLanguageManager().getMessage("messages.debug.item.removed", placeholders)
-                        ));
+                    if (event.getItemDrop().isValid()) {
+                        event.getItemDrop().remove();
+                        if (plugin.isDebugEnabled()) {
+                            Map<String, String> placeholders = new HashMap<>();
+                            placeholders.put("player", event.getPlayer().getName());
+                            placeholders.put("item", commandItem.getId());
+                            plugin.getLogger().info(ColorUtils.translateConsoleColors(
+                                plugin.getLanguageManager().getMessage("messages.debug.item.removed", placeholders)
+                            ));
+                        }
                     }
                 }
             }.runTaskLater(plugin, delay);
         }
     }
 
-    private boolean shouldGiveItems(Player player) {
-        List<String> itemIds = plugin.getConfig().getStringList("auto-give.items");
-        if (itemIds == null || itemIds.isEmpty()) {
-            return false;
-        }
-
-        // 检查玩家背包中是否已有这些命令物品
-        for (String itemId : itemIds) {
-            CommandItem configItem = itemManager.getItem(itemId);
-            if (configItem == null) {
-                continue;
-            }
-
-            boolean hasItem = false;
-            for (ItemStack invItem : player.getInventory().getContents()) {
-                if (invItem != null && itemManager.getCommandItem(invItem) != null &&
-                    itemManager.getCommandItem(invItem).getId().equals(itemId)) {
-                    hasItem = true;
-                    break;
-                }
-            }
-
-            // 如果有任何一个配置的物品不在背包中，就需要给予物品
-            if (!hasItem) {
-                if (plugin.isDebugEnabled()) {
-                    Map<String, String> placeholders = new HashMap<>();
-                    placeholders.put("player", player.getName());
-                    placeholders.put("item", itemId);
-                    plugin.getLogger().info(ColorUtils.translateConsoleColors(
-                        plugin.getLanguageManager().getMessage("messages.debug.item.missing", placeholders)
-                    ));
-                }
-                return true;
+    private void giveItemIfNotExists(Player player, CommandItem item) {
+        // 检查玩家背包中是否已有这个物品
+        boolean hasItem = false;
+        for (ItemStack invItem : player.getInventory().getContents()) {
+            if (invItem != null && item.matches(invItem)) {
+                hasItem = true;
+                break;
             }
         }
 
-        if (plugin.isDebugEnabled()) {
-            Map<String, String> placeholders = new HashMap<>();
-            placeholders.put("player", player.getName());
-            plugin.getLogger().info(ColorUtils.translateConsoleColors(
-                plugin.getLanguageManager().getMessage("messages.debug.item.has-all", placeholders)
-            ));
-        }
-        return false;
-    }
-
-    private void giveItems(Player player) {
-        List<String> itemIds = plugin.getConfig().getStringList("auto-give.items");
-        if (itemIds == null || itemIds.isEmpty()) {
-            if (plugin.isDebugEnabled()) {
-                plugin.getLogger().warning(ColorUtils.translateConsoleColors(
-                    plugin.getLanguageManager().getMessage("messages.debug.config.no-items")
-                ));
-            }
-            return;
-        }
-
-        for (String itemId : itemIds) {
-            CommandItem item = itemManager.getItem(itemId);
-            if (item == null) {
-                if (plugin.isDebugEnabled()) {
-                    Map<String, String> placeholders = new HashMap<>();
-                    placeholders.put("id", itemId);
-                    plugin.getLogger().warning(ColorUtils.translateConsoleColors(
-                        plugin.getLanguageManager().getMessage("messages.debug.item.not-found", placeholders)
-                    ));
-                }
-                continue;
-            }
-
-            // 检查玩家背包中是否已有这个物品
-            boolean hasItem = false;
-            for (ItemStack invItem : player.getInventory().getContents()) {
-                if (invItem != null && itemManager.getCommandItem(invItem) != null &&
-                    itemManager.getCommandItem(invItem).getId().equals(itemId)) {
-                    hasItem = true;
-                    break;
-                }
-            }
-
-            // 只有当玩家没有这个物品时才给予
-            if (!hasItem) {
-                ItemStack itemStack = item.createItemStack();
-                // 检查背包是否已满
-                if (player.getInventory().firstEmpty() == -1) {
-                    Map<String, String> placeholders = new HashMap<>();
-                    placeholders.put("item", item.getName());
-                    player.sendMessage(ColorUtils.translateConsoleColors(
-                        plugin.getLanguageManager().getMessage("messages.inventory-full", placeholders)
-                    ));
-                    continue;
-                }
-                
-                player.getInventory().addItem(itemStack);
-
-                if (plugin.isDebugEnabled()) {
-                    Map<String, String> placeholders = new HashMap<>();
-                    placeholders.put("player", player.getName());
-                    placeholders.put("item", item.getName());
-                    plugin.getLogger().info(ColorUtils.translateConsoleColors(
-                        plugin.getLanguageManager().getMessage("messages.debug.item.given", placeholders)
-                    ));
-                }
-            }
-        }
-    }
-
-    private void giveFirstJoinItems(Player player) {
-        // 给予普通物品
-        if (plugin.getConfig().getBoolean("auto-give.join")) {
-            giveItems(player);
-        }
-        
-        // 给予首次加入专属物品
-        List<String> firstJoinItems = plugin.getConfig().getStringList("auto-give.first-join-items");
-        if (firstJoinItems == null || firstJoinItems.isEmpty()) {
-            return;
-        }
-
-        for (String itemId : firstJoinItems) {
-            CommandItem item = itemManager.getItem(itemId);
-            if (item == null) {
-                if (plugin.isDebugEnabled()) {
-                    Map<String, String> placeholders = new HashMap<>();
-                    placeholders.put("id", itemId);
-                    plugin.getLogger().warning(ColorUtils.translateConsoleColors(
-                        plugin.getLanguageManager().getMessage("messages.debug.item.not-found", placeholders)
-                    ));
-                }
-                continue;
-            }
-
+        // 只有当玩家没有这个物品时才给予
+        if (!hasItem) {
             ItemStack itemStack = item.createItemStack();
             // 检查背包是否已满
             if (player.getInventory().firstEmpty() == -1) {
@@ -238,7 +112,7 @@ public class AutoGiveListener implements Listener {
                 player.sendMessage(ColorUtils.translateConsoleColors(
                     plugin.getLanguageManager().getMessage("messages.inventory-full", placeholders)
                 ));
-                continue;
+                return;
             }
             
             player.getInventory().addItem(itemStack);
@@ -248,7 +122,7 @@ public class AutoGiveListener implements Listener {
                 placeholders.put("player", player.getName());
                 placeholders.put("item", item.getName());
                 plugin.getLogger().info(ColorUtils.translateConsoleColors(
-                    plugin.getLanguageManager().getMessage("messages.debug.item.first-join-given", placeholders)
+                    plugin.getLanguageManager().getMessage("messages.debug.item.given", placeholders)
                 ));
             }
         }

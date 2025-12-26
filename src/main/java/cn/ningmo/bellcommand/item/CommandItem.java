@@ -18,6 +18,48 @@ public class CommandItem {
     private final String permission;
     private final double cooldown;
     private final Map<String, List<CommandEntry>> commands;
+    private final AutoGiveConfig autoGive;
+    private final AutoCleanupConfig autoCleanup;
+
+    public static class AutoGiveConfig {
+        private final boolean join;
+        private final boolean firstJoin;
+        private final boolean respawn;
+
+        public AutoGiveConfig(ConfigurationSection config) {
+            if (config == null) {
+                this.join = false;
+                this.firstJoin = false;
+                this.respawn = false;
+            } else {
+                this.join = config.getBoolean("join", false);
+                this.firstJoin = config.getBoolean("first-join", false);
+                this.respawn = config.getBoolean("respawn", false);
+            }
+        }
+
+        public boolean isJoin() { return join; }
+        public boolean isFirstJoin() { return firstJoin; }
+        public boolean isRespawn() { return respawn; }
+    }
+
+    public static class AutoCleanupConfig {
+        private final boolean enabled;
+        private final int delay;
+
+        public AutoCleanupConfig(ConfigurationSection config) {
+            if (config == null) {
+                this.enabled = false;
+                this.delay = 30;
+            } else {
+                this.enabled = config.getBoolean("enabled", false);
+                this.delay = config.getInt("delay", 30);
+            }
+        }
+
+        public boolean isEnabled() { return enabled; }
+        public int getDelay() { return delay; }
+    }
 
     public static class CommandEntry {
         private final String command;
@@ -59,6 +101,8 @@ public class CommandItem {
         this.permission = config.getString("permission", "");
         this.cooldown = config.getDouble("cooldown", 0.0);
         this.commands = new HashMap<>();
+        this.autoGive = new AutoGiveConfig(config.getConfigurationSection("auto-give"));
+        this.autoCleanup = new AutoCleanupConfig(config.getConfigurationSection("auto-cleanup"));
         
         // 加载命令
         ConfigurationSection commandsSection = config.getConfigurationSection("commands");
@@ -106,6 +150,14 @@ public class CommandItem {
 
     public List<CommandEntry> getCommands(String type) {
         return commands.getOrDefault(type, new ArrayList<>());
+    }
+
+    public AutoGiveConfig getAutoGive() {
+        return autoGive;
+    }
+
+    public AutoCleanupConfig getAutoCleanup() {
+        return autoCleanup;
     }
 
     public ItemStack createItemStack() {

@@ -3,6 +3,7 @@ package cn.ningmo.bellcommand.item;
 import cn.ningmo.bellcommand.BellCommand;
 import cn.ningmo.bellcommand.utils.ColorUtils;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
@@ -65,49 +66,54 @@ public class CommandItemManager {
 
     private void loadItems() {
         items.clear();
-        ConfigurationSection itemsSection = plugin.getConfig().getConfigurationSection("items");
-        if (itemsSection == null) {
-            if (plugin.isDebugEnabled()) {
-                plugin.getLogger().info(ColorUtils.translateConsoleColors(
-                    plugin.getLanguageManager().getMessage("messages.debug.config.no-items")
-                ));
+        
+        // 获取所有配置文件
+        Map<String, FileConfiguration> itemConfigs = 
+            plugin.getConfigurationManager().getItemConfigs();
+        
+        int totalItems = 0;
+        
+        for (Map.Entry<String, FileConfiguration> entry : itemConfigs.entrySet()) {
+            String configName = entry.getKey();
+            FileConfiguration config = entry.getValue();
+            
+            ConfigurationSection itemsSection = config.getConfigurationSection("items");
+            if (itemsSection == null) {
+                if (plugin.isDebugEnabled()) {
+                    plugin.getLogger().info(ColorUtils.translateConsoleColors(
+                        "&e[调试] 配置文件 " + configName + " 中没有物品配置"
+                    ));
+                }
+                continue;
             }
-            return;
-        }
 
-        if (plugin.isDebugEnabled()) {
-            Map<String, String> placeholders = new HashMap<>();
-            placeholders.put("count", String.valueOf(itemsSection.getKeys(false).size()));
-            plugin.getLogger().info(ColorUtils.translateConsoleColors(
-                plugin.getLanguageManager().getMessage("messages.debug.config.items-loaded", placeholders)
-            ));
-        }
-
-        for (String id : itemsSection.getKeys(false)) {
-            ConfigurationSection itemSection = itemsSection.getConfigurationSection(id);
-            if (itemSection != null) {
-                try {
-                    CommandItem item = new CommandItem(id, itemSection);
-                    items.put(id, item);
-                    
-                    if (plugin.isDebugEnabled()) {
-                        Map<String, String> placeholders = new HashMap<>();
-                        placeholders.put("id", id);
-                        placeholders.put("name", item.getName());
-                        placeholders.put("type", itemSection.getString("item-id", "CLOCK"));
-                        plugin.getLogger().info(ColorUtils.translateConsoleColors(
-                            plugin.getLanguageManager().getMessage("messages.debug.config.item-entry", placeholders)
-                        ));
-                    }
-                } catch (Exception e) {
-                    if (plugin.isDebugEnabled()) {
-                        Map<String, String> placeholders = new HashMap<>();
-                        placeholders.put("id", id);
-                        placeholders.put("error", e.getMessage());
-                        plugin.getLogger().warning(ColorUtils.translateConsoleColors(
-                            plugin.getLanguageManager().getMessage("messages.error.invalid-config", placeholders)
-                        ));
-                        e.printStackTrace();
+            for (String id : itemsSection.getKeys(false)) {
+                ConfigurationSection itemSection = itemsSection.getConfigurationSection(id);
+                if (itemSection != null) {
+                    try {
+                        CommandItem item = new CommandItem(id, itemSection);
+                        items.put(id, item);
+                        totalItems++;
+                        
+                        if (plugin.isDebugEnabled()) {
+                            Map<String, String> placeholders = new HashMap<>();
+                            placeholders.put("id", id);
+                            placeholders.put("name", item.getName());
+                            placeholders.put("type", itemSection.getString("item-id", "CLOCK"));
+                            plugin.getLogger().info(ColorUtils.translateConsoleColors(
+                                plugin.getLanguageManager().getMessage("messages.debug.config.item-entry", placeholders)
+                            ));
+                        }
+                    } catch (Exception e) {
+                        if (plugin.isDebugEnabled()) {
+                            Map<String, String> placeholders = new HashMap<>();
+                            placeholders.put("id", id);
+                            placeholders.put("error", e.getMessage());
+                            plugin.getLogger().warning(ColorUtils.translateConsoleColors(
+                                plugin.getLanguageManager().getMessage("messages.error.invalid-config", placeholders)
+                            ));
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
@@ -115,7 +121,7 @@ public class CommandItemManager {
 
         if (plugin.isDebugEnabled()) {
             Map<String, String> placeholders = new HashMap<>();
-            placeholders.put("count", String.valueOf(items.size()));
+            placeholders.put("count", String.valueOf(totalItems));
             plugin.getLogger().info(ColorUtils.translateConsoleColors(
                 plugin.getLanguageManager().getMessage("messages.debug.config.items-loaded", placeholders)
             ));

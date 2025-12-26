@@ -4,6 +4,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import cn.ningmo.bellcommand.utils.ColorUtils;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -42,7 +43,12 @@ public class LanguageManager {
             }
         }
 
-        langConfig = YamlConfiguration.loadConfiguration(langFile);
+        try (InputStreamReader reader = new InputStreamReader(new java.io.FileInputStream(langFile), StandardCharsets.UTF_8)) {
+            langConfig = YamlConfiguration.loadConfiguration(reader);
+        } catch (IOException e) {
+            plugin.getLogger().warning("加载语言文件失败: " + e.getMessage());
+            langConfig = YamlConfiguration.loadConfiguration(langFile); // 回退到默认加载
+        }
 
         // 加载默认语言文件作为后备
         InputStream defLangStream = plugin.getResource("lang/messages.yml");
