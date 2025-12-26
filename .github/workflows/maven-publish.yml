@@ -57,12 +57,12 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Publish to Modrinth
-      uses: Kirabiru/publish-modrinth@v2
+      uses: modrinth/minotaur@v2
       with:
         token: ${{ secrets.MODRINTH_TOKEN }}
-        project_id: n18snJd9
-        version_name: BellCommand ${{ github.ref_name }}
-        version_number: ${{ github.ref_name }}
+        project-id: n18snJd9
+        version-name: BellCommand ${{ github.ref_name }}
+        version-number: ${{ github.ref_name }}
         file: target/bellcommand-*.jar
         loaders: |
           spigot
