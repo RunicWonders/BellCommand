@@ -50,22 +50,23 @@ update-source:
 ```yaml
 items:
   example_item:
-    material: "STICK"
+    item-id: "STICK"
     name: "&b示例命令棒"
     lore:
       - "&7左键点击执行命令"
     # 自动给予设置 (针对此物品)
     auto-give:
-      enabled: true
       join: true
+      first-join: true
       respawn: true
     # 自动清理设置 (针对此物品)
     auto-cleanup:
       enabled: true
       delay: 30
-    # 点击命令设置
-    actions:
-      left:
-        commands:
-          - "say 你好！"
+    # 命令设置
+    commands:
+      left-click:
+        1:
+          command: "say 你好！"
+          as-console: false
 ```

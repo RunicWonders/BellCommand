@@ -27,6 +27,7 @@ items:
     # 自动给予配置
     auto-give:
       join: true
+      first-join: true
       respawn: true
     # 自动清理配置
     auto-cleanup:

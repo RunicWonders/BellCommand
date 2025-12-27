@@ -9,37 +9,39 @@ BellCommand v1.4.0 引入了精细的物品消耗逻辑，允许你为命令物�
 ```yaml
 items:
   limited_sword:
-    material: "DIAMOND_SWORD"
+    item-id: "DIAMOND_SWORD"
     consumable:
       enabled: true          # 是否开启消耗系统
       mode: "COUNT"          # 消耗模式
-      value: 1               # 消耗数值/概率
-      min: 1                 # 随机模式下的最小值
-      max: 3                 # 随机模式下的最大值
+      amount: 1              # 消耗数量 (适用于 COUNT 和 PROBABILITY 模式)
+      probability: 0.5       # 消耗概率 (适用于 PROBABILITY 和 PROBABILITY_RANGE 模式)
+      min-amount: 1          # 最小消耗数量 (适用于 RANGE 和 PROBABILITY_RANGE 模式)
+      max-amount: 3          # 最大消耗数量 (适用于 RANGE 和 PROBABILITY_RANGE 模式)
 ```
 
 ## 消耗模式 (Modes)
 
 ### 1. COUNT (固定消耗)
 每次执行成功命令后，固定消耗指定数量的物品。
-- `value`: 每次消耗的数量。
-- 示例：`value: 1` 表示每点一次少一个。
+- `amount`: 每次消耗的数量。
+- 示例：`amount: 1` 表示每点一次少一个。
 
 ### 2. PROBABILITY (概率消耗)
-每次执行成功后，有一定概率消耗 **1个** 物品。
-- `value`: 触发概率 (0.0 到 1.0)。
-- 示例：`value: 0.5` 表示 50% 的几率扣除物品。
+每次执行成功后，有一定概率消耗指定数量的物品。
+- `probability`: 触发概率 (0.0 到 1.0)。
+- `amount`: 触发后的消耗数量。
+- 示例：`probability: 0.5`, `amount: 1` 表示 50% 的几率扣除 1 个物品。
 
 ### 3. RANGE (随机区间消耗)
-每次执行成功后，随机消耗 `[min, max]` 范围内的数量。
-- `min`: 最小消耗量。
-- `max`: 最大消耗量。
+每次执行成功后，随机消耗 `[min-amount, max-amount]` 范围内的数量。
+- `min-amount`: 最小消耗量。
+- `max-amount`: 最大消耗量。
 
 ### 4. PROBABILITY_RANGE (概率触发 + 随机区间)
 先判定是否触发消耗，如果触发，再随机扣除指定范围的数量。
-- `value`: 触发概率 (0.0 到 1.0)。
-- `min`: 触发后的最小消耗量。
-- `max`: 触发后的最大消耗量。
+- `probability`: 触发概率 (0.0 到 1.0)。
+- `min-amount`: 触发后的最小消耗量。
+- `max-amount`: 触发后的最大消耗量。
 
 ## 注意事项
 
