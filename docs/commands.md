@@ -65,6 +65,8 @@ items:
 - shift-left-click - Shift+左键
 - bedrock-right-click - 基岩版右键
 - bedrock-left-click - 基岩版左键
+- bedrock-shift-right-click - 基岩版 Shift+右键
+- bedrock-shift-left-click - 基岩版 Shift+左键
 
 ### 延迟执行命令
 从版本1.3.0开始，BellCommand支持延迟执行命令功能。您可以通过添加`delay`参数来设置命令的延迟执行时间（秒）。
