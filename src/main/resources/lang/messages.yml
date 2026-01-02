@@ -30,8 +30,14 @@ messages:
       migration-success: "&a配置迁移成功！旧版物品已移动至 Legacy_config/commands.yml"
       migration-failed: "&c配置迁移失败: %error%"
       backup-created: "&7已创建配置文件备份: %file%"
+      backup-failed: "&c备份文件失败: %file% - %error%"
       hot-reload: "&e检测到文件变更: %file%，正在执行热重载..."
       load-failed: "&c加载配置文件失败: %file% - %error%"
+      watch-init-failed: "&c无法初始化文件监听服务: %error%"
+      watch-thread-error: "&c配置监听线程异常: %error%"
+      save-failed: "&c无法保存配置文件 %file%: %error%"
+      lang-file-missing: "&e找不到语言文件: %file%，将使用默认语言"
+      lang-load-failed: "&c加载语言文件失败: %error%"
     
     # 更新源相关消息
     update:
@@ -44,6 +50,9 @@ messages:
       download-failed: "§c[BellCommand] 更新下载失败: §e%error%"
       invalid-source: "§c[BellCommand] 无效的更新源: %source%"
       source-disabled: "§e[BellCommand] 更新检查已禁用"
+      source-init-error: "§c[BellCommand] 初始化更新源时发生错误: %error%"
+      source-config-missing: "§e[BellCommand] %source% 配置部分缺失，使用默认值"
+      source-response-error: "§c[BellCommand] 更新源响应错误: %error%"
       reminder: "§e[BellCommand] 提醒：有新版本可用！当前版本: v%current%, 最新版本: v%latest%"
       download-url: "§e[BellCommand] 下载地址: %url%"
   

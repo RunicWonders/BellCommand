@@ -39,12 +39,16 @@ public class UpdateManager {
                     updateSource = new CustomUpdateSource(plugin);
                     break;
                 default:
-                    plugin.getLogger().warning("无效的更新源类型: " + sourceType);
+                    plugin.getLogger().warning(ColorUtils.translateConsoleColors(
+                        plugin.getLanguageManager().getMessage("messages.plugin.update.invalid-source", Map.of("source", sourceType))
+                    ));
                     enabled = false;
                     break;
             }
         } catch (Exception e) {
-            plugin.getLogger().warning("初始化更新源时发生错误: " + e.getMessage());
+            plugin.getLogger().warning(ColorUtils.translateConsoleColors(
+                plugin.getLanguageManager().getMessage("messages.plugin.update.source-init-error", Map.of("error", e.getMessage()))
+            ));
             if (plugin.isDebugEnabled()) {
                 e.printStackTrace();
             }

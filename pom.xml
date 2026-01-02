@@ -6,7 +6,7 @@
 
   <groupId>cn.ningmo</groupId>
     <artifactId>bellcommand</artifactId>
-    <version>1.4.0-beta.2</version>
+    <version>1.4.0-beta.3</version>
     <packaging>jar</packaging>
 
   <name>BellCommand</name>

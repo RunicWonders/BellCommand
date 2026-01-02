@@ -78,7 +78,7 @@ public class BellCommand extends JavaPlugin {
                     languageManager.getMessage("messages.plugin.startup-failed", Map.of("error", e.getMessage()))
                 ));
             } else {
-                getLogger().severe("插件启动失败: " + e.getMessage());
+                getLogger().severe("§c[BellCommand] 插件启动失败: " + e.getMessage());
             }
             if (debug) {
                 e.printStackTrace();

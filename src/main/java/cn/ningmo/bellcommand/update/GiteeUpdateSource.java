@@ -1,6 +1,7 @@
 package cn.ningmo.bellcommand.update;
 
 import cn.ningmo.bellcommand.BellCommand;
+import cn.ningmo.bellcommand.utils.ColorUtils;
 import org.bukkit.configuration.ConfigurationSection;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -29,7 +30,10 @@ public class GiteeUpdateSource implements UpdateSource {
             this.owner = "ning-g-mo";
             this.repo = "BellCommand";
             if (plugin.isDebugEnabled()) {
-                plugin.getLogger().warning("Gitee配置部分缺失，使用默认值");
+                plugin.getLogger().warning(ColorUtils.translateConsoleColors(
+                    plugin.getLanguageManager().getMessage("messages.plugin.update.source-config-missing", 
+                    Map.of("source", "Gitee"))
+                ));
             }
         }
     }

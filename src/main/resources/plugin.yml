@@ -1,5 +1,5 @@
 name: BellCommand
-version: '1.4.0-beta.2'
+version: '1.4.0-beta.3'
 main: cn.ningmo.bellcommand.BellCommand
 api: '1.13'
 api-version: '1.13'

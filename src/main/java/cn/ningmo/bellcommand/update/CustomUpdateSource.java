@@ -1,6 +1,8 @@
 package cn.ningmo.bellcommand.update;
 
 import cn.ningmo.bellcommand.BellCommand;
+import cn.ningmo.bellcommand.utils.ColorUtils;
+import org.bukkit.configuration.ConfigurationSection;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -138,7 +140,10 @@ public class CustomUpdateSource implements UpdateSource {
                         while ((line = reader.readLine()) != null) {
                             response.append(line);
                         }
-                        plugin.getLogger().warning("错误信息: " + response.toString());
+                        plugin.getLogger().warning(ColorUtils.translateConsoleColors(
+                            plugin.getLanguageManager().getMessage("messages.plugin.update.source-response-error", 
+                            Map.of("error", response.toString()))
+                        ));
                     }
                 }
             }

@@ -36,7 +36,9 @@ public class LanguageManager {
             try {
                 plugin.saveResource("lang/messages.yml", false);
             } catch (Exception e) {
-                plugin.getLogger().warning("找不到语言文件: messages.yml，将使用默认语言");
+                plugin.getLogger().warning(ColorUtils.translateConsoleColors(
+                    getMessage("messages.plugin.config.lang-file-missing", Map.of("file", "messages.yml"))
+                ));
                 // 如果找不到语言文件，创建一个空的配置
                 langConfig = new YamlConfiguration();
                 return;
@@ -46,7 +48,9 @@ public class LanguageManager {
         try (InputStreamReader reader = new InputStreamReader(new java.io.FileInputStream(langFile), StandardCharsets.UTF_8)) {
             langConfig = YamlConfiguration.loadConfiguration(reader);
         } catch (IOException e) {
-            plugin.getLogger().warning("加载语言文件失败: " + e.getMessage());
+            plugin.getLogger().warning(ColorUtils.translateConsoleColors(
+                getMessage("messages.plugin.config.lang-load-failed", Map.of("error", e.getMessage()))
+            ));
             langConfig = YamlConfiguration.loadConfiguration(langFile); // 回退到默认加载
         }
 

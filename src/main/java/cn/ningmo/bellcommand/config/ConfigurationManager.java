@@ -201,7 +201,10 @@ public class ConfigurationManager {
                 Map.of("file", backupFile.getName()))
             ));
         } catch (IOException e) {
-            plugin.getLogger().warning("备份文件失败: " + file.getName() + " - " + e.getMessage());
+            plugin.getLogger().warning(ColorUtils.translateConsoleColors(
+                plugin.getLanguageManager().getMessage("messages.plugin.config.backup-failed", 
+                Map.of("file", file.getName(), "error", e.getMessage()))
+            ));
         }
     }
 
@@ -228,7 +231,10 @@ public class ConfigurationManager {
             watchThread.setDaemon(true);
             watchThread.start();
         } catch (IOException e) {
-            plugin.getLogger().warning("无法初始化文件监听服务: " + e.getMessage());
+            plugin.getLogger().warning(ColorUtils.translateConsoleColors(
+                plugin.getLanguageManager().getMessage("messages.plugin.config.watch-init-failed", 
+                Map.of("error", e.getMessage()))
+            ));
         }
     }
 
@@ -286,7 +292,10 @@ public class ConfigurationManager {
             // 正常停止
         } catch (Exception e) {
             if (watchService != null) {
-                plugin.getLogger().warning("配置监听线程异常: " + e.getMessage());
+                plugin.getLogger().warning(ColorUtils.translateConsoleColors(
+                    plugin.getLanguageManager().getMessage("messages.plugin.config.watch-thread-error", 
+                    Map.of("error", e.getMessage()))
+                ));
             }
         }
     }
@@ -342,7 +351,10 @@ public class ConfigurationManager {
                 config.save(file);
                 itemConfigs.put(configName, config);
             } catch (IOException e) {
-                plugin.getLogger().severe("无法保存配置文件 " + file.getPath() + ": " + e.getMessage());
+                plugin.getLogger().severe(ColorUtils.translateConsoleColors(
+                    plugin.getLanguageManager().getMessage("messages.plugin.config.save-failed", 
+                    Map.of("file", file.getPath(), "error", e.getMessage()))
+                ));
             }
         } finally {
             lock.writeLock().unlock();
