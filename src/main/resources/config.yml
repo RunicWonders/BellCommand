@@ -37,7 +37,7 @@ update-source:
   reminder-interval: 14400
   # GitHub 更新源配置 (GitHub Update Source Configuration)
   github:
-    owner: RunicWonders
+    owner: ning-g-mo
     repo: BellCommand
   # Gitee 更新源配置 (Gitee Update Source Configuration)
   gitee:

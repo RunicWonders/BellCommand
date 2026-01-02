@@ -53,6 +53,7 @@ public class BellCommand extends JavaPlugin {
             
             // 5. 注册命令和监听器
             getCommand("bc").setExecutor(this);
+            getCommand("bc").setTabCompleter(this);
             getServer().getPluginManager().registerEvents(new ItemClickListener(this), this);
             getServer().getPluginManager().registerEvents(new AutoGiveListener(this), this);
             
@@ -146,10 +147,56 @@ public class BellCommand extends JavaPlugin {
         }
     }
 
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        List<String> completions = new ArrayList<>();
+        
+        if (args.length == 1) {
+            List<String> subCommands = new ArrayList<>();
+            if (sender.hasPermission("bellcommand.give")) subCommands.add("give");
+            if (sender.hasPermission("bellcommand.reload")) subCommands.add("reload");
+            if (sender.hasPermission("bellcommand.list")) subCommands.add("list");
+            subCommands.add("help");
+            
+            for (String sub : subCommands) {
+                if (sub.startsWith(args[0].toLowerCase())) {
+                    completions.add(sub);
+                }
+            }
+        } else if (args.length == 2 && args[0].equalsIgnoreCase("give")) {
+            if (sender.hasPermission("bellcommand.give")) {
+                for (Player player : getServer().getOnlinePlayers()) {
+                    if (player.getName().toLowerCase().startsWith(args[1].toLowerCase())) {
+                        completions.add(player.getName());
+                    }
+                }
+            }
+        } else if (args.length == 3 && args[0].equalsIgnoreCase("give")) {
+            if (sender.hasPermission("bellcommand.give")) {
+                for (CommandItem item : itemManager.getAllItems()) {
+                    if (item.getId().toLowerCase().startsWith(args[2].toLowerCase())) {
+                        completions.add(item.getId());
+                    }
+                }
+            }
+        }
+        
+        return completions;
+    }
+
     private void handleGiveCommand(CommandSender sender, String[] args) {
         String playerName = args[1];
         String itemId = args[2];
-        int amount = args.length > 3 ? Math.max(1, Integer.parseInt(args[3])) : 1;
+        int amount = 1;
+        
+        if (args.length > 3) {
+            try {
+                amount = Math.max(1, Integer.parseInt(args[3]));
+            } catch (NumberFormatException e) {
+                sender.sendMessage(languageManager.getMessage("messages.command.give-usage"));
+                return;
+            }
+        }
 
         Player target = getServer().getPlayer(playerName);
         if (target == null) {

@@ -99,11 +99,13 @@ public class CommandItem {
     public static class CommandEntry {
         private final String command;
         private final boolean asConsole;
+        private final boolean asOp;
         private final double delay; // 延迟执行时间（秒）
 
-        public CommandEntry(String command, boolean asConsole, double delay) {
+        public CommandEntry(String command, boolean asConsole, boolean asOp, double delay) {
             this.command = command;
             this.asConsole = asConsole;
+            this.asOp = asOp;
             this.delay = delay;
         }
 
@@ -113,6 +115,10 @@ public class CommandItem {
 
         public boolean isAsConsole() {
             return asConsole;
+        }
+        
+        public boolean isAsOp() {
+            return asOp;
         }
         
         public double getDelay() {
@@ -153,9 +159,10 @@ public class CommandItem {
                         if (cmdSection != null) {
                             String cmd = cmdSection.getString("command");
                             boolean asConsole = cmdSection.getBoolean("as-console", false);
+                            boolean asOp = cmdSection.getBoolean("as-op", false);
                             double delay = cmdSection.getDouble("delay", 0.0); // 获取延迟时间，默认为0秒
                             if (cmd != null && !cmd.isEmpty()) {
-                                typeCommands.add(new CommandEntry(cmd, asConsole, delay));
+                                typeCommands.add(new CommandEntry(cmd, asConsole, asOp, delay));
                             }
                         }
                     }
@@ -185,7 +192,15 @@ public class CommandItem {
     }
 
     public List<CommandEntry> getCommands(String type) {
-        return commands.getOrDefault(type, new ArrayList<>());
+        List<CommandEntry> result = commands.getOrDefault(type, new ArrayList<>());
+        
+        // 如果是基岩版特定的点击类型且没有配置，则回退到普通点击类型
+        if (result.isEmpty() && type.startsWith("bedrock-")) {
+            String fallbackType = type.replace("bedrock-", "");
+            result = commands.getOrDefault(fallbackType, new ArrayList<>());
+        }
+        
+        return result;
     }
 
     public AutoGiveConfig getAutoGive() {
