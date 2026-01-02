@@ -7,6 +7,7 @@ messages:
     bedrock-detected: "§e[BellCommand] 检测到基岩版服务器，部分功能可能不可用"
     version: "§6[BellCommand] 版本: v%version%"
     floodgate-detected: "&a已检测到 Floodgate，基岩版支持已启用"
+    floodgate-not-detected: "&e未检测到 Floodgate，基岩版支持已禁用"
     bedrock-player-detected: "&7检测到基岩版玩家: &f%player%"
     startup-failed: "&c插件启动失败: %error%"
     loading-default-config: "&e尝试加载默认配置..."
